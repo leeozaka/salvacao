@@ -4,7 +4,6 @@ import { JWT_SECRET } from '../config/secret';
 import { UserService } from 'services/UserService';
 import { EntityAttribute, EntityType } from 'enums/ErrorTypes';
 import JwtPayload from 'interfaces/JwtPayloadInterface';
-import { ResultAsync, errAsync, okAsync } from 'neverthrow';
 
 /**
  * Authentication middleware to protect routes
@@ -13,55 +12,78 @@ import { ResultAsync, errAsync, okAsync } from 'neverthrow';
 export const authenticate =
   (userService: UserService) =>
   async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
-    const validateToken = (): ResultAsync<string, Error> => {
+    try {
       const authHeader = req.headers.authorization;
 
-      if (!authHeader?.startsWith('Bearer '))
-        return errAsync(new Error('Invalid or missing authentication token'));
+      if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(401).json({
+          errors: [
+            {
+              type: EntityType.USER,
+              attribute: EntityAttribute.TOKEN,
+              message: 'Invalid or missing authentication token',
+            },
+          ],
+        });
+      }
 
-      if (!JWT_SECRET) return errAsync(new Error('JWT secret is not configured'));
+      if (!JWT_SECRET) {
+        return res.status(401).json({
+          errors: [
+            {
+              type: EntityType.USER,
+              attribute: EntityAttribute.TOKEN,
+              message: 'JWT secret is not configured',
+            },
+          ],
+        });
+      }
 
-      return okAsync(authHeader.split(' ')[1]);
-    };
+      const token = authHeader.split(' ')[1];
+      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+      
+      if (!decoded?.userId) {
+        return res.status(401).json({
+          errors: [
+            {
+              type: EntityType.USER,
+              attribute: EntityAttribute.TOKEN,
+              message: 'Invalid token payload',
+            },
+          ],
+        });
+      }
 
-    const verifyToken = (token: string): ResultAsync<string, Error> =>
-      ResultAsync.fromPromise(Promise.resolve(jwt.verify(token, JWT_SECRET as string)), (error) => {
-        if (error instanceof jwt.JsonWebTokenError) {
-          return new Error('Invalid authentication token');
-        }
-        if (error instanceof jwt.TokenExpiredError) {
-          return new Error('Token has expired');
-        }
-        return new Error('Authentication failed');
-      }).andThen((decoded) => {
-        const payload = decoded as JwtPayload;
-        return payload?.userId
-          ? okAsync(payload.userId)
-          : errAsync(new Error('Invalid token payload'));
-      });
+      const user = await userService.findOne(decoded.userId);
+      
+      if (!user) {
+        return res.status(401).json({
+          errors: [
+            {
+              type: EntityType.USER,
+              attribute: EntityAttribute.TOKEN,
+              message: 'User not found',
+            },
+          ],
+        });
+      }
 
-    const result = await validateToken()
-      .andThen(verifyToken)
-      .andThen((userId) => userService.findOne(userId))
-      .andThen((user) => {
-        if (!user) return errAsync(new Error('User not found'));
-        if (req.method !== 'POST' && !req.body.id) req.body.id= user.id;
-        return okAsync(user);
-      });
+      if (req.method !== 'POST' && !req.body.id) {
+        req.body.id = user.id;
+      }
 
-    if (result.isErr()) {
+      return next();
+    } catch (error) {
       return res.status(401).json({
         errors: [
           {
             type: EntityType.USER,
             attribute: EntityAttribute.TOKEN,
-            message: result.error.message || 'Authentication failed',
+            message: error instanceof Error ? error.message : 'Authentication failed',
           },
         ],
       });
     }
-
-    return next();
   };
 
 export default authenticate;

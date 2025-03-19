@@ -15,20 +15,20 @@ export class UserController {
    * @param res - Express response object
    */
   create = async (req: Request, res: Response): Promise<void> => {
-    const result = await this.userService.create(req.body);
-
-    if (result.isErr()) {
-      if (Array.isArray(result.error)) {
+    try {
+      const user = await this.userService.create(req.body);
+      res.status(StatusCodes.CREATED).json(user);
+    } catch (error) {
+      if (Array.isArray(error)) {
         res
           .status(StatusCodes.BAD_REQUEST)
-          .json({ message: 'Validation failed', errors: result.error });
+          .json({ message: 'Validation failed', errors: error });
       } else {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: result.error.message });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+          message: error instanceof Error ? error.message : 'Internal server error' 
+        });
       }
-      return;
     }
-
-    res.status(StatusCodes.CREATED).json(result.value);
   };
 
   /**
@@ -37,21 +37,21 @@ export class UserController {
    * @param res - Express response object
    */
   findOne = async (req: Request, res: Response): Promise<void> => {
-    const id = req.query.id || req.body.id;
+    try {
+      const id = req.query.id || req.body.id;
 
-    if (typeof id !== 'string') {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid ID parameter' });
-      return;
+      if (typeof id !== 'string') {
+        res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid ID parameter' });
+        return;
+      }
+
+      const user = await this.userService.findOne(id as string);
+      res.status(StatusCodes.OK).json(user);
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+        message: error instanceof Error ? error.message : 'Internal server error' 
+      });
     }
-
-    const user = await this.userService.findOne(id as string);
-
-    if (user.isErr()) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: user.error.message });
-      return;
-    }
-
-    res.status(StatusCodes.OK).json(user.value);
   };
 
   /**
@@ -60,13 +60,14 @@ export class UserController {
    * @param res - Express response object
    */
   findAll = async (req: Request, res: Response): Promise<void> => {
-    const users = await this.userService.findAll(req.body.userId);
-
-    if (users.isErr()) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: users.error.message });
+    try {
+      const users = await this.userService.findAll(req.body.userId);
+      res.status(StatusCodes.OK).json(users);
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+        message: error instanceof Error ? error.message : 'Internal server error' 
+      });
     }
-
-    res.status(StatusCodes.OK).json(users);
   };
 
   /**
@@ -75,14 +76,14 @@ export class UserController {
    * @param res - Express response object
    */
   update = async (req: Request, res: Response): Promise<void> => {
-    const user = await this.userService.update(req.body.id, req.body);
-
-    if (user.isErr()) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: user.error });
-      return;
+    try {
+      const user = await this.userService.update(req.body.id, req.body);
+      res.status(StatusCodes.OK).json(user);
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+        message: error instanceof Error ? error.message : 'Internal server error' 
+      });
     }
-
-    res.status(StatusCodes.OK).json(user);
   };
 
   /**
@@ -91,13 +92,13 @@ export class UserController {
    * @param res - Express response object
    */
   delete = async (req: Request, res: Response): Promise<void> => {
-    const result = await this.userService.delete(req.body.userId);
-
-    if (result.isErr()) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: result.error.message });
-      return;
+    try {
+      await this.userService.delete(req.body.userId);
+      res.status(StatusCodes.NO_CONTENT).send();
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+        message: error instanceof Error ? error.message : 'Internal server error' 
+      });
     }
-
-    res.status(StatusCodes.NO_CONTENT).send();
   };
 }

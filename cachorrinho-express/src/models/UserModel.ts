@@ -2,7 +2,6 @@ import { User } from 'dtos/UserDTO';
 import { Role } from '@prisma/client';
 import { ActivableEntityMixin } from 'interfaces/ActivableEntityInterface';
 import { UserUtils } from 'utils/UserUtils';
-import { errAsync, okAsync, ResultAsync } from 'neverthrow';
 import { ValidationError } from 'types/ValidationErrorType';
 
 type UserModelParams = Partial<User>;
@@ -44,41 +43,26 @@ export default class UserModel implements User {
     this.updatedAt = data.updatedAt;
   }
 
-  validate(): ResultAsync<boolean, ValidationError[]> {
-    const validations = [
-      this.validateCPF(),
-      this.validateEmail(),
-      this.validatePhone(),
-      this.validatePassword(),
-    ];
+  async validate(): Promise<boolean | ValidationError[]> {
+    const errors: ValidationError[] = [];
 
-    return ResultAsync.combineWithAllErrors(validations)
-      .map(() => true)
-      .mapErr((errors) => errors.filter((e): e is ValidationError => e !== null));
-  }
+    if (!UserUtils.isValidCPF(this.cpf)) {
+      errors.push({ field: 'cpf', message: 'Invalid CPF format' });
+    }
 
-  private validateCPF(): ResultAsync<boolean, ValidationError> {
-    return UserUtils.isValidCPF(this.cpf)
-      ? okAsync(true)
-      : errAsync({ field: 'cpf', message: 'Invalid CPF format' });
-  }
+    if (!UserUtils.isValidEmail(this.email)) {
+      errors.push({ field: 'email', message: 'Invalid email format' });
+    }
 
-  private validateEmail(): ResultAsync<boolean, ValidationError> {
-    return UserUtils.isValidEmail(this.email)
-      ? okAsync(true)
-      : errAsync({ field: 'email', message: 'Invalid email format' });
-  }
+    if (!UserUtils.isValidPhone(this.telephone)) {
+      errors.push({ field: 'telephone', message: 'Invalid phone format' });
+    }
 
-  private validatePhone(): ResultAsync<boolean, ValidationError> {
-    return UserUtils.isValidPhone(this.telephone)
-      ? okAsync(true)
-      : errAsync({ field: 'telephone', message: 'Invalid phone format' });
-  }
+    if (this.password && !UserUtils.isValidPassword(this.password)) {
+      errors.push({ field: 'password', message: 'Invalid password format' });
+    }
 
-  private validatePassword(): ResultAsync<boolean, ValidationError> {
-    return !this.password || UserUtils.isValidPassword(this.password)
-      ? okAsync(true)
-      : errAsync({ field: 'password', message: 'Invalid password format' });
+    return errors.length > 0 ? errors : true;
   }
 
   inactivate = ActivableEntityMixin.inactivate;

@@ -20,13 +20,14 @@ export class LoginController {
     req: Request<object, object, LoginRequest>,
     res: Response,
   ): Promise<void> => {
-    const result = await this.loginService.authenticate(req.body);
-
-    if (result.isOk()) {
-      res.status(StatusCodes.OK).json(result.value);
-      return;
+    try {
+      const result = await this.loginService.authenticate(req.body);
+      res.status(StatusCodes.OK).json(result);
+    } catch (error) {
+      res.status(StatusCodes.BAD_REQUEST).json({ 
+        message: error instanceof Error ? error.message : 'Authentication failed' 
+      });
     }
-    res.status(StatusCodes.BAD_REQUEST).json({ message: result.error.message });
   };
 
   /**
@@ -36,20 +37,21 @@ export class LoginController {
    * @returns Promise<void>
    */
   verifyToken = async (req: Request, res: Response): Promise<void> => {
-    const { token } = req.body;
-    
-    if (!token) {
-      res.status(StatusCodes.BAD_REQUEST).json({ valid: false, message: 'Token is required' });
-      return;
-    }
-    
-    const result = await this.loginService.verifyToken(token);
-    
-    if (result.isOk()) {
+    try {
+      const { token } = req.body;
+      
+      if (!token) {
+        res.status(StatusCodes.BAD_REQUEST).json({ valid: false, message: 'Token is required' });
+        return;
+      }
+      
+      const isValid = await this.loginService.verifyToken(token);
       res.status(StatusCodes.OK).json({ valid: true });
-      return;
+    } catch (error) {
+      res.status(StatusCodes.UNAUTHORIZED).json({ 
+        valid: false, 
+        message: error instanceof Error ? error.message : 'Token verification failed' 
+      });
     }
-    
-    res.status(StatusCodes.UNAUTHORIZED).json({ valid: false, message: result.error.message });
   };
 }

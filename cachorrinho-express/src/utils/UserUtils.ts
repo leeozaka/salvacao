@@ -87,7 +87,7 @@ export class UserUtils {
     return passwordRegex.test(password);
   }
 
-  static validateUserInfo(user: User): boolean | Error {
+  static validateUserInfo(user: User): boolean {
     if (!user.password) return false;
 
     return (

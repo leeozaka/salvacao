@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import { IUserRepository } from 'interfaces/UserInterface';
 import { User } from 'dtos/UserDTO';
 import { UserMapper } from 'mapper/UserMapper';
-import { errAsync, ResultAsync, okAsync } from 'neverthrow';
 
 /**
  * Repository implementation for User entity operations with Prisma ORM
@@ -12,92 +11,118 @@ export class UserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   /**
-   * Creates a user. Returns a ResultAsync with the created user or an error.
+   * Creates a user
    * @param {User} data - The user data
-   * @returns {ResultAsync<User, Error>}
+   * @returns {Promise<User>}
    */
-  create(data: User): ResultAsync<User, Error> {
-    return ResultAsync.fromPromise(
-      this.prisma.user.create({ data: UserMapper.toEntity(data) }),
-      (error) => new Error('Error creating user: ' + error),
-    );
+  async create(data: User): Promise<User> {
+    try {
+      const user = await this.prisma.user.create({ data: UserMapper.toEntity(data) });
+      return UserMapper.toDomain(user);
+    } catch (error) {
+      throw new Error('Error creating user: ' + error);
+    }
   }
 
   /**
-   * Finds a user by ID. Returns a ResultAsync with the user or an error if not found.
+   * Finds a user by ID
    * @param {string} id - The user's unique ID
-   * @returns {ResultAsync<User, Error>}
+   * @returns {Promise<User>}
    */
-  findOne(id: string): ResultAsync<User, Error> {
-    return ResultAsync.fromPromise(
-      this.prisma.user.findUnique({ where: { id, isDeleted: false } }),
-      (error) => new Error('Error finding user: ' + error),
-    ).andThen((user) => {
-      if (!user) return errAsync(new Error('User not found'));
+  async findOne(id: string): Promise<User> {
+    try {
+      const user = await this.prisma.user.findUnique({ 
+        where: { id, isDeleted: false } 
+      });
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
 
-      return okAsync(UserMapper.toDomain(user));
-    });
+      return UserMapper.toDomain(user);
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Error finding user: ' + error);
+    }
   }
 
   /**
-   * Retrieves all users matching an optional filter. Returns a ResultAsync with an array of users or an error.
+   * Retrieves all users matching an optional filter
    * @param {Partial<User>} [filter] - Optional filtering criteria
-   * @returns {ResultAsync<User[], Error>}
+   * @returns {Promise<User[]>}
    */
-  findAll(filter?: Partial<User>): ResultAsync<User[], Error> {
-    return ResultAsync.fromPromise(
-      this.prisma.user
-        .findMany({ where: { ...filter, isDeleted: false } })
-        .then((users) => users.map((user) => UserMapper.toDomain(user))),
-      (error) => new Error('Error: ' + error),
-    );
+  async findAll(filter?: Partial<User>): Promise<User[]> {
+    try {
+      const users = await this.prisma.user.findMany({ 
+        where: { ...filter, isDeleted: false } 
+      });
+      
+      return users.map(user => UserMapper.toDomain(user));
+    } catch (error) {
+      throw new Error('Error finding users: ' + error);
+    }
   }
 
   /**
-   * Updates a user by ID. Returns a ResultAsync with the updated user or an error if not found.
+   * Updates a user by ID
    * @param {string} id - The user's unique ID
    * @param {Partial<User>} data - Fields to update
-   * @returns {ResultAsync<User, Error>}
+   * @returns {Promise<User>}
    */
-  update(id: string, data: Partial<User>): ResultAsync<User, Error> {
-    return this.findOne(id).andThen((user) => {
-      if (!user) return errAsync(new Error('User to update not found'));
-      return ResultAsync.fromPromise(
-        this.prisma.user.update({ where: { id }, data: { ...data } }),
-        (error) => new Error('Error updating user: ' + error),
-      ).map(UserMapper.toDomain);
-    });
+  async update(id: string, data: Partial<User>): Promise<User> {
+    try {
+      // First check if user exists
+      await this.findOne(id);
+      
+      const updatedUser = await this.prisma.user.update({ 
+        where: { id }, 
+        data: { ...data } 
+      });
+      
+      return UserMapper.toDomain(updatedUser);
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Error updating user: ' + error);
+    }
   }
 
   /**
-   * Performs a soft delete on a user. Returns a ResultAsync with true or an error if not found.
+   * Performs a soft delete on a user
    * @param {string} id - The user's unique ID
-   * @returns {ResultAsync<boolean, Error>}
+   * @returns {Promise<boolean>}
    */
-  delete(id: string): ResultAsync<boolean, Error> {
-    return this.findOne(id).andThen((user) => {
-      if (!user) return errAsync(new Error('User to delete not found'));
+  async delete(id: string): Promise<boolean> {
+    try {
+      const user = await this.findOne(id);
       const userModel = UserMapper.toEntity(user);
-      return ResultAsync.fromPromise(
-        this.prisma.user.update({ where: { id }, data: { ...userModel, isDeleted: true } }),
-        (error) => new Error('Error deleting user: ' + error),
-      ).map(() => true);
-    });
+      
+      await this.prisma.user.update({ 
+        where: { id }, 
+        data: { ...userModel, isDeleted: true } 
+      });
+      
+      return true;
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Error deleting user: ' + error);
+    }
   }
 
   /**
-   * Finds a user by CPF. Returns a ResultAsync with the user or an error if not found.
+   * Finds a user by CPF
    * @param {string} cpf - The user's CPF
-   * @returns {ResultAsync<User, Error>}
+   * @returns {Promise<User>}
    */
-  findByCpf(cpf: string): ResultAsync<User, Error> {
-    return ResultAsync.fromPromise(
-      this.prisma.user.findUnique({ where: { cpf, isDeleted: false } }),
-      (error) => new Error('Error finding by CPF: ' + error),
-    ).andThen((user) => {
-      if (!user) return errAsync(new Error('User not found'));
+  async findByCpf(cpf: string): Promise<User> {
+    try {
+      const user = await this.prisma.user.findUnique({ 
+        where: { cpf, isDeleted: false } 
+      });
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
 
-      return okAsync(UserMapper.toDomain(user));
-    });
+      return UserMapper.toDomain(user);
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Error finding by CPF: ' + error);
+    }
   }
 }
