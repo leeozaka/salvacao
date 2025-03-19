@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
 const mockMonthlyData = [
-  { month: 'Jan', users: 120, revenue: 5400 },
-  { month: 'Feb', users: 145, revenue: 5800 },
-  { month: 'Mar', users: 190, revenue: 6700 },
-  { month: 'Apr', users: 210, revenue: 7200 },
-  { month: 'May', users: 250, revenue: 9100 },
-  { month: 'Jun', users: 280, revenue: 10500 },
+  { month: "Jan", users: 120, revenue: 5400 },
+  { month: "Feb", users: 145, revenue: 5800 },
+  { month: "Mar", users: 190, revenue: 6700 },
+  { month: "Apr", users: 210, revenue: 7200 },
+  { month: "May", users: 250, revenue: 9100 },
+  { month: "Jun", users: 280, revenue: 10500 },
 ];
 
 export default function AnalyticsPage() {
@@ -14,9 +14,11 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold mb-1">Analytics Dashboard</h1>
-        <p className="text-gray-500">Overview of key metrics and performance indicators</p>
+        <p className="text-gray-500">
+          Overview of key metrics and performance indicators
+        </p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-gray-500 text-sm">Monthly Active Users</h3>
@@ -26,7 +28,7 @@ export default function AnalyticsPage() {
           </div>
           <p className="text-xs text-gray-400 mt-1">vs. last month</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-gray-500 text-sm">Average Revenue Per User</h3>
           <div className="flex items-end space-x-2 mt-2">
@@ -35,7 +37,7 @@ export default function AnalyticsPage() {
           </div>
           <p className="text-xs text-gray-400 mt-1">vs. last month</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-gray-500 text-sm">Conversion Rate</h3>
           <div className="flex items-end space-x-2 mt-2">
@@ -45,7 +47,7 @@ export default function AnalyticsPage() {
           <p className="text-xs text-gray-400 mt-1">vs. last month</p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-medium mb-4">Monthly Growth</h2>
@@ -53,8 +55,8 @@ export default function AnalyticsPage() {
             {mockMonthlyData.map((item, index) => (
               <div key={index} className="flex-1 flex flex-col items-center">
                 <div className="relative w-full flex justify-center">
-                  <div 
-                    className="w-6 bg-blue-500 rounded-t" 
+                  <div
+                    className="w-6 bg-blue-500 rounded-t"
                     style={{ height: `${item.users / 3}px` }}
                   ></div>
                 </div>
@@ -67,15 +69,15 @@ export default function AnalyticsPage() {
             <span className="text-xs text-gray-500">Monthly Active Users</span>
           </div>
         </div>
-        
+
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-medium mb-4">Revenue Trends</h2>
           <div className="h-64 flex items-end">
             {mockMonthlyData.map((item, index) => (
               <div key={index} className="flex-1 flex flex-col items-center">
                 <div className="relative w-full flex justify-center">
-                  <div 
-                    className="w-6 bg-green-500 rounded-t" 
+                  <div
+                    className="w-6 bg-green-500 rounded-t"
                     style={{ height: `${item.revenue / 165}px` }}
                   ></div>
                 </div>
@@ -89,7 +91,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
-      
+
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-lg font-medium mb-4">User Acquisition Channels</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -100,7 +102,10 @@ export default function AnalyticsPage() {
                 <span className="text-sm font-medium">42%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '42%' }}></div>
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: "42%" }}
+                ></div>
               </div>
             </div>
             <div className="mb-4">
@@ -109,7 +114,10 @@ export default function AnalyticsPage() {
                 <span className="text-sm font-medium">28%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '28%' }}></div>
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: "28%" }}
+                ></div>
               </div>
             </div>
             <div className="mb-4">
@@ -118,7 +126,10 @@ export default function AnalyticsPage() {
                 <span className="text-sm font-medium">16%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '16%' }}></div>
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: "16%" }}
+                ></div>
               </div>
             </div>
           </div>
@@ -129,7 +140,10 @@ export default function AnalyticsPage() {
                 <span className="text-sm font-medium">9%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '9%' }}></div>
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: "9%" }}
+                ></div>
               </div>
             </div>
             <div className="mb-4">
@@ -138,7 +152,10 @@ export default function AnalyticsPage() {
                 <span className="text-sm font-medium">3%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '3%' }}></div>
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: "3%" }}
+                ></div>
               </div>
             </div>
             <div className="mb-4">
@@ -147,7 +164,10 @@ export default function AnalyticsPage() {
                 <span className="text-sm font-medium">2%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-blue-600 h-2 rounded-full" style={{ width: '2%' }}></div>
+                <div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: "2%" }}
+                ></div>
               </div>
             </div>
           </div>

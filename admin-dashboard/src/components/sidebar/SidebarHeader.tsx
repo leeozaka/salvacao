@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { memo } from 'react';
+import React, { memo } from "react";
 
 const SidebarHeader = () => {
   return (

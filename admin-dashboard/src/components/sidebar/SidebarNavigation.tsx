@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { memo } from 'react';
-import SidebarNavItem from './SidebarNavItem';
+import React, { memo } from "react";
+import SidebarNavItem from "./SidebarNavItem";
 
 const navItems = [
-  { icon: 'home', label: 'Dashboard', href: '/dashboard' },
-  { icon: 'users', label: 'Users', href: '/dashboard/users' },
-  { icon: 'chart-bar', label: 'Analytics', href: '/dashboard/analytics' },
-  { icon: 'document', label: 'Reports', href: '/dashboard/reports' },
-  { icon: 'cog', label: 'Settings', href: '/dashboard/settings' },
+  { icon: "home", label: "Dashboard", href: "/dashboard" },
+  { icon: "users", label: "Users", href: "/dashboard/users" },
+  { icon: "chart-bar", label: "Analytics", href: "/dashboard/analytics" },
+  { icon: "document", label: "Reports", href: "/dashboard/reports" },
+  { icon: "cog", label: "Settings", href: "/dashboard/settings" },
 ];
 
 const SidebarNavigation = () => {
@@ -16,7 +16,7 @@ const SidebarNavigation = () => {
     <nav className="flex-grow p-4">
       <ul className="space-y-2">
         {navItems.map((item) => (
-          <SidebarNavItem 
+          <SidebarNavItem
             key={item.href}
             icon={item.icon}
             label={item.label}

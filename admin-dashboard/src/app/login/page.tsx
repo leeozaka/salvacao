@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from "react";
+import LoginForm from "@/components/auth/LoginForm";
+import RegisterForm from "@/components/auth/RegisterForm";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function AuthPage() {
   const [showLogin, setShowLogin] = useState(true);
-  
+
   const handleRegisterSuccess = () => {
     setShowLogin(true);
   };
@@ -34,9 +34,9 @@ export default function AuthPage() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <RegisterForm 
-                onSuccess={handleRegisterSuccess} 
-                onToggleForm={() => setShowLogin(true)} 
+              <RegisterForm
+                onSuccess={handleRegisterSuccess}
+                onToggleForm={() => setShowLogin(true)}
               />
             </motion.div>
           )}

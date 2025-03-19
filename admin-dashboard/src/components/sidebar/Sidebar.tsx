@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import SidebarHeader from './SidebarHeader';
-import SidebarNavigation from './SidebarNavigation';
-import SidebarFooter from './SidebarFooter';
+import React from "react";
+import SidebarHeader from "./SidebarHeader";
+import SidebarNavigation from "./SidebarNavigation";
+import SidebarFooter from "./SidebarFooter";
 
 const Sidebar = () => {
   return (

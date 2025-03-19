@@ -4,7 +4,7 @@
  * @returns boolean indicating if CPF is valid
  */
 export function isValidCPF(cpf: string): boolean {
-  const cleanCPF = cpf.replace(/\D/g, '');
+  const cleanCPF = cpf.replace(/\D/g, "");
 
   if (cleanCPF.length !== 11) return false;
   if (/^(\d)\1{10}$/.test(cleanCPF)) return false;
@@ -27,7 +27,7 @@ export function isValidCPF(cpf: string): boolean {
 
   remainder = (sum * 10) % 11;
   if (remainder === 10 || remainder === 11) remainder = 0;
-  
+
   return remainder === parseInt(cleanCPF.substring(10, 11));
 }
 
@@ -37,16 +37,16 @@ export function isValidCPF(cpf: string): boolean {
  * @returns boolean indicating if phone number is valid
  */
 export function isValidPhone(phone: string): boolean {
-  const cleanPhone = phone.replace(/\D/g, '');
-  
+  const cleanPhone = phone.replace(/\D/g, "");
+
   if (cleanPhone.length !== 10 && cleanPhone.length !== 11) return false;
   if (/^(\d)\1+$/.test(cleanPhone)) return false;
-  
+
   const ddd = parseInt(cleanPhone.substring(0, 2));
   if (ddd < 11 || ddd > 99) return false;
-  
-  if (cleanPhone.length === 11 && cleanPhone.charAt(2) !== '9') return false;
-  
+
+  if (cleanPhone.length === 11 && cleanPhone.charAt(2) !== "9") return false;
+
   return true;
 }
 
@@ -63,14 +63,16 @@ export function isValidPhone(phone: string): boolean {
  */
 export function isValidPassword(password: string): boolean {
   if (!password) return false;
-  
+
   const hasMinLength = password.length >= 8;
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const hasSpecialChar = /[#?!@$%^&*\-_=+[\]{}|;:,.<>()/"'\\]/.test(password);
-  
-  return hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
+
+  return (
+    hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar
+  );
 }
 
 /**
@@ -79,10 +81,11 @@ export function isValidPassword(password: string): boolean {
  * @returns Formatted CPF string
  */
 export function formatCPF(cpf: string): string {
-  const digits = cpf.replace(/\D/g, '');
+  const digits = cpf.replace(/\D/g, "");
   if (digits.length <= 3) return digits;
   if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  if (digits.length <= 9)
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
   return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
 }
 
@@ -92,9 +95,10 @@ export function formatCPF(cpf: string): string {
  * @returns Formatted phone string
  */
 export function formatPhone(phone: string): string {
-  const digits = phone.replace(/\D/g, '');
+  const digits = phone.replace(/\D/g, "");
   if (digits.length <= 2) return digits;
   if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  if (digits.length <= 10)
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
