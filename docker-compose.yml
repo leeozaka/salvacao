@@ -18,10 +18,10 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U salvacao -d cachorrinhodb"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 10
+      start_period: 15s
   
   # Backend API
   api:
@@ -36,7 +36,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://salvacao:salvacao123@db:5432/cachorrinhodb
+      DATABASE_URL: postgresql://salvacao:salvacao123@db:5432/cachorrinhodb?connect_timeout=30
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET:-my-super-secure-jwt-secret}
       PORT: 3344
@@ -44,11 +44,11 @@ services:
       - salvacao_network
     restart: always
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3344"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3344/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     
   # Frontend Dashboard
   dashboard:
@@ -62,12 +62,11 @@ services:
       - /app/.next
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://api:3344
+      NEXT_PUBLIC_API_URL: /api
     networks:
       - salvacao_network
     depends_on:
-      api:
-        condition: service_healthy
+      - api
     restart: always
   
   # Nginx Reverse Proxy
