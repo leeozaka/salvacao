@@ -63,7 +63,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
   return (
     <div className="w-full max-w-md">
       <h1 className="text-2xl font-bold text-center mb-4 text-black">
-        Login to Dashboard
+        Salvacao - Dashboard
       </h1>
 
       {error && (

@@ -1,5 +1,4 @@
 import { User } from 'dtos/UserDTO';
-import { ValidationError } from 'types/ValidationErrorType';
 
 export interface CreateUserRequest {
   cpf: string;

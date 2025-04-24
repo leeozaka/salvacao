@@ -45,7 +45,7 @@ export class LoginController {
         return;
       }
       
-      const isValid = await this.loginService.verifyToken(token);
+      await this.loginService.verifyToken(token);
       res.status(StatusCodes.OK).json({ valid: true });
     } catch (error) {
       res.status(StatusCodes.UNAUTHORIZED).json({ 
