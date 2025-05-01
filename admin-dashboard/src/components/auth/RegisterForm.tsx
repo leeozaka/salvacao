@@ -29,42 +29,67 @@ export default function RegisterForm({
     birthday: "",
   });
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    const errorMessage = validateField(name, value);
+
+    if (name === "password") {
+      const confirmError = validateField(
+        "confirmPassword",
+        formData.confirmPassword,
+      );
+      setErrors((prev) => ({
+        ...prev,
+        [name]: errorMessage,
+        confirmPassword: confirmError,
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: errorMessage }));
+    }
+  };
+
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case "name":
+        return value ? "" : "Name is required";
+      case "email":
+        if (!value) return "Email is required";
+        return /^\S+@\S+\.\S+$/.test(value) ? "" : "Invalid email format";
+      case "password":
+        if (!value) return "Password is required";
+        return isValidPassword(value)
+          ? ""
+          : "Password must have at least 8 characters with uppercase, lowercase, numbers and special characters";
+      case "confirmPassword":
+        return value === formData.password ? "" : "Passwords do not match";
+      case "cpf":
+        if (!value) return "CPF is required";
+        return isValidCPF(value) ? "" : "Invalid CPF format";
+      case "telephone":
+        if (!value) return "Telephone is required";
+        return isValidPhone(value) ? "" : "Invalid phone number format";
+      case "birthday":
+        return value ? "" : "Birthday is required";
+      default:
+        return "";
+    }
   };
 
   const validateForm = (): boolean => {
-    const newErrors: string[] = [];
+    const newErrors: Record<string, string> = {};
 
-    if (!formData.name) newErrors.push("Name is required");
-    if (!formData.email) newErrors.push("Email is required");
-    if (!/^\S+@\S+\.\S+$/.test(formData.email))
-      newErrors.push("Invalid email format");
-
-    if (!formData.password) newErrors.push("Password is required");
-    if (!isValidPassword(formData.password)) {
-      newErrors.push(
-        "Password must have at least 8 characters with uppercase, lowercase, numbers and special characters",
-      );
-    }
-    if (formData.password !== formData.confirmPassword)
-      newErrors.push("Passwords do not match");
-
-    if (!formData.cpf) newErrors.push("CPF is required");
-    if (!isValidCPF(formData.cpf)) newErrors.push("Invalid CPF format");
-
-    if (!formData.telephone) newErrors.push("Telephone is required");
-    if (!isValidPhone(formData.telephone))
-      newErrors.push("Invalid phone number format");
-
-    if (!formData.birthday) newErrors.push("Birthday is required");
+    Object.entries(formData).forEach(([name, value]) => {
+      const error = validateField(name, value);
+      if (error) newErrors[name] = error;
+    });
 
     setErrors(newErrors);
-    return newErrors.length === 0;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,10 +114,10 @@ export default function RegisterForm({
       if (result.success) {
         onSuccess();
       } else {
-        setErrors([result.message || "Registration failed"]);
+        setErrors({ general: result.message || "Registration failed" });
       }
     } catch (error) {
-      setErrors(["An unexpected error occurred"]);
+      setErrors({ general: "An unexpected error occurred" });
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -105,12 +130,20 @@ export default function RegisterForm({
         Create an Account
       </h1>
 
-      {errors.length > 0 && (
+      {errors.general && (
+        <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 border border-red-200 rounded">
+          <p>{errors.general}</p>
+        </div>
+      )}
+
+      {Object.keys(errors).length > 0 && Object.keys(errors).some(key => key !== 'general' && errors[key]) && (
         <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 border border-red-200 rounded">
           <ul className="list-disc list-inside">
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
+            {Object.entries(errors).map(([field, message]) => 
+              field !== 'general' && message ? (
+                <li key={field}>{message}</li>
+              ) : null
+            )}
           </ul>
         </div>
       )}
@@ -132,6 +165,9 @@ export default function RegisterForm({
             className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.name && (
+            <p className="mt-1 text-xs text-red-500">{errors.name}</p>
+          )}
         </div>
 
         <div>
@@ -150,6 +186,9 @@ export default function RegisterForm({
             className="w-full px-3 py-2 mt-1 border  text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+          )}
         </div>
 
         <div>
@@ -167,12 +206,17 @@ export default function RegisterForm({
             onChange={(e) => {
               const formatted = formatCPF(e.target.value);
               setFormData((prev) => ({ ...prev, cpf: formatted }));
+              const errorMessage = validateField("cpf", formatted);
+              setErrors((prev) => ({ ...prev, cpf: errorMessage }))
             }}
             placeholder="000.000.000-00"
             maxLength={14}
             className="w-full px-3 py-2 mt-1 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.cpf && (
+            <p className="mt-1 text-xs text-red-500">{errors.cpf}</p>
+          )}
         </div>
 
         <div>
@@ -190,12 +234,17 @@ export default function RegisterForm({
             onChange={(e) => {
               const formatted = formatPhone(e.target.value);
               setFormData((prev) => ({ ...prev, telephone: formatted }));
+              const errorMessage = validateField("telephone", formatted);
+              setErrors((prev) => ({ ...prev, telephone: errorMessage }));
             }}
             placeholder="(00) 00000-0000"
             maxLength={15}
             className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.telephone && (
+            <p className="mt-1 text-xs text-red-500">{errors.telephone}</p>
+          )}
         </div>
 
         <div>
@@ -214,6 +263,9 @@ export default function RegisterForm({
             className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.birthday && (
+            <p className="mt-1 text-xs text-red-500">{errors.birthday}</p>
+          )}
         </div>
 
         <div>
@@ -232,10 +284,13 @@ export default function RegisterForm({
             className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <p className="mt-1 text-xs text-gray-500">
+          {errors.password && (
+            <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+          )}
+          {/* <p className="mt-1 text-xs text-gray-500">
             Password must be at least 8 characters with numbers and special
             characters
-          </p>
+          </p> */}
         </div>
 
         <div>
@@ -254,6 +309,9 @@ export default function RegisterForm({
             className="w-full px-3 py-2 mt-1 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+          {errors.confirmPassword && (
+            <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
+          )}
         </div>
 
         <div>

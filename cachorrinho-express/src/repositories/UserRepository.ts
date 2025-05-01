@@ -91,8 +91,14 @@ export class UserRepository implements IUserRepository {
    */
   async delete(id: string): Promise<boolean> {
     try {
-      const user = await this.findOne(id);
-      const userModel = UserMapper.toEntity(user);
+      // const user = await this.findOne(id);
+      const user2  = await this.prisma.$queryRaw<User[]>`SELECT * FROM users WHERE id = ${id}`.then(x => x[0]);
+
+      if (!user2) {
+        throw new Error('User not found');
+      }
+
+      const userModel= UserMapper.toEntity(user2);
       
       await this.prisma.user.update({ 
         where: { id }, 
