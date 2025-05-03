@@ -2,45 +2,36 @@
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 
-// Definição das interfaces
-interface Animal {
-  id: number;
-  nome: string;
-  especie: string;
-  porte: string;
-  peso: string;
-}
+// Importação das interfaces
+import {
+  Animal,
+  Medicamento,
+  Pessoa,
+  UnidadeDeMedida,
+  ReceitaMedicamento,
+} from "@/types/entities";
 
-interface Medicamento {
-  id: number;
-  nome: string;
-  categoria: string;
-}
+import { ViaAdministracaoType, FormDataType } from "@/types/formTypes";
 
-interface FormDataType {
-  animalId: string;
-  medicamentoId: string;
-  dose: string;
-  unidade: string;
-  data: string;
-  hora: string;
-  observacoes: string;
-  viaAdministracao: string;
-  responsavel: string;
-}
-
-type UnidadeType = "ml" | "mg" | "comprimido" | "gota" | "aplicação";
-type ViaAdministracaoType =
-  | "oral"
-  | "injetável"
-  | "tópica"
-  | "ocular"
-  | "auricular";
+// Importação dos serviços
+import {
+  buscarAnimais,
+  buscarMedicamentos,
+  buscarUnidadesDeMedida,
+  buscarResponsaveis,
+  buscarReceitas,
+  registrarMedicacao,
+} from "@/services/medicacaoService";
 
 const RegistroMedicacao: React.FC = () => {
   // Estados para controlar os dados do formulário
   const [animais, setAnimais] = useState<Animal[]>([]);
   const [medicamentos, setMedicamentos] = useState<Medicamento[]>([]);
+  const [unidadesDeMedida, setUnidadesDeMedida] = useState<UnidadeDeMedida[]>(
+    [],
+  );
+  const [responsaveis, setResponsaveis] = useState<Pessoa[]>([]);
+  const [receitas, setReceitas] = useState<ReceitaMedicamento[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -50,36 +41,50 @@ const RegistroMedicacao: React.FC = () => {
     animalId: "",
     medicamentoId: "",
     dose: "",
-    unidade: "ml",
+    unidadeId: "",
     data: new Date().toISOString().split("T")[0],
     hora: new Date().toTimeString().slice(0, 5),
     observacoes: "",
     viaAdministracao: "oral",
-    responsavel: "",
+    responsavelId: "",
+    receitaId: "",
+    quantidadeDias: "",
+    intervaloHoras: "",
   });
 
-  // Efeito para carregar os dados iniciais (simulado)
+  // Efeito para carregar os dados iniciais
   useEffect(() => {
-    // Simulando carregamento de dados do backend
-    setAnimais([
-      { id: 1, nome: "Rex", especie: "Cachorro", porte: "Médio", peso: "12kg" },
-      { id: 2, nome: "Miau", especie: "Gato", porte: "Pequeno", peso: "3.5kg" },
-      {
-        id: 3,
-        nome: "Totó",
-        especie: "Cachorro",
-        porte: "Grande",
-        peso: "25kg",
-      },
-      { id: 4, nome: "Luna", especie: "Gato", porte: "Médio", peso: "4kg" },
-    ]);
+    // Função para carregar todos os dados necessários
+    const carregarDados = async () => {
+      try {
+        // Buscar todos os dados em paralelo
+        const [
+          animaisData,
+          medicamentosData,
+          unidadesData,
+          responsaveisData,
+          receitasData,
+        ] = await Promise.all([
+          buscarAnimais(),
+          buscarMedicamentos(),
+          buscarUnidadesDeMedida(),
+          buscarResponsaveis(),
+          buscarReceitas(),
+        ]);
 
-    setMedicamentos([
-      { id: 1, nome: "Amoxicilina", categoria: "Antibiótico" },
-      { id: 2, nome: "Dipirona", categoria: "Analgésico" },
-      { id: 3, nome: "Vermífugo", categoria: "Antiparasitário" },
-      { id: 4, nome: "Prednisolona", categoria: "Anti-inflamatório" },
-    ]);
+        // Atualizar os estados com os dados recebidos
+        setAnimais(animaisData);
+        setMedicamentos(medicamentosData);
+        setUnidadesDeMedida(unidadesData);
+        setResponsaveis(responsaveisData);
+        setReceitas(receitasData);
+      } catch (error) {
+        console.error("Erro ao carregar dados iniciais:", error);
+        setError("Falha ao carregar dados. Por favor, tente novamente.");
+      }
+    };
+
+    carregarDados();
   }, []);
 
   // Função para lidar com mudanças nos campos do formulário
@@ -94,50 +99,80 @@ const RegistroMedicacao: React.FC = () => {
   };
 
   // Função para lidar com o envio do formulário
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess(false);
 
     // Validação básica
-    if (!formData.animalId || !formData.medicamentoId || !formData.dose) {
+    if (
+      !formData.animalId ||
+      !formData.medicamentoId ||
+      !formData.dose ||
+      !formData.unidadeId
+    ) {
       setError("Por favor, preencha todos os campos obrigatórios.");
       setLoading(false);
       return;
     }
 
-    // Simulando uma chamada API
-    setTimeout(() => {
-      console.log("Dados enviados:", formData);
+    try {
+      // Chamar o serviço para registrar a medicação
+      const resultado = await registrarMedicacao(formData);
 
-      // Simulando sucesso
-      setSuccess(true);
+      if (resultado.success) {
+        setSuccess(true);
+        // Resetar o formulário após sucesso
+        setFormData({
+          animalId: "",
+          medicamentoId: "",
+          dose: "",
+          unidadeId: "",
+          data: new Date().toISOString().split("T")[0],
+          hora: new Date().toTimeString().slice(0, 5),
+          observacoes: "",
+          viaAdministracao: "oral",
+          responsavelId: "",
+          receitaId: "",
+          quantidadeDias: "",
+          intervaloHoras: "",
+        });
+      } else {
+        setError(resultado.error || "Erro ao registrar medicação.");
+      }
+    } catch (error) {
+      setError("Ocorreu um erro ao processar a requisição.");
+      console.error("Erro no handleSubmit:", error);
+    } finally {
       setLoading(false);
-
-      // Resetar o formulário após sucesso
-      setFormData({
-        animalId: "",
-        medicamentoId: "",
-        dose: "",
-        unidade: "ml",
-        data: new Date().toISOString().split("T")[0],
-        hora: new Date().toTimeString().slice(0, 5),
-        observacoes: "",
-        viaAdministracao: "oral",
-        responsavel: "",
-      });
-    }, 1500);
+    }
   };
 
   // Encontrar os detalhes do animal selecionado
   const animalSelecionado = formData.animalId
-    ? animais.find((animal) => animal.id === parseInt(formData.animalId))
+    ? animais.find((animal) => animal.idanimal === Number(formData.animalId))
     : null;
 
   // Encontrar os detalhes do medicamento selecionado
   const medicamentoSelecionado = formData.medicamentoId
-    ? medicamentos.find((med) => med.id === parseInt(formData.medicamentoId))
+    ? medicamentos.find(
+        (med) => med.idproduto === Number(formData.medicamentoId),
+      )
+    : null;
+
+  // Encontrar a unidade de medida selecionada
+  const unidadeSelecionada = formData.unidadeId
+    ? unidadesDeMedida.find(
+        (unidade) => unidade.idunidademedida === Number(formData.unidadeId),
+      )
+    : null;
+
+  // Encontrar o responsável selecionado
+  const responsavelSelecionado = formData.responsavelId
+    ? responsaveis.find(
+        (pessoa) => pessoa.idpessoa === Number(formData.responsavelId),
+      )
     : null;
 
   return (
@@ -185,8 +220,9 @@ const RegistroMedicacao: React.FC = () => {
             >
               <option value="">Selecione o animal</option>
               {animais.map((animal) => (
-                <option key={animal.id} value={animal.id}>
-                  {animal.nome} ({animal.especie}, {animal.peso})
+                <option key={animal.idanimal} value={animal.idanimal}>
+                  {animal.nome} ({animal.especie}, {animal.idade} ano(s),{" "}
+                  {animal.raca})
                 </option>
               ))}
             </select>
@@ -210,8 +246,8 @@ const RegistroMedicacao: React.FC = () => {
             >
               <option value="">Selecione o medicamento</option>
               {medicamentos.map((med) => (
-                <option key={med.id} value={med.id}>
-                  {med.nome} ({med.categoria})
+                <option key={med.idproduto} value={med.idproduto}>
+                  {med.nome} ({med.composicao})
                 </option>
               ))}
             </select>
@@ -238,25 +274,30 @@ const RegistroMedicacao: React.FC = () => {
                 required
               />
             </div>
-            <div className="w-24">
+            <div className="w-36">
               <label
                 className="block text-sm font-medium text-gray-700 mb-1"
-                htmlFor="unidade"
+                htmlFor="unidadeId"
               >
-                Unidade
+                Unidade <span className="text-red-500">*</span>
               </label>
               <select
-                id="unidade"
-                name="unidade"
-                value={formData.unidade}
+                id="unidadeId"
+                name="unidadeId"
+                value={formData.unidadeId}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                required
               >
-                <option value="ml">ml</option>
-                <option value="mg">mg</option>
-                <option value="comprimido">comprimido</option>
-                <option value="gota">gotas</option>
-                <option value="aplicação">aplicação</option>
+                <option value="">Selecione</option>
+                {unidadesDeMedida.map((unidade) => (
+                  <option
+                    key={unidade.idunidademedida}
+                    value={unidade.idunidademedida}
+                  >
+                    {unidade.descricao}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -326,20 +367,91 @@ const RegistroMedicacao: React.FC = () => {
           <div>
             <label
               className="block text-sm font-medium text-gray-700 mb-1"
-              htmlFor="responsavel"
+              htmlFor="responsavelId"
             >
               Responsável pela Aplicação
             </label>
-            <input
-              type="text"
-              id="responsavel"
-              name="responsavel"
-              value={formData.responsavel}
+            <select
+              id="responsavelId"
+              name="responsavelId"
+              value={formData.responsavelId}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="Nome do responsável"
-            />
+            >
+              <option value="">Selecione o responsável</option>
+              {responsaveis.map((pessoa) => (
+                <option key={pessoa.idpessoa} value={pessoa.idpessoa}>
+                  {pessoa.nome}
+                </option>
+              ))}
+            </select>
           </div>
+
+          {/* Receita Médica */}
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="receitaId"
+            >
+              Receita Médica
+            </label>
+            <select
+              id="receitaId"
+              name="receitaId"
+              value={formData.receitaId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            >
+              <option value="">Selecione a receita (opcional)</option>
+              {receitas.map((receita) => (
+                <option key={receita.idreceita} value={receita.idreceita}>
+                  {receita.medico} -{" "}
+                  {new Date(receita.data).toLocaleDateString()} -{" "}
+                  {receita.clinica}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Campos de Posologia - Exibidos apenas se uma receita for selecionada */}
+          {formData.receitaId && (
+            <>
+              <div>
+                <label
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                  htmlFor="quantidadeDias"
+                >
+                  Quantidade de Dias
+                </label>
+                <input
+                  type="number"
+                  id="quantidadeDias"
+                  name="quantidadeDias"
+                  value={formData.quantidadeDias}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  min="1"
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                  htmlFor="intervaloHoras"
+                >
+                  Intervalo (horas)
+                </label>
+                <input
+                  type="number"
+                  id="intervaloHoras"
+                  name="intervaloHoras"
+                  value={formData.intervaloHoras}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  min="1"
+                />
+              </div>
+            </>
+          )}
 
           {/* Observações */}
           <div className="md:col-span-2">
@@ -362,26 +474,67 @@ const RegistroMedicacao: React.FC = () => {
         </div>
 
         {/* Resumo da medicação */}
-        {animalSelecionado && medicamentoSelecionado && formData.dose && (
-          <div className="mt-6 p-4 bg-amber-50 rounded-md border border-amber-100">
-            <h3 className="font-medium text-amber-800 mb-2">
-              Resumo da medicação
-            </h3>
-            <p className="text-gray-700">
-              Aplicar{" "}
-              <span className="font-medium">
-                {formData.dose} {formData.unidade}
-              </span>{" "}
-              de{" "}
-              <span className="font-medium">{medicamentoSelecionado.nome}</span>{" "}
-              via{" "}
-              <span className="font-medium">{formData.viaAdministracao}</span>{" "}
-              no animal{" "}
-              <span className="font-medium">{animalSelecionado.nome}</span> (
-              {animalSelecionado.especie}, {animalSelecionado.peso}).
-            </p>
-          </div>
-        )}
+        {animalSelecionado &&
+          medicamentoSelecionado &&
+          formData.dose &&
+          unidadeSelecionada && (
+            <div className="mt-6 p-4 bg-amber-50 rounded-md border border-amber-100">
+              <h3 className="font-medium text-amber-800 mb-2">
+                Resumo da medicação
+              </h3>
+              <p className="text-gray-700">
+                Aplicar{" "}
+                <span className="font-medium">
+                  {formData.dose} {unidadeSelecionada.descricao}
+                </span>{" "}
+                de{" "}
+                <span className="font-medium">
+                  {medicamentoSelecionado.nome}
+                </span>{" "}
+                via{" "}
+                <span className="font-medium">{formData.viaAdministracao}</span>{" "}
+                no animal{" "}
+                <span className="font-medium">{animalSelecionado.nome}</span> (
+                {animalSelecionado.especie}, {animalSelecionado.raca}).
+                {responsavelSelecionado && (
+                  <>
+                    {" "}
+                    Responsável:{" "}
+                    <span className="font-medium">
+                      {responsavelSelecionado.nome}
+                    </span>
+                    .
+                  </>
+                )}
+                {responsavelSelecionado && (
+                  <>
+                    {" "}
+                    Responsável:{" "}
+                    <span className="font-medium">
+                      {responsavelSelecionado.nome}
+                    </span>
+                    .
+                  </>
+                )}
+                {formData.receitaId &&
+                  formData.quantidadeDias &&
+                  formData.intervaloHoras && (
+                    <>
+                      {" "}
+                      Tratamento:{" "}
+                      <span className="font-medium">
+                        {formData.quantidadeDias} dias
+                      </span>
+                      , a cada{" "}
+                      <span className="font-medium">
+                        {formData.intervaloHoras} horas
+                      </span>
+                      .
+                    </>
+                  )}
+              </p>
+            </div>
+          )}
 
         <div className="mt-6 flex justify-end space-x-3">
           <button

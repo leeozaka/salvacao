@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { SidebarProvider } from "../../components/sidebar/SidebarContext";
-import Sidebar from "../../components/sidebar/Sidebar";
+import { SidebarProvider } from "@/components/sidebar/SidebarContext";
+import Sidebar from "@/components/sidebar/Sidebar";
 import { useState } from "react";
 
 export default function DashboardLayout({

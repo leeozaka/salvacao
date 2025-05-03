@@ -1,35 +1,25 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-// Interfaces para tipagem
-interface Produto {
-  id: number;
-  nome: string;
-  codigo: string;
-  quantidadeAtual: number;
-  unidade: string;
-  categoria: string;
-}
-
-interface AcertoEstoque {
-  produtoId: number;
-  quantidadeAnterior: number;
-  quantidadeNova: number;
-  motivo: string;
-  data: string;
-  responsavel: string;
-}
+import { Produto, SaidaProduto, TipoSaida, Estoque } from "@/types/entities";
+import {
+  buscarProdutos,
+  buscarTiposSaida,
+  registrarSaidaProduto,
+  buscarQuantidadeEstoque,
+} from "@/services/estoqueService";
 
 const AcertoEstoquePage: React.FC = () => {
   // Estados
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [estoques, setEstoques] = useState<Estoque[]>([]);
+  const [tiposSaida, setTiposSaida] = useState<TipoSaida[]>([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(
     null,
   );
   const [quantidadeNova, setQuantidadeNova] = useState<number>(0);
-  const [motivo, setMotivo] = useState<string>("");
-  const [responsavel, setResponsavel] = useState<string>("");
+  const [idTipoSaida, setIdTipoSaida] = useState<number>(0);
+  const [obs, setObs] = useState<string>("");
   const [pesquisa, setPesquisa] = useState<string>("");
   const [produtosFiltrados, setProdutosFiltrados] = useState<Produto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -38,60 +28,29 @@ const AcertoEstoquePage: React.FC = () => {
 
   const router = useRouter();
 
-  // Simulação de carregamento de dados (substitua por chamada à API real)
+  // Carregar dados iniciais
   useEffect(() => {
-    // Simulando um atraso de carregamento
-    const timeoutId = setTimeout(() => {
-      // Dados de exemplo
-      const produtosExemplo: Produto[] = [
-        {
-          id: 1,
-          nome: "Ração Premium Cães",
-          codigo: "RAC001",
-          quantidadeAtual: 25,
-          unidade: "kg",
-          categoria: "Alimentos",
-        },
-        {
-          id: 2,
-          nome: "Antipulgas Gatos",
-          codigo: "APG002",
-          quantidadeAtual: 15,
-          unidade: "unid",
-          categoria: "Medicamentos",
-        },
-        {
-          id: 3,
-          nome: "Shampoo Hipoalergênico",
-          codigo: "SHP003",
-          quantidadeAtual: 8,
-          unidade: "litros",
-          categoria: "Higiene",
-        },
-        {
-          id: 4,
-          nome: "Coleira Ajustável P",
-          codigo: "COL004",
-          quantidadeAtual: 12,
-          unidade: "unid",
-          categoria: "Acessórios",
-        },
-        {
-          id: 5,
-          nome: "Vitamina C para Aves",
-          codigo: "VIT005",
-          quantidadeAtual: 6,
-          unidade: "frascos",
-          categoria: "Suplementos",
-        },
-      ];
+    const carregarDados = async () => {
+      try {
+        setLoading(true);
+        const [produtosData, tiposSaidaData, estoquesData] = await Promise.all([
+          buscarProdutos(),
+          buscarTiposSaida(),
+          buscarQuantidadeEstoque(),
+        ]);
 
-      setProdutos(produtosExemplo);
-      setProdutosFiltrados(produtosExemplo);
-      setLoading(false);
-    }, 1000);
+        setProdutos(produtosData);
+        setProdutosFiltrados(produtosData);
+        setTiposSaida(tiposSaidaData);
+        setEstoques(estoquesData);
+        setLoading(false);
+      } catch (err) {
+        setErro("Erro ao carregar dados. Tente novamente mais tarde.");
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timeoutId);
+    carregarDados();
   }, []);
 
   // Efeito para filtrar produtos com base na pesquisa
@@ -102,21 +61,31 @@ const AcertoEstoquePage: React.FC = () => {
       const filtered = produtos.filter(
         (produto) =>
           produto.nome.toLowerCase().includes(pesquisa.toLowerCase()) ||
-          produto.codigo.toLowerCase().includes(pesquisa.toLowerCase()) ||
-          produto.categoria.toLowerCase().includes(pesquisa.toLowerCase()),
+          produto.fabricante.toLowerCase().includes(pesquisa.toLowerCase()),
       );
       setProdutosFiltrados(filtered);
     }
   }, [pesquisa, produtos]);
 
-  // Manipuladores de eventos
+  // Função para obter a quantidade atual do estoque
+  const getQuantidadeAtual = (idproduto: number): number => {
+    const estoque = estoques.find((e) => e.idproduto === idproduto);
+    return estoque ? estoque.quantidade : 0;
+  };
+
+  // Manipulador para selecionar produto
   const handleSelecionarProduto = (produto: Produto) => {
     setProdutoSelecionado(produto);
-    setQuantidadeNova(produto.quantidadeAtual);
+    setQuantidadeNova(getQuantidadeAtual(produto.idproduto));
+    setIdTipoSaida(
+      tiposSaida.find((t) => t.descricao === "ACERTO")?.idtiposaida || 0,
+    );
+    setObs("");
     setErro("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Manipulador para submeter o acerto
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!produtoSelecionado) {
@@ -129,58 +98,60 @@ const AcertoEstoquePage: React.FC = () => {
       return;
     }
 
-    if (!motivo) {
-      setErro("Informe o motivo do acerto de estoque");
+    if (idTipoSaida === 0) {
+      setErro("Selecione o motivo do acerto");
       return;
     }
 
-    if (!responsavel) {
-      setErro("Informe o responsável pelo acerto");
-      return;
+    try {
+      const quantidadeAtual = getQuantidadeAtual(produtoSelecionado.idproduto);
+      const quantidadeDelta = quantidadeNova - quantidadeAtual;
+
+      // Criar objeto SaidaProduto
+      const saida: SaidaProduto = {
+        produto_idproduto: produtoSelecionado.idproduto,
+        usuario_pessoa_idpessoa: 1, // Simulado, obter do contexto de autenticação
+        data: new Date(),
+        quantidade: quantidadeDelta, // Positivo para aumento, negativo para redução
+        obs:
+          obs ||
+          `Acerto de estoque: de ${quantidadeAtual} para ${quantidadeNova}`,
+        idtiposaida: idTipoSaida,
+      };
+
+      // Enviar para a API
+      await registrarSaidaProduto(saida);
+
+      // Atualizar estoque localmente
+      const estoquesAtualizados = estoques.map((e) =>
+        e.idproduto === produtoSelecionado.idproduto
+          ? { ...e, quantidade: quantidadeNova }
+          : e,
+      );
+      setEstoques(estoquesAtualizados);
+
+      // Feedback de sucesso
+      setSucesso(
+        `Estoque do produto "${produtoSelecionado.nome}" atualizado com sucesso!`,
+      );
+
+      // Limpar formulário
+      setProdutoSelecionado(null);
+      setQuantidadeNova(0);
+      setIdTipoSaida(0);
+      setObs("");
+      setTimeout(() => setSucesso(""), 5000);
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro ao registrar acerto");
     }
-
-    // Criar objeto de acerto de estoque
-    const acerto: AcertoEstoque = {
-      produtoId: produtoSelecionado.id,
-      quantidadeAnterior: produtoSelecionado.quantidadeAtual,
-      quantidadeNova: quantidadeNova,
-      motivo: motivo,
-      data: new Date().toISOString(),
-      responsavel: responsavel,
-    };
-
-    // Aqui você enviaria o acerto para a API
-    console.log("Acerto de estoque a ser enviado:", acerto);
-
-    // Atualizar o estoque localmente (simulando resposta bem-sucedida da API)
-    const produtosAtualizados = produtos.map((p) =>
-      p.id === produtoSelecionado.id
-        ? { ...p, quantidadeAtual: quantidadeNova }
-        : p,
-    );
-
-    setProdutos(produtosAtualizados);
-    setProdutosFiltrados(produtosAtualizados);
-
-    // Feedback de sucesso
-    setSucesso(
-      `Estoque do produto "${produtoSelecionado.nome}" atualizado com sucesso!`,
-    );
-
-    // Limpar formulário
-    setProdutoSelecionado(null);
-    setQuantidadeNova(0);
-    setMotivo("");
-    setResponsavel("");
-
-    // Limpar mensagem de sucesso após 5 segundos
-    setTimeout(() => setSucesso(""), 5000);
   };
 
+  // Manipulador para cancelar
   const handleCancelar = () => {
     setProdutoSelecionado(null);
     setQuantidadeNova(0);
-    setMotivo("");
+    setIdTipoSaida(0);
+    setObs("");
     setErro("");
   };
 
@@ -240,9 +211,9 @@ const AcertoEstoquePage: React.FC = () => {
               <ul className="divide-y divide-gray-200">
                 {produtosFiltrados.map((produto) => (
                   <li
-                    key={produto.id}
+                    key={produto.idproduto}
                     className={`p-3 cursor-pointer hover:bg-amber-50 transition-colors ${
-                      produtoSelecionado?.id === produto.id
+                      produtoSelecionado?.idproduto === produto.idproduto
                         ? "bg-amber-100"
                         : ""
                     }`}
@@ -252,17 +223,14 @@ const AcertoEstoquePage: React.FC = () => {
                       <div>
                         <h3 className="font-medium">{produto.nome}</h3>
                         <p className="text-sm text-gray-500">
-                          Código: {produto.codigo} | Categoria:{" "}
-                          {produto.categoria}
+                          Fabricante: {produto.fabricante}
                         </p>
                       </div>
                       <div className="text-right">
                         <span className="font-semibold">
-                          {produto.quantidadeAtual}
+                          {getQuantidadeAtual(produto.idproduto)}
                         </span>
-                        <span className="text-gray-500 text-sm ml-1">
-                          {produto.unidade}
-                        </span>
+                        <span className="text-gray-500 text-sm ml-1">unid</span>
                       </div>
                     </div>
                   </li>
@@ -288,25 +256,26 @@ const AcertoEstoquePage: React.FC = () => {
                 <h3 className="font-medium mb-2">{produtoSelecionado.nome}</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-600">Código:</p>
-                    <p className="font-medium">{produtoSelecionado.codigo}</p>
+                    <p className="text-sm text-gray-600">Fabricante:</p>
+                    <p className="font-medium">
+                      {produtoSelecionado.fabricante}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Categoria:</p>
+                    <p className="text-sm text-gray-600">Validade:</p>
                     <p className="font-medium">
-                      {produtoSelecionado.categoria}
+                      {produtoSelecionado.dataValidade
+                        ? new Date(
+                            produtoSelecionado.dataValidade,
+                          ).toLocaleDateString("pt-BR")
+                        : "N/A"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Quantidade Atual:</p>
                     <p className="font-medium">
-                      {produtoSelecionado.quantidadeAtual}{" "}
-                      {produtoSelecionado.unidade}
+                      {getQuantidadeAtual(produtoSelecionado.idproduto)} unid
                     </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Unidade:</p>
-                    <p className="font-medium">{produtoSelecionado.unidade}</p>
                   </div>
                 </div>
               </div>
@@ -346,20 +315,25 @@ const AcertoEstoquePage: React.FC = () => {
                 </div>
                 <div className="mt-1 flex justify-between text-sm">
                   <span className="text-gray-500">
-                    Quantidade atual: {produtoSelecionado.quantidadeAtual}
+                    Quantidade atual:{" "}
+                    {getQuantidadeAtual(produtoSelecionado.idproduto)}
                   </span>
                   <span
                     className={`font-medium ${
-                      quantidadeNova > produtoSelecionado.quantidadeAtual
+                      quantidadeNova >
+                      getQuantidadeAtual(produtoSelecionado.idproduto)
                         ? "text-green-600"
-                        : quantidadeNova < produtoSelecionado.quantidadeAtual
+                        : quantidadeNova <
+                            getQuantidadeAtual(produtoSelecionado.idproduto)
                           ? "text-red-600"
                           : "text-gray-600"
                     }`}
                   >
-                    {quantidadeNova > produtoSelecionado.quantidadeAtual && "+"}
-                    {quantidadeNova - produtoSelecionado.quantidadeAtual}{" "}
-                    {produtoSelecionado.unidade}
+                    {quantidadeNova >
+                      getQuantidadeAtual(produtoSelecionado.idproduto) && "+"}
+                    {quantidadeNova -
+                      getQuantidadeAtual(produtoSelecionado.idproduto)}{" "}
+                    unid
                   </span>
                 </div>
               </div>
@@ -370,47 +344,30 @@ const AcertoEstoquePage: React.FC = () => {
                 </label>
                 <select
                   className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  value={motivo}
-                  onChange={(e) => setMotivo(e.target.value)}
+                  value={idTipoSaida}
+                  onChange={(e) => setIdTipoSaida(parseInt(e.target.value))}
                   required
                 >
-                  <option value="">Selecione um motivo</option>
-                  <option value="Inventário físico">Inventário físico</option>
-                  <option value="Produto danificado">Produto danificado</option>
-                  <option value="Produto vencido">Produto vencido</option>
-                  <option value="Erro de lançamento">Erro de lançamento</option>
-                  <option value="Devolução">Devolução</option>
-                  <option value="Entrada manual">Entrada manual</option>
-                  <option value="Outro">Outro</option>
+                  <option value={0}>Selecione um motivo</option>
+                  {tiposSaida.map((tipo) => (
+                    <option key={tipo.idtiposaida} value={tipo.idtiposaida}>
+                      {tipo.descricao}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {motivo === "Outro" && (
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-semibold mb-2">
-                    Especifique o motivo:
-                  </label>
-                  <textarea
-                    className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    rows={3}
-                    placeholder="Descreva o motivo do acerto..."
-                    required
-                  ></textarea>
-                </div>
-              )}
-
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-semibold mb-2">
-                  Responsável:
+                  Observações:
                 </label>
-                <input
-                  type="text"
+                <textarea
                   className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  placeholder="Nome do responsável"
-                  value={responsavel}
-                  onChange={(e) => setResponsavel(e.target.value)}
-                  required
-                />
+                  rows={3}
+                  placeholder="Descreva detalhes do acerto..."
+                  value={obs}
+                  onChange={(e) => setObs(e.target.value)}
+                ></textarea>
               </div>
 
               <div className="mt-6 flex justify-end space-x-3">

@@ -1,27 +1,21 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-// Interfaces para tipagem
-interface Produto {
-  idproduto: number;
-  nome: string;
-  idtipoproduto: number;
-  idunidademedida: number;
-  fabricante: string;
-  dataValidade?: string; // Campo opcional para data de validade
-}
-
-interface TipoProduto {
-  idtipoproduto: number;
-  descricao: string;
-  controlaValidade: boolean; // Novo campo para controlar validade
-}
-
-interface UnidadeMedida {
-  idunidademedida: number;
-  descricao: string;
-}
+import {
+  TipoProduto,
+  UnidadeDeMedida as UnidadeMedida,
+  Produto,
+} from "@/types/entities";
+import {
+  buscarTiposProduto,
+  buscarUnidadesMedida,
+  buscarProdutos,
+  adicionarProduto,
+  adicionarTipoProduto,
+  excluirTipoProduto,
+  NovoProdutoDTO,
+  NovoTipoDTO,
+} from "@/services/produtoService";
 
 const CadastroProdutos: React.FC = () => {
   const router = useRouter();
@@ -54,13 +48,7 @@ const CadastroProdutos: React.FC = () => {
   });
 
   // Estado para novo produto
-  const [novoProduto, setNovoProduto] = useState<{
-    nome: string;
-    idtipoproduto: number;
-    idunidademedida: number;
-    fabricante: string;
-    dataValidade?: string;
-  }>({
+  const [novoProduto, setNovoProduto] = useState<NovoProdutoDTO>({
     nome: "",
     idtipoproduto: 0,
     idunidademedida: 0,
@@ -71,10 +59,7 @@ const CadastroProdutos: React.FC = () => {
   // Estado para tipo de produto
   const [pesquisaTipo, setPesquisaTipo] = useState<string>("");
   const [tiposFiltrados, setTiposFiltrados] = useState<TipoProduto[]>([]);
-  const [novoTipo, setNovoTipo] = useState<{
-    descricao: string;
-    controlaValidade: boolean;
-  }>({
+  const [novoTipo, setNovoTipo] = useState<NovoTipoDTO>({
     descricao: "",
     controlaValidade: false,
   });
@@ -95,89 +80,23 @@ const CadastroProdutos: React.FC = () => {
     });
   };
 
-  // Carregar dados iniciais (simulação)
+  // Carregar dados iniciais
   useEffect(() => {
     const carregarDados = async () => {
       try {
-        // Simulação de carregamento de dados
-        setTimeout(() => {
-          const tiposExemplo: TipoProduto[] = [
-            {
-              idtipoproduto: 1,
-              descricao: "Medicamentos",
-              controlaValidade: true,
-            },
-            { idtipoproduto: 2, descricao: "Vacinas", controlaValidade: true },
-            {
-              idtipoproduto: 3,
-              descricao: "Alimentos",
-              controlaValidade: true,
-            },
-            {
-              idtipoproduto: 4,
-              descricao: "Acessórios",
-              controlaValidade: false,
-            },
-            { idtipoproduto: 5, descricao: "Higiene", controlaValidade: true },
-          ];
+        setLoading(true);
+        const [tipos, unidades, produtosData] = await Promise.all([
+          buscarTiposProduto(),
+          buscarUnidadesMedida(),
+          buscarProdutos(),
+        ]);
 
-          const unidadesExemplo: UnidadeMedida[] = [
-            { idunidademedida: 1, descricao: "Unidade" },
-            { idunidademedida: 2, descricao: "Kg" },
-            { idunidademedida: 3, descricao: "g" },
-            { idunidademedida: 4, descricao: "ml" },
-            { idunidademedida: 5, descricao: "L" },
-          ];
-
-          const produtosExemplo: Produto[] = [
-            {
-              idproduto: 1,
-              nome: "Ração Premium Cães",
-              idtipoproduto: 3,
-              idunidademedida: 2,
-              fabricante: "PetNutri",
-              dataValidade: "2025-07-15",
-            },
-            {
-              idproduto: 2,
-              nome: "Antipulgas Gatos",
-              idtipoproduto: 1,
-              idunidademedida: 1,
-              fabricante: "VetPharma",
-              dataValidade: "2025-03-10",
-            },
-            {
-              idproduto: 3,
-              nome: "Vacina Antirrábica",
-              idtipoproduto: 2,
-              idunidademedida: 1,
-              fabricante: "BioVet",
-              dataValidade: "2025-05-22",
-            },
-            {
-              idproduto: 4,
-              nome: "Shampoo Hipoalergênico",
-              idtipoproduto: 5,
-              idunidademedida: 5,
-              fabricante: "PetClean",
-              dataValidade: "2026-01-30",
-            },
-            {
-              idproduto: 5,
-              nome: "Coleira Ajustável P",
-              idtipoproduto: 4,
-              idunidademedida: 1,
-              fabricante: "PetAcessórios",
-            },
-          ];
-
-          setTiposProduto(tiposExemplo);
-          setTiposFiltrados(tiposExemplo);
-          setUnidadesMedida(unidadesExemplo);
-          setProdutos(produtosExemplo);
-          setProdutosFiltrados(produtosExemplo);
-          setLoading(false);
-        }, 1000);
+        setTiposProduto(tipos);
+        setTiposFiltrados(tipos);
+        setUnidadesMedida(unidades);
+        setProdutos(produtosData);
+        setProdutosFiltrados(produtosData);
+        setLoading(false);
       } catch (err) {
         setError("Erro ao carregar dados. Tente novamente mais tarde.");
         setLoading(false);
@@ -224,8 +143,8 @@ const CadastroProdutos: React.FC = () => {
       filtered = filtered.filter(
         (produto) =>
           produto.dataValidade &&
-          produto.dataValidade >= filtroValidade.dataInicio &&
-          produto.dataValidade <= filtroValidade.dataFim,
+          produto.dataValidade >= new Date(filtroValidade.dataInicio) &&
+          produto.dataValidade <= new Date(filtroValidade.dataFim),
       );
     }
 
@@ -272,45 +191,17 @@ const CadastroProdutos: React.FC = () => {
     setModalOpen(true);
   };
 
-  const handleSalvarProduto = () => {
-    // Validações
-    if (!novoProduto.nome.trim()) {
-      setError("Nome do produto é obrigatório");
-      return;
+  const handleSalvarProduto = async () => {
+    try {
+      const produtoAdicionado = await adicionarProduto(novoProduto);
+      setProdutos([...produtos, produtoAdicionado]);
+      setModalOpen(false);
+      setSuccess("Produto cadastrado com sucesso!");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao salvar produto");
+      setTimeout(() => setError(""), 5000);
     }
-
-    if (novoProduto.idtipoproduto === 0) {
-      setError("Selecione um tipo de produto");
-      return;
-    }
-
-    if (novoProduto.idunidademedida === 0) {
-      setError("Selecione uma unidade de medida");
-      return;
-    }
-
-    // Verificar se data de validade é necessária
-    if (
-      tipoControlaValidade(novoProduto.idtipoproduto) &&
-      !novoProduto.dataValidade
-    ) {
-      setError("Data de validade é obrigatória para este tipo de produto");
-      return;
-    }
-
-    // Simulação de salvamento
-    const novoProdutoCompleto: Produto = {
-      idproduto:
-        produtos.length > 0
-          ? Math.max(...produtos.map((p) => p.idproduto)) + 1
-          : 1,
-      ...novoProduto,
-    };
-
-    setProdutos([...produtos, novoProdutoCompleto]);
-    setModalOpen(false);
-    setSuccess("Produto cadastrado com sucesso!");
-    setTimeout(() => setSuccess(""), 3000);
   };
 
   // Manipuladores para tipos de produto
@@ -322,53 +213,33 @@ const CadastroProdutos: React.FC = () => {
     setModalTipoOpen(true);
   };
 
-  const handleSalvarTipo = () => {
-    // Validação
-    if (!novoTipo.descricao.trim()) {
-      setError("Descrição do tipo de produto é obrigatória");
-      return;
-    }
-
-    // Verificar duplicação
-    if (
-      tiposProduto.some(
-        (tipo) =>
-          tipo.descricao.toLowerCase() === novoTipo.descricao.toLowerCase(),
-      )
-    ) {
-      setError("Já existe um tipo de produto com esta descrição");
-      return;
-    }
-
-    // Simulação de salvamento
-    const novoTipoCompleto: TipoProduto = {
-      idtipoproduto:
-        tiposProduto.length > 0
-          ? Math.max(...tiposProduto.map((t) => t.idtipoproduto)) + 1
-          : 1,
-      descricao: novoTipo.descricao,
-      controlaValidade: novoTipo.controlaValidade,
-    };
-
-    setTiposProduto([...tiposProduto, novoTipoCompleto]);
-    setModalTipoOpen(false);
-    setSuccess("Tipo de produto cadastrado com sucesso!");
-    setTimeout(() => setSuccess(""), 3000);
-  };
-
-  const handleExcluirTipo = (id: number) => {
-    // Verificar se existem produtos usando este tipo
-    if (produtos.some((produto) => produto.idtipoproduto === id)) {
+  const handleSalvarTipo = async () => {
+    try {
+      const tipoAdicionado = await adicionarTipoProduto(novoTipo);
+      setTiposProduto([...tiposProduto, tipoAdicionado]);
+      setModalTipoOpen(false);
+      setSuccess("Tipo de produto cadastrado com sucesso!");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
       setError(
-        "Não é possível excluir este tipo de produto pois existem produtos cadastrados com ele",
+        err instanceof Error ? err.message : "Erro ao salvar tipo de produto",
       );
       setTimeout(() => setError(""), 5000);
-      return;
     }
+  };
 
-    setTiposProduto(tiposProduto.filter((tipo) => tipo.idtipoproduto !== id));
-    setSuccess("Tipo de produto excluído com sucesso!");
-    setTimeout(() => setSuccess(""), 3000);
+  const handleExcluirTipo = async (id: number) => {
+    try {
+      await excluirTipoProduto(id);
+      setTiposProduto(tiposProduto.filter((tipo) => tipo.idtipoproduto !== id));
+      setSuccess("Tipo de produto excluído com sucesso!");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Erro ao excluir tipo de produto",
+      );
+      setTimeout(() => setError(""), 5000);
+    }
   };
 
   return (

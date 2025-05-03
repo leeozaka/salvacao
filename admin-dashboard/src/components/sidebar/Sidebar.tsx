@@ -1,19 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-const { logoutUser } = await import("@/services/authService");
-
-// Interface para definir a estrutura dos submenus
-interface OpenSubmenus {
-  produtos: boolean;
-  medicacao: boolean;
-  [key: string]: boolean; // Permite adicionar mais submenus no futuro
-}
-
-interface SidebarProps {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import { logoutUser } from "@/services/authService";
+import { OpenSubmenus, SidebarProps } from "@/types/sidebar";
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const router = useRouter();
@@ -78,11 +67,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   const handleLogout = async (): Promise<void> => {
     try {
-      // Executa o logout
       const success = await logoutUser();
 
       if (success) {
-        // Redireciona para a página de login após logout bem-sucedido
         router.push("/login");
       } else {
         console.error("Erro ao fazer logout");
