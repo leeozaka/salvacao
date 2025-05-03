@@ -1,1 +1,36 @@
 @import "tailwindcss";
+
+:root {
+  --primary-color: #f59e0b; /* Substituído pelo amber-500 do Tailwind */
+  --secondary-color: #d97706; /* Substituído pelo amber-600 do Tailwind */
+  --bg-color: #f9fafb; /* Substituído pelo gray-50 do Tailwind */
+  --menu-bg: #fef3c7; /* Substituído pelo amber-100 do Tailwind */
+  --menu-hover: #fde68a; /* Substituído pelo amber-200 do Tailwind */
+  --sidebar-width: 16rem;
+  --sidebar-collapsed-width: 0;
+}
+
+/* Estilos que não podem ser facilmente implementados com o Tailwind */
+/* Estilo para o scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+/* Estilos de acessibilidade para foco - manter personalizado */
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}

@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { registerUser } from "@/services/authService";
 import {
   isValidCPF,
   isValidPhone,
   isValidPassword,
+  validatePasswordStrength,
+  getPasswordStrength,
   formatCPF,
   formatPhone,
+  isValidEmail,
+  isValidBirthday,
 } from "@/utils/validationUtils";
+import Image from "next/image";
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -31,6 +36,37 @@ export default function RegisterForm({
 
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({
+    score: 0,
+    label: "Muito fraca",
+    color: "red",
+  });
+  const [emailValid, setEmailValid] = useState<boolean | null>(null);
+  const [isAgeValid, setIsAgeValid] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (formData.password) {
+      setPasswordStrength(getPasswordStrength(formData.password));
+    } else {
+      setPasswordStrength({ score: 0, label: "Muito fraca", color: "red" });
+    }
+  }, [formData.password]);
+
+  useEffect(() => {
+    if (formData.email) {
+      setEmailValid(isValidEmail(formData.email));
+    } else {
+      setEmailValid(null);
+    }
+  }, [formData.email]);
+
+  useEffect(() => {
+    if (formData.birthday) {
+      setIsAgeValid(isValidBirthday(formData.birthday));
+    } else {
+      setIsAgeValid(null);
+    }
+  }, [formData.birthday]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -40,28 +76,40 @@ export default function RegisterForm({
   const validateForm = (): boolean => {
     const newErrors: string[] = [];
 
-    if (!formData.name) newErrors.push("Name is required");
-    if (!formData.email) newErrors.push("Email is required");
-    if (!/^\S+@\S+\.\S+$/.test(formData.email))
-      newErrors.push("Invalid email format");
+    if (!formData.name) newErrors.push("Nome é obrigatório");
 
-    if (!formData.password) newErrors.push("Password is required");
-    if (!isValidPassword(formData.password)) {
-      newErrors.push(
-        "Password must have at least 8 characters with uppercase, lowercase, numbers and special characters",
-      );
+    if (!formData.email) newErrors.push("Email é obrigatório");
+    if (formData.email && !isValidEmail(formData.email)) {
+      newErrors.push("Formato de email inválido");
     }
-    if (formData.password !== formData.confirmPassword)
-      newErrors.push("Passwords do not match");
 
-    if (!formData.cpf) newErrors.push("CPF is required");
-    if (!isValidCPF(formData.cpf)) newErrors.push("Invalid CPF format");
+    if (!formData.password) {
+      newErrors.push("Senha é obrigatória");
+    } else {
+      const passwordValidation = validatePasswordStrength(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.push(...passwordValidation.errors);
+      }
+    }
 
-    if (!formData.telephone) newErrors.push("Telephone is required");
-    if (!isValidPhone(formData.telephone))
-      newErrors.push("Invalid phone number format");
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.push("As senhas não coincidem");
+    }
 
-    if (!formData.birthday) newErrors.push("Birthday is required");
+    if (!formData.cpf) newErrors.push("CPF é obrigatório");
+    if (formData.cpf && !isValidCPF(formData.cpf)) {
+      newErrors.push("CPF inválido");
+    }
+
+    if (!formData.telephone) newErrors.push("Telefone é obrigatório");
+    if (formData.telephone && !isValidPhone(formData.telephone)) {
+      newErrors.push("Formato de telefone inválido");
+    }
+
+    if (!formData.birthday) newErrors.push("Data de nascimento é obrigatória");
+    if (formData.birthday && !isValidBirthday(formData.birthday)) {
+      newErrors.push("Você deve ter pelo menos 18 anos para se cadastrar");
+    }
 
     setErrors(newErrors);
     return newErrors.length === 0;
@@ -89,10 +137,10 @@ export default function RegisterForm({
       if (result.success) {
         onSuccess();
       } else {
-        setErrors([result.message || "Registration failed"]);
+        setErrors([result.message || "Falha no cadastro"]);
       }
     } catch (error) {
-      setErrors(["An unexpected error occurred"]);
+      setErrors(["Ocorreu um erro inesperado"]);
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -100,13 +148,13 @@ export default function RegisterForm({
   };
 
   return (
-    <div className="w-full max-w-md">
-      <h1 className="text-2xl font-bold text-center mb-4 text-black">
-        Create an Account
+    <div className="flex flex-col items-center justify-center w-full max-w-md p-6 bg-gray-50 rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-center mb-4 text-amber-600">
+        Criar uma Conta
       </h1>
 
       {errors.length > 0 && (
-        <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 border border-red-200 rounded">
+        <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded w-full">
           <ul className="list-disc list-inside">
             {errors.map((error, index) => (
               <li key={index}>{error}</li>
@@ -115,13 +163,13 @@ export default function RegisterForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 w-full">
         <div>
           <label
             htmlFor="name"
             className="block text-sm font-medium text-gray-700"
           >
-            Full Name
+            Nome Completo
           </label>
           <input
             id="name"
@@ -129,7 +177,7 @@ export default function RegisterForm({
             type="text"
             value={formData.name}
             onChange={handleChange}
-            className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             required
           />
         </div>
@@ -147,9 +195,20 @@ export default function RegisterForm({
             type="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full px-3 py-2 mt-1 border  text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 mt-1 border text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${
+              emailValid === false
+                ? "border-red-300 bg-red-50"
+                : emailValid === true
+                  ? "border-green-300 bg-green-50"
+                  : "border-gray-300"
+            }`}
             required
           />
+          {emailValid === false && (
+            <p className="mt-1 text-xs text-red-600">
+              Formato de email inválido
+            </p>
+          )}
         </div>
 
         <div>
@@ -170,9 +229,18 @@ export default function RegisterForm({
             }}
             placeholder="000.000.000-00"
             maxLength={14}
-            className="w-full px-3 py-2 mt-1 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 mt-1 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${
+              formData.cpf && !isValidCPF(formData.cpf)
+                ? "border-red-300 bg-red-50"
+                : formData.cpf && isValidCPF(formData.cpf)
+                  ? "border-green-300 bg-green-50"
+                  : ""
+            }`}
             required
           />
+          {formData.cpf && !isValidCPF(formData.cpf) && (
+            <p className="mt-1 text-xs text-red-600">CPF inválido</p>
+          )}
         </div>
 
         <div>
@@ -180,7 +248,7 @@ export default function RegisterForm({
             htmlFor="telephone"
             className="block text-sm font-medium text-gray-700"
           >
-            Telephone
+            Telefone
           </label>
           <input
             id="telephone"
@@ -193,9 +261,20 @@ export default function RegisterForm({
             }}
             placeholder="(00) 00000-0000"
             maxLength={15}
-            className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${
+              formData.telephone && !isValidPhone(formData.telephone)
+                ? "border-red-300 bg-red-50"
+                : formData.telephone && isValidPhone(formData.telephone)
+                  ? "border-green-300 bg-green-50"
+                  : ""
+            }`}
             required
           />
+          {formData.telephone && !isValidPhone(formData.telephone) && (
+            <p className="mt-1 text-xs text-red-600">
+              Formato de telefone inválido
+            </p>
+          )}
         </div>
 
         <div>
@@ -203,7 +282,7 @@ export default function RegisterForm({
             htmlFor="birthday"
             className="block text-sm font-medium text-gray-700"
           >
-            Birth Date
+            Data de Nascimento
           </label>
           <input
             id="birthday"
@@ -211,9 +290,20 @@ export default function RegisterForm({
             type="date"
             value={formData.birthday}
             onChange={handleChange}
-            className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${
+              isAgeValid === false
+                ? "border-red-300 bg-red-50"
+                : isAgeValid === true
+                  ? "border-green-300 bg-green-50"
+                  : ""
+            }`}
             required
           />
+          {isAgeValid === false && (
+            <p className="mt-1 text-xs text-red-600">
+              Você deve ter pelo menos 18 anos para se cadastrar
+            </p>
+          )}
         </div>
 
         <div>
@@ -221,7 +311,7 @@ export default function RegisterForm({
             htmlFor="password"
             className="block text-sm font-medium text-gray-700"
           >
-            Password
+            Senha
           </label>
           <input
             id="password"
@@ -229,12 +319,31 @@ export default function RegisterForm({
             type="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             required
           />
+          {formData.password && (
+            <>
+              <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-300`}
+                  style={{
+                    width: `${(passwordStrength.score / 4) * 100}%`,
+                    backgroundColor: passwordStrength.color,
+                  }}
+                ></div>
+              </div>
+              <p
+                className="mt-1 text-xs"
+                style={{ color: passwordStrength.color }}
+              >
+                Força da senha: {passwordStrength.label}
+              </p>
+            </>
+          )}
           <p className="mt-1 text-xs text-gray-500">
-            Password must be at least 8 characters with numbers and special
-            characters
+            A senha deve ter pelo menos 8 caracteres com letras maiúsculas,
+            minúsculas, números e caracteres especiais
           </p>
         </div>
 
@@ -243,7 +352,7 @@ export default function RegisterForm({
             htmlFor="confirmPassword"
             className="block text-sm font-medium text-gray-700"
           >
-            Confirm Password
+            Confirmar Senha
           </label>
           <input
             id="confirmPassword"
@@ -251,32 +360,51 @@ export default function RegisterForm({
             type="password"
             value={formData.confirmPassword}
             onChange={handleChange}
-            className="w-full px-3 py-2 mt-1 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 mt-1 border border-gray-300 text-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${
+              formData.confirmPassword &&
+              formData.password !== formData.confirmPassword
+                ? "border-red-300 bg-red-50"
+                : formData.confirmPassword &&
+                    formData.password === formData.confirmPassword
+                  ? "border-green-300 bg-green-50"
+                  : ""
+            }`}
             required
           />
+          {formData.confirmPassword &&
+            formData.password !== formData.confirmPassword && (
+              <p className="mt-1 text-xs text-red-600">
+                As senhas não coincidem
+              </p>
+            )}
         </div>
 
         <div>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300"
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-md hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:bg-amber-300 transition-colors duration-200"
           >
-            {isLoading ? "Creating account..." : "Register"}
+            {isLoading ? "Criando conta..." : "Cadastrar"}
           </button>
         </div>
       </form>
 
-      <div className="mt-4 text-center">
+      <div className="mt-4 text-center w-full">
         <p className="text-sm text-gray-600">
-          Already have an account?{" "}
+          Já tem uma conta?{" "}
           <button
             onClick={onToggleForm}
-            className="text-blue-600 hover:underline focus:outline-none"
+            className="text-amber-600 hover:text-amber-800 hover:underline focus:outline-none"
           >
-            Sign in
+            Entrar
           </button>
         </p>
+      </div>
+
+      <div className="mt-6 text-center text-sm text-gray-500">
+        &copy; {new Date().getFullYear()} Salvacão - Todos os direitos
+        reservados
       </div>
     </div>
   );
