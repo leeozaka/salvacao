@@ -34,7 +34,7 @@ export default function RegisterForm({
     birthday: "",
   });
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
@@ -71,6 +71,49 @@ export default function RegisterForm({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    const errorMessage = validateField(name, value);
+
+    if (name === "password") {
+      const confirmError = validateField(
+        "confirmPassword",
+        formData.confirmPassword,
+      );
+      setErrors((prev) => ({
+        ...prev,
+        [name]: errorMessage,
+        confirmPassword: confirmError,
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: errorMessage }));
+    }
+  };
+
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case "name":
+        return value ? "" : "Name is required";
+      case "email":
+        if (!value) return "Email is required";
+        return /^\S+@\S+\.\S+$/.test(value) ? "" : "Invalid email format";
+      case "password":
+        if (!value) return "Password is required";
+        return isValidPassword(value)
+          ? ""
+          : "Password must have at least 8 characters with uppercase, lowercase, numbers and special characters";
+      case "confirmPassword":
+        return value === formData.password ? "" : "Passwords do not match";
+      case "cpf":
+        if (!value) return "CPF is required";
+        return isValidCPF(value) ? "" : "Invalid CPF format";
+      case "telephone":
+        if (!value) return "Telephone is required";
+        return isValidPhone(value) ? "" : "Invalid phone number format";
+      case "birthday":
+        return value ? "" : "Birthday is required";
+      default:
+        return "";
+    }
   };
 
   const validateForm = (): boolean => {
@@ -112,7 +155,7 @@ export default function RegisterForm({
     }
 
     setErrors(newErrors);
-    return newErrors.length === 0;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -156,9 +199,11 @@ export default function RegisterForm({
       {errors.length > 0 && (
         <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded w-full">
           <ul className="list-disc list-inside">
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
+            {Object.entries(errors).map(([field, message]) =>
+              field !== "general" && message ? (
+                <li key={field}>{message}</li>
+              ) : null,
+            )}
           </ul>
         </div>
       )}
@@ -180,6 +225,9 @@ export default function RegisterForm({
             className="w-full px-3 py-2 mt-1 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             required
           />
+          {errors.name && (
+            <p className="mt-1 text-xs text-red-500">{errors.name}</p>
+          )}
         </div>
 
         <div>
@@ -226,6 +274,8 @@ export default function RegisterForm({
             onChange={(e) => {
               const formatted = formatCPF(e.target.value);
               setFormData((prev) => ({ ...prev, cpf: formatted }));
+              const errorMessage = validateField("cpf", formatted);
+              setErrors((prev) => ({ ...prev, cpf: errorMessage }));
             }}
             placeholder="000.000.000-00"
             maxLength={14}
@@ -258,6 +308,8 @@ export default function RegisterForm({
             onChange={(e) => {
               const formatted = formatPhone(e.target.value);
               setFormData((prev) => ({ ...prev, telephone: formatted }));
+              const errorMessage = validateField("telephone", formatted);
+              setErrors((prev) => ({ ...prev, telephone: errorMessage }));
             }}
             placeholder="(00) 00000-0000"
             maxLength={15}
