@@ -31,7 +31,7 @@ export default async function DashboardLayout({
         <main className="flex-1 transition-all duration-300 flex flex-col lg:ml-64">
           {/* Cabeçalho do dashboard */}
           <header className="bg-white shadow-sm py-4 px-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-end">
               <div className="flex items-center space-x-4">
                 {/* Adicione aqui componentes adicionais de cabeçalho (notificações, perfil, etc) */}
                 <div className="relative">

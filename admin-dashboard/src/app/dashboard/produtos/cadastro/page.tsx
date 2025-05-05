@@ -13,9 +13,9 @@ import {
   adicionarProduto,
   adicionarTipoProduto,
   excluirTipoProduto,
-  NovoProdutoDTO,
-  NovoTipoDTO,
 } from "@/services/produtoService";
+import { NovoProdutoDTO } from "@/dto/NovoProdutoDTO";
+import { NovoTipoDTO } from "@/dto/NovoTipoDTO";
 
 const CadastroProdutos: React.FC = () => {
   const router = useRouter();
@@ -671,9 +671,9 @@ const CadastroProdutos: React.FC = () => {
         </div>
       )}
 
-      {/* Modal para Novo Produto */}
+      {/* Modal para Novo Produto (Sem background escuro) */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg mx-4">
             <div className="border-b border-gray-200 px-6 py-4">
               <h3 className="text-lg font-semibold text-amber-700">
@@ -811,9 +811,9 @@ const CadastroProdutos: React.FC = () => {
         </div>
       )}
 
-      {/* Modal para Novo Tipo de Produto */}
+      {/* Modal para Novo Tipo de Produto (Sem background escuro) */}
       {modalTipoOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
             <div className="border-b border-gray-200 px-6 py-4">
               <h3 className="text-lg font-semibold text-amber-700">
