@@ -93,13 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <>
-      {/* Overlay para quando o sidebar estiver aberto em dispositivos móveis */}
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={toggleSidebar}
-        />
-      )}
+      {/* Removido o overlay preto */}
 
       {/* Botão mobile */}
       <button
