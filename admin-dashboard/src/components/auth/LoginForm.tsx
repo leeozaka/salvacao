@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/services/authService";
-import Image from "next/image";
 
 interface LoginFormProps {
   onToggleForm: () => void;
@@ -49,7 +48,8 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
       if (result.success) {
         setRedirecting(true);
         setTimeout(() => {
-          router.push("/dashboard");
+          router.refresh();
+          // router.push("/dashboard");
         }, 50);
       } else {
         setError(result.message || "Login failed");
@@ -64,16 +64,6 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
 
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-md p-6 bg-gray-50 rounded-lg shadow-md">
-      {/* <div className="flex justify-center mb-2">
-        <Image
-          src="/logo.png"
-          alt="Logo Salvacão"
-          width={100}
-          height={100}
-          className="h-24 w-auto"
-          priority
-        />
-      </div> */}
 
       <h1 className="text-2xl font-bold text-center mb-4 text-amber-600">
         Salvacão - Dashboard
