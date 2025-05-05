@@ -11,13 +11,13 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const token = await getAuthToken();
-  
+
   if (!token) {
     redirect("/login");
   }
-  
+
   const isValid = await verifyToken(token);
-  
+
   if (!isValid) {
     redirect("/login");
   }
@@ -28,9 +28,7 @@ export default async function DashboardLayout({
         <SidebarWrapper />
 
         {/* Conteúdo principal */}
-        <main
-          className="flex-1 transition-all duration-300 flex flex-col lg:ml-64"
-        >
+        <main className="flex-1 transition-all duration-300 flex flex-col lg:ml-64">
           {/* Cabeçalho do dashboard */}
           <header className="bg-white shadow-sm py-4 px-6">
             <div className="flex items-center justify-between">

@@ -13,11 +13,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   });
 
   // Memoize the setIsOpen function to avoid unnecessary re-renders
-  const handleSetIsOpen = useCallback((value: boolean) => {
-    if (typeof setIsOpen === "function") {
-      setIsOpen(value);
-    }
-  }, [setIsOpen]);
+  const handleSetIsOpen = useCallback(
+    (value: boolean) => {
+      if (typeof setIsOpen === "function") {
+        setIsOpen(value);
+      }
+    },
+    [setIsOpen],
+  );
 
   // Função para fechar o sidebar em telas pequenas quando clica fora
   useEffect(() => {
