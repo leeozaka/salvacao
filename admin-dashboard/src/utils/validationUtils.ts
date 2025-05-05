@@ -76,6 +76,75 @@ export function isValidPassword(password: string): boolean {
 }
 
 /**
+ * Validates a password strength and returns detailed validation results
+ * @param password Password to validate
+ * @returns Object with validation status and errors
+ */
+export function validatePasswordStrength(password: string): {
+  isValid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  if (!password || password.length < 8) {
+    errors.push("A senha deve ter pelo menos 8 caracteres");
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push("A senha deve conter pelo menos uma letra maiúscula");
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push("A senha deve conter pelo menos uma letra minúscula");
+  }
+
+  if (!/[0-9]/.test(password)) {
+    errors.push("A senha deve conter pelo menos um número");
+  }
+
+  if (!/[#?!@$%^&*\-_=+[\]{}|;:,.<>()/"'\\]/.test(password)) {
+    errors.push("A senha deve conter pelo menos um caractere especial");
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Calculates password strength score
+ * @param password Password to evaluate
+ * @returns Object with score, label and color for UI feedback
+ */
+export function getPasswordStrength(password: string): {
+  score: number; // 0-4
+  label: string; // 'Fraca', 'Média', 'Forte', 'Muito forte'
+  color: string; // 'red', 'orange', 'yellow', 'green'
+} {
+  if (!password) {
+    return { score: 0, label: "Muito fraca", color: "red" };
+  }
+
+  let score = 0;
+
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[#?!@$%^&*\-_=+[\]{}|;:,.<>()/"'\\]/.test(password)) score++;
+
+  // Usar uma abordagem tipo-segura para definir a força
+  const finalScore = Math.min(score, 4);
+
+  if (finalScore === 0) return { score: 0, label: "Muito fraca", color: "red" };
+  if (finalScore === 1) return { score: 1, label: "Fraca", color: "red" };
+  if (finalScore === 2) return { score: 2, label: "Média", color: "orange" };
+  if (finalScore === 3) return { score: 3, label: "Forte", color: "green" };
+  return { score: 4, label: "Muito forte", color: "green" };
+}
+
+/**
  * Format CPF with dots and dash
  * @param cpf CPF string (with or without formatting)
  * @returns Formatted CPF string
@@ -101,4 +170,63 @@ export function formatPhone(phone: string): string {
   if (digits.length <= 10)
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+/**
+ * Validates if email format is correct
+ * @param email Email to validate
+ * @returns boolean indicating if email format is valid
+ */
+export function isValidEmail(email: string): boolean {
+  // Regex básica para validar formato de email
+  const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!basicEmailRegex.test(email)) return false;
+
+  // Verificações adicionais
+  const parts = email.split("@");
+  const domain = parts[1];
+
+  // Verificar se o domínio tem pelo menos 1 ponto
+  if (!domain.includes(".")) return false;
+
+  // Verificar se o domínio principal tem pelo menos 2 caracteres
+  const domainParts = domain.split(".");
+  const tld = domainParts[domainParts.length - 1];
+  if (tld.length < 2) return false;
+
+  return true;
+}
+
+/**
+ * Validates if the user is of legal age
+ * @param birthday Birthday date string in YYYY-MM-DD format
+ * @param minAge Minimum age required (default: 18)
+ * @returns boolean indicating if user is of legal age
+ */
+export function isValidBirthday(birthday: string, minAge = 18): boolean {
+  try {
+    const birthdayDate = new Date(birthday);
+
+    // Verificar se a data é válida
+    if (isNaN(birthdayDate.getTime())) return false;
+
+    const today = new Date();
+
+    // Verificar se a data de nascimento não é no futuro
+    if (birthdayDate > today) return false;
+
+    let age = today.getFullYear() - birthdayDate.getFullYear();
+    const monthDiff = today.getMonth() - birthdayDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthdayDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age >= minAge;
+  } catch (error) {
+    return false;
+  }
 }
