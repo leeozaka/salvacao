@@ -81,7 +81,7 @@ export class UserRepository implements IUserRepository {
         if (filter.email) query += ` AND email = '${filter.email}'`;
         if (filter.telephone) query += ` AND telephone = '${filter.telephone}'`;
         if (filter.role) query += ` AND role = '${filter.role}'`;
-        if (filter.isActive !== undefined) query += ` AND is_active = ${filter.isActive}`;
+        if (filter.isActive !== undefined) query += ` AND isActive = ${filter.isActive}`;
       }
       
       const results = await this.prisma.$queryRaw<User[]>`${query}`;
@@ -112,10 +112,10 @@ export class UserRepository implements IUserRepository {
       if (data.birthday) updateParts.push(`birthday = '${data.birthday}'`);
       if (data.password) updateParts.push(`password = '${data.password}'`);
       if (data.role) updateParts.push(`role = '${data.role}'`);
-      if (data.isActive !== undefined) updateParts.push(`is_active = ${data.isActive}`);
+      if (data.isActive !== undefined) updateParts.push(`isActive = ${data.isActive}`);
       
-      // Always update the updated_at timestamp
-      updateParts.push(`updated_at = '${now.toISOString()}'`);
+      // Always update the updatedAt timestamp
+      updateParts.push(`updatedAt = '${now.toISOString()}'`);
       
       if (updateParts.length === 0) {
         throw new Error('No fields to update');
