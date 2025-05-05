@@ -92,66 +92,67 @@ export default function RegisterForm({
   const validateField = (name: string, value: string): string => {
     switch (name) {
       case "name":
-        return value ? "" : "Name is required";
+        return value ? "" : "Nome é obrigatório";
       case "email":
-        if (!value) return "Email is required";
-        return /^\S+@\S+\.\S+$/.test(value) ? "" : "Invalid email format";
+        if (!value) return "Email é obrigatório";
+        return /^\S+@\S+\.\S+$/.test(value) ? "" : "Formato de email inválido";
       case "password":
-        if (!value) return "Password is required";
+        if (!value) return "Senha é obrigatória";
         return isValidPassword(value)
           ? ""
-          : "Password must have at least 8 characters with uppercase, lowercase, numbers and special characters";
+          : "A senha deve ter pelo menos 8 caracteres com letras maiúsculas, minúsculas, números e caracteres especiais";
       case "confirmPassword":
-        return value === formData.password ? "" : "Passwords do not match";
+        return value === formData.password ? "" : "As senhas não coincidem";
       case "cpf":
-        if (!value) return "CPF is required";
-        return isValidCPF(value) ? "" : "Invalid CPF format";
+        if (!value) return "CPF é obrigatório";
+        return isValidCPF(value) ? "" : "CPF inválido";
       case "telephone":
-        if (!value) return "Telephone is required";
-        return isValidPhone(value) ? "" : "Invalid phone number format";
+        if (!value) return "Telefone é obrigatório";
+        return isValidPhone(value) ? "" : "Formato de telefone inválido";
       case "birthday":
-        return value ? "" : "Birthday is required";
+        return value ? "" : "Data de nascimento é obrigatória";
       default:
         return "";
     }
   };
 
   const validateForm = (): boolean => {
-    const newErrors: string[] = [];
+    const newErrors: Record<string, string> = {};
 
-    if (!formData.name) newErrors.push("Nome é obrigatório");
+    if (!formData.name) newErrors.name = "Nome é obrigatório";
 
-    if (!formData.email) newErrors.push("Email é obrigatório");
+    if (!formData.email) newErrors.email = "Email é obrigatório";
     if (formData.email && !isValidEmail(formData.email)) {
-      newErrors.push("Formato de email inválido");
+      newErrors.email = "Formato de email inválido";
     }
 
     if (!formData.password) {
-      newErrors.push("Senha é obrigatória");
+      newErrors.password = "Senha é obrigatória";
     } else {
       const passwordValidation = validatePasswordStrength(formData.password);
       if (!passwordValidation.isValid) {
-        newErrors.push(...passwordValidation.errors);
+        newErrors.password = passwordValidation.errors[0];
       }
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.push("As senhas não coincidem");
+      newErrors.confirmPassword = "As senhas não coincidem";
     }
 
-    if (!formData.cpf) newErrors.push("CPF é obrigatório");
+    if (!formData.cpf) newErrors.cpf = "CPF é obrigatório";
     if (formData.cpf && !isValidCPF(formData.cpf)) {
-      newErrors.push("CPF inválido");
+      newErrors.cpf = "CPF inválido";
     }
 
-    if (!formData.telephone) newErrors.push("Telefone é obrigatório");
+    if (!formData.telephone) newErrors.telephone = "Telefone é obrigatório";
     if (formData.telephone && !isValidPhone(formData.telephone)) {
-      newErrors.push("Formato de telefone inválido");
+      newErrors.telephone = "Formato de telefone inválido";
     }
 
-    if (!formData.birthday) newErrors.push("Data de nascimento é obrigatória");
+    if (!formData.birthday)
+      newErrors.birthday = "Data de nascimento é obrigatória";
     if (formData.birthday && !isValidBirthday(formData.birthday)) {
-      newErrors.push("Você deve ter pelo menos 18 anos para se cadastrar");
+      newErrors.birthday = "Você deve ter pelo menos 18 anos para se cadastrar";
     }
 
     setErrors(newErrors);
@@ -180,10 +181,10 @@ export default function RegisterForm({
       if (result.success) {
         onSuccess();
       } else {
-        setErrors([result.message || "Falha no cadastro"]);
+        setErrors({ general: result.message || "Falha no cadastro" });
       }
     } catch (error) {
-      setErrors(["Ocorreu um erro inesperado"]);
+      setErrors({ general: "Ocorreu um erro inesperado" });
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -196,9 +197,10 @@ export default function RegisterForm({
         Criar uma Conta
       </h1>
 
-      {errors.length > 0 && (
+      {Object.keys(errors).length > 0 && (
         <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded w-full">
           <ul className="list-disc list-inside">
+            {errors.general && <li>{errors.general}</li>}
             {Object.entries(errors).map(([field, message]) =>
               field !== "general" && message ? (
                 <li key={field}>{message}</li>

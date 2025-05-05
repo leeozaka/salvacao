@@ -4,7 +4,6 @@ import CompromissosLoading from "@/components/dashboard/CompromissosLoading";
 import { getCompromissos } from "@/services/compromissos-server";
 
 export default async function DashboardPage() {
-  // Esta chamada ocorre no servidor durante a renderização
   const compromissos = await getCompromissos();
 
   return (

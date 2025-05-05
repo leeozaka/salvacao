@@ -1,4 +1,6 @@
 import { Produto, TipoProduto, UnidadeDeMedida } from "@/types/entities";
+import { NovoProdutoDTO } from "@/dto/NovoProdutoDTO";
+import { NovoTipoDTO } from "@/dto/NovoTipoDTO";
 
 // Dados simulados
 const tiposExemplo: TipoProduto[] = [
@@ -110,14 +112,6 @@ export const buscarProdutos = async (): Promise<Produto[]> => {
 };
 
 // Funções para adicionar novos dados
-export interface NovoProdutoDTO {
-  nome: string;
-  idtipoproduto: number;
-  idunidademedida: number;
-  fabricante: string;
-  dataValidade?: string;
-}
-
 export const adicionarProduto = async (
   produto: NovoProdutoDTO,
 ): Promise<Produto> => {
@@ -169,11 +163,6 @@ export const adicionarProduto = async (
     throw error;
   }
 };
-
-export interface NovoTipoDTO {
-  descricao: string;
-  controlaValidade: boolean;
-}
 
 export const adicionarTipoProduto = async (
   tipo: NovoTipoDTO,
