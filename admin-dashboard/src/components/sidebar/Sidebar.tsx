@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { logoutUser } from "@/services/authService";
 import { OpenSubmenus, SidebarProps } from "@/types/sidebar";
@@ -11,12 +12,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     medicacao: false,
   });
 
+  // Memoize the setIsOpen function to avoid unnecessary re-renders
+  const handleSetIsOpen = useCallback((value: boolean) => {
+    if (typeof setIsOpen === "function") {
+      setIsOpen(value);
+    }
+  }, [setIsOpen]);
+
   // Função para fechar o sidebar em telas pequenas quando clica fora
   useEffect(() => {
     const handleResize = () => {
       // Fecha o sidebar automaticamente em telas pequenas
       if (window.innerWidth < 1024 && isOpen) {
-        setIsOpen(false);
+        handleSetIsOpen(false);
       }
     };
 
@@ -33,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         window.innerWidth < 1024 &&
         isOpen
       ) {
-        setIsOpen(false);
+        handleSetIsOpen(false);
       }
     };
 
@@ -44,10 +52,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen, setIsOpen]);
+  }, [isOpen, handleSetIsOpen]);
 
   const toggleSidebar = (): void => {
-    setIsOpen(!isOpen);
+    handleSetIsOpen(!isOpen);
   };
 
   const toggleSubmenu = (menu: string): void => {
@@ -61,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     router.push(path);
     // Fecha o sidebar automaticamente após navegação em dispositivos móveis
     if (window.innerWidth < 1024) {
-      setIsOpen(false);
+      handleSetIsOpen(false);
     }
   };
 

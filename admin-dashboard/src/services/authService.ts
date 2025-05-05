@@ -1,9 +1,16 @@
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3344";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
+/**
+ * Sets an authentication cookie for the user
+ */
 function setAuthCookie(token: string): void {
+  // Set cookie that works in both production and development
   document.cookie = `authToken=${token}; path=/; max-age=86400; SameSite=Strict`;
 }
 
+/**
+ * Clears the authentication cookie
+ */
 function clearAuthCookie(): void {
   document.cookie =
     "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict";
@@ -56,30 +63,24 @@ export async function logoutUser(): Promise<boolean> {
   }
 }
 
-export async function verifyAuthToken() {
+export async function verifyAuthToken(): Promise<boolean> {
   try {
     const token = getTokenFromCookie();
+    if (!token) return false;
 
-    if (!token) {
-      return false;
-    }
-
-    // Verifique se está usando a URL correta aqui
-    const response = await fetch("/api/verify-token", {
+    const response = await fetch(`${API_URL}/login/verify`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+      credentials: "same-origin",
     });
 
-    if (!response.ok) {
-      return false;
-    }
+    if (!response.ok) return false;
 
-    return true;
+    const data = await response.json();
+    return !!data.valid;
   } catch (error) {
-    console.error("Auth verification error:", error);
+    console.error("Token verification error:", error);
     return false;
   }
 }
@@ -87,7 +88,7 @@ export async function verifyAuthToken() {
 /**
  * Gets token from cookie
  */
-export function getTokenFromCookie(): string | null {
+function getTokenFromCookie(): string | null {
   if (typeof document === "undefined") return null;
 
   const tokenCookie = document.cookie
