@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useSidebar } from "./SidebarContext";
+import { useSidebar } from "../../contexts/SidebarContext";
 
 export default function ClientLayout({
   children,
