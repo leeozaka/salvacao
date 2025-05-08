@@ -191,4 +191,20 @@ export class UserRepository implements IUserRepository {
       throw error instanceof Error ? error : new Error('Error finding by CPF: ' + error);
     }
   }
+
+  /**
+   * Checks if there are any users in the system
+   * @returns {Promise<boolean>} True if there are no users, false otherwise
+   */
+  async isFirstUser(): Promise<boolean> {
+    try {
+      const result = await this.prisma.$queryRaw<{ count: string }[]>`
+        SELECT COUNT(*) as count FROM "User"
+      `.then(x => Number(x[0].count));
+      
+      return result === 0;
+    } catch (error) {
+      throw error instanceof Error ? error : new Error('Error checking first user: ' + error);
+    }
+  }
 }

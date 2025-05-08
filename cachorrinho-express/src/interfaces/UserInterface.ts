@@ -12,6 +12,7 @@ export interface IUserRepository {
   update(id: string, data: Partial<User>): Promise<User>;
   delete(id: string): Promise<boolean>;
   findByCpf(cpf: string): Promise<User>;
+  isFirstUser(): Promise<boolean>;
 }
 
 export interface IUserService {

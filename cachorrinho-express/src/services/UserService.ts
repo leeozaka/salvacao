@@ -3,6 +3,7 @@ import { hash } from 'bcrypt';
 import { CreateUserDTO, User } from 'dtos/UserDTO';
 import UserModel from 'models/UserModel';
 import { UserMapper } from 'mapper/UserMapper';
+import { Role } from '@prisma/client';
 
 export class UserService implements IUserService {
   constructor(private readonly userRepository: IUserRepository) {}
@@ -22,14 +23,20 @@ export class UserService implements IUserService {
    * @returns {Promise<User>}
    */
   async create(data: CreateUserDTO): Promise<User> {
-    const userModel = new UserModel(data);
+    const isFirstUser = await this.userRepository.isFirstUser();
+
+    console.log(isFirstUser, 'isFirstUser');
+    
+    const userModel = new UserModel({
+      ...data,
+      role: isFirstUser ? Role.ADMIN : Role.USER
+    });
 
     const validationResult = await userModel.validate();
     if (Array.isArray(validationResult)) {
       throw validationResult;
     }
 
-    // Hash password and create user
     const hashedPassword = await hash(data.password!, 12);
     userModel.password = hashedPassword;
 
