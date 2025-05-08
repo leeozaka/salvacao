@@ -12,19 +12,19 @@ const RETRY_DELAY = 5000;
 app.use(
   cors({
     origin: [
-      'http://localhost', 
+      'http://localhost',
       'http://localhost:3000',
       'http://localhost:80',
       'http://127.0.0.1',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:80',
-      'http://dashboard:3000', 
-      'http://localhost:5173', 
+      'http://dashboard:3000',
+      'http://localhost:5173',
       'http://127.0.0.1:5173',
       'http://nginx',
       'http://nginx:80',
       'https://localhost',
-      'https://127.0.0.1'
+      'https://127.0.0.1',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -47,7 +47,7 @@ async function connectWithRetry(retries: number): Promise<void> {
     console.log('Attempting to connect to database...');
     await prismaClient.$connect();
     console.log('Database connection established successfully');
-    
+
     Container.init();
     app.use(routes);
 
@@ -56,9 +56,11 @@ async function connectWithRetry(retries: number): Promise<void> {
     });
   } catch (err) {
     console.error('Failed to connect to database:', err);
-    
+
     if (retries > 0) {
-      console.log(`Retrying connection in ${RETRY_DELAY/1000} seconds... (${retries} attempts left)`);
+      console.log(
+        `Retrying connection in ${RETRY_DELAY / 1000} seconds... (${retries} attempts left)`,
+      );
       setTimeout(() => connectWithRetry(retries - 1), RETRY_DELAY);
     } else {
       console.error('Maximum retry attempts reached. Could not connect to database.');

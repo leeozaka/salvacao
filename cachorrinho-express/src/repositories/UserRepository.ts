@@ -18,7 +18,7 @@ export class UserRepository implements IUserRepository {
   async create(data: CreateUserDTO): Promise<User> {
     try {
       const now = new Date();
-      
+
       const result = await this.prisma.$queryRaw<User[]>`
         INSERT INTO "User" (
           id, cpf, name, email, telephone, birthday, password, role, 
@@ -30,7 +30,7 @@ export class UserRepository implements IUserRepository {
           ${data.birthday}::DATE, ${data.password}, ${data.role}::"Role",
           true, false, ${now}, ${now}
         ) 
-        RETURNING *`.then(x => x[0]);
+        RETURNING *`.then((x) => x[0]);
 
       if (!result) {
         throw new Error('Failed to create user');
@@ -52,8 +52,8 @@ export class UserRepository implements IUserRepository {
       const result = await this.prisma.$queryRaw<User[]>`
         SELECT * FROM "User" 
         WHERE id = ${id} AND "isDeleted" = false
-      `.then(x => x[0]);
-      
+      `.then((x) => x[0]);
+
       if (!result) {
         throw new Error('User not found');
       }
@@ -73,7 +73,7 @@ export class UserRepository implements IUserRepository {
     try {
       // Build the base query
       let query = `SELECT * FROM "User" WHERE "isDeleted" = false`;
-      
+
       // Add filter conditions if they exist
       if (filter) {
         if (filter.cpf) query += ` AND cpf = '${filter.cpf}'`;
@@ -83,7 +83,7 @@ export class UserRepository implements IUserRepository {
         if (filter.role) query += ` AND role = '${filter.role}'`;
         if (filter.isActive !== undefined) query += ` AND isActive = ${filter.isActive}`;
       }
-      
+
       const results = await this.prisma.$queryRaw<User[]>`${query}`;
       return results;
     } catch (error) {
@@ -101,11 +101,11 @@ export class UserRepository implements IUserRepository {
     try {
       // First check if user exists
       await this.findOne(id);
-      
+
       // Build update query parts
       const updateParts = [];
       const now = new Date();
-      
+
       if (data.name) updateParts.push(`name = '${data.name}'`);
       if (data.email) updateParts.push(`email = '${data.email}'`);
       if (data.telephone) updateParts.push(`telephone = '${data.telephone}'`);
@@ -113,27 +113,27 @@ export class UserRepository implements IUserRepository {
       if (data.password) updateParts.push(`password = '${data.password}'`);
       if (data.role) updateParts.push(`role = '${data.role}'`);
       if (data.isActive !== undefined) updateParts.push(`isActive = ${data.isActive}`);
-      
+
       // Always update the updatedAt timestamp
       updateParts.push(`updatedAt = '${now.toISOString()}'`);
-      
+
       if (updateParts.length === 0) {
         throw new Error('No fields to update');
       }
-      
+
       const updateQuery = `
         UPDATE "User" 
         SET ${updateParts.join(', ')}
         WHERE id = '${id}'
         RETURNING *
       `;
-      
-      const result = await this.prisma.$queryRaw<User[]>`${updateQuery}`.then(x => x[0]);
-      
+
+      const result = await this.prisma.$queryRaw<User[]>`${updateQuery}`.then((x) => x[0]);
+
       if (!result) {
         throw new Error('Failed to update user');
       }
-      
+
       return result;
     } catch (error) {
       throw error instanceof Error ? error : new Error('Error updating user: ' + error);
@@ -150,12 +150,12 @@ export class UserRepository implements IUserRepository {
       // Check if user exists
       const user = await this.prisma.$queryRaw<User[]>`
         SELECT * FROM "User" WHERE id = ${id}
-      `.then(x => x[0]);
+      `.then((x) => x[0]);
 
       if (!user) {
         throw new Error('User not found');
       }
-      
+
       // Perform soft delete
       const now = new Date();
       await this.prisma.$queryRaw`
@@ -163,7 +163,7 @@ export class UserRepository implements IUserRepository {
         SET isDeleted = true, updatedAt = '${now.toISOString()}'
         WHERE id = ${id}
       `;
-      
+
       return true;
     } catch (error) {
       throw error instanceof Error ? error : new Error('Error deleting user: ' + error);
@@ -180,8 +180,8 @@ export class UserRepository implements IUserRepository {
       const result = await this.prisma.$queryRaw<User[]>`
         SELECT * FROM "User" 
         WHERE cpf = ${cpf} AND isDeleted = false
-      `.then(x => x[0]);
-      
+      `.then((x) => x[0]);
+
       if (!result) {
         throw new Error('User not found');
       }
@@ -200,8 +200,8 @@ export class UserRepository implements IUserRepository {
     try {
       const result = await this.prisma.$queryRaw<{ count: string }[]>`
         SELECT COUNT(*) as count FROM "User"
-      `.then(x => Number(x[0].count));
-      
+      `.then((x) => Number(x[0].count));
+
       return result === 0;
     } catch (error) {
       throw error instanceof Error ? error : new Error('Error checking first user: ' + error);

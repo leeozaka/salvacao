@@ -20,12 +20,10 @@ export class UserController {
       res.status(StatusCodes.CREATED).json(user);
     } catch (error) {
       if (Array.isArray(error)) {
-        res
-          .status(StatusCodes.BAD_REQUEST)
-          .json({ message: 'Validation failed', errors: error });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: 'Validation failed', errors: error });
       } else {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-          message: error instanceof Error ? error.message : 'Internal server error' 
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          message: error instanceof Error ? error.message : 'Internal server error',
         });
       }
     }
@@ -48,8 +46,8 @@ export class UserController {
       const user = await this.userService.findOne(id as string);
       res.status(StatusCodes.OK).json(user);
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-        message: error instanceof Error ? error.message : 'Internal server error' 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: error instanceof Error ? error.message : 'Internal server error',
       });
     }
   };
@@ -64,8 +62,8 @@ export class UserController {
       const users = await this.userService.findAll(req.body.userId);
       res.status(StatusCodes.OK).json(users);
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-        message: error instanceof Error ? error.message : 'Internal server error' 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: error instanceof Error ? error.message : 'Internal server error',
       });
     }
   };
@@ -80,8 +78,8 @@ export class UserController {
       const user = await this.userService.update(req.body.id, req.body);
       res.status(StatusCodes.OK).json(user);
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-        message: error instanceof Error ? error.message : 'Internal server error' 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: error instanceof Error ? error.message : 'Internal server error',
       });
     }
   };
@@ -96,8 +94,8 @@ export class UserController {
       await this.userService.delete(req.body.userId);
       res.status(StatusCodes.NO_CONTENT).send();
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-        message: error instanceof Error ? error.message : 'Internal server error' 
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: error instanceof Error ? error.message : 'Internal server error',
       });
     }
   };

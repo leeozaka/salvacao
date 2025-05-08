@@ -25,11 +25,9 @@ export class UserService implements IUserService {
   async create(data: CreateUserDTO): Promise<User> {
     const isFirstUser = await this.userRepository.isFirstUser();
 
-    console.log(isFirstUser, 'isFirstUser');
-    
     const userModel = new UserModel({
       ...data,
-      role: isFirstUser ? Role.ADMIN : Role.USER
+      role: isFirstUser ? Role.ADMIN : Role.USER,
     });
 
     const validationResult = await userModel.validate();
