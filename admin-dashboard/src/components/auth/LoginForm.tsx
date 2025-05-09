@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/services/authService";
-import Image from "next/image";
 
 interface LoginFormProps {
   onToggleForm: () => void;
@@ -49,45 +48,34 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
       if (result.success) {
         setRedirecting(true);
         setTimeout(() => {
-          router.push("/dashboard");
+          router.refresh();
         }, 50);
       } else {
-        setError(result.message || "Login failed");
+        setError(result.message || "Login falhou");
         setIsLoading(false);
       }
     } catch (err) {
-      setError("An unexpected error occurred");
-      console.error(err);
+      setError("Ocorreu um erro inesperado");
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md p-6 bg-gray-50 rounded-lg shadow-md">
-      {/* <div className="flex justify-center mb-2">
-        <Image
-          src="/logo.png"
-          alt="Logo Salvacão"
-          width={100}
-          height={100}
-          className="h-24 w-auto"
-          priority
-        />
-      </div> */}
+    <div className="flex flex-col items-center justify-center w-full max-w-md p-6 rounded-lg shadow-md bg-bg-color dark:bg-menu-bg-dark text-text-color dark:text-text-color-dark">
 
-      <h1 className="text-2xl font-bold text-center mb-4 text-amber-600">
+      <h1 className="text-2xl font-bold text-center mb-4">
         Salvacão - Dashboard
       </h1>
 
       {error && (
-        <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded w-full">
+        <div className="p-3 mb-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-800 dark:bg-opacity-30 border border-red-200 dark:border-red-700 rounded w-full">
           {error}
         </div>
       )}
 
       {redirecting && (
-        <div className="p-3 mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded w-full">
-          Login successful! {dots}
+        <div className="p-3 mb-4 text-sm text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-800 dark:bg-opacity-30 border border-green-200 dark:border-green-700 rounded w-full">
+          Login realizado com suceso! {dots}
         </div>
       )}
 
@@ -96,7 +84,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium"
             >
               Email
             </label>
@@ -105,27 +93,27 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email address"
+              placeholder="Email"
               required
-              className="w-full px-3 py-2 mt-1 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium"
             >
-              Password
+              Senha
             </label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder="Senha"
               required
-              className="w-full px-3 py-2 mt-1 border text-gray-700 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              className="w-full px-3 py-2 mt-1 border text-[var(--color-text)] bg-primary border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
             />
           </div>
         </div>
@@ -138,11 +126,11 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 text-amber-500 focus:ring-amber-500 border-gray-300 rounded"
+              className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-[var(--color-secondary)] rounded"
             />
             <label
               htmlFor="remember-me"
-              className="ml-2 block text-sm text-gray-900"
+              className="ml-2 block text-sm text-[var(--color-text)]"
             >
               Lembrar-me
             </label>
@@ -151,7 +139,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
           <div className="text-sm">
             <a
               href="#"
-              className="font-medium text-amber-600 hover:text-amber-700"
+              className="font-medium text-[var(--color-primary)] hover:text-[var(--color-secondary)]"
             >
               Esqueci minha senha
             </a>
@@ -162,7 +150,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
           <button
             type="submit"
             disabled={isLoading || redirecting}
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-md hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:bg-amber-300 transition-colors duration-200"
+            className="w-full px-4 py-2 text-sm font-medium text-text-color dark:text-text-color-dark bg-login-button dark:bg-login-button-dark rounded-md hover:bg-login-button-hover dark:hover:bg-login-button-hover-dark focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors duration-200"
           >
             {isLoading
               ? "Entrando..."
@@ -174,18 +162,18 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
       </form>
 
       <div className="mt-4 text-center w-full">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-text-color dark:text-text-color-dark">
           Não tem uma conta?{" "}
           <button
             onClick={onToggleForm}
-            className="text-amber-600 hover:text-amber-800 hover:underline focus:outline-none"
+            className="hover:text-secondary-color dark:hover:text-secondary-color-dark hover:underline focus:outline-none transition-colors duration-200"
           >
             Cadastre-se
           </button>
         </p>
       </div>
 
-      <div className="mt-6 text-center text-sm text-gray-500">
+      <div className="mt-6 text-center text-sm text-[var(--color-text)] opacity-70">
         &copy; {new Date().getFullYear()} Salvacão - Todos os direitos
         reservados
       </div>

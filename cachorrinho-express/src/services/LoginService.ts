@@ -25,15 +25,13 @@ export class LoginService {
       }
 
       const token = this.generateToken(user.id);
-      
+
       return {
         expires: new Date(),
         token,
       };
     } catch (error) {
-      throw error instanceof Error 
-        ? error 
-        : new Error('Authentication failed');
+      throw error instanceof Error ? error : new Error('Authentication failed');
     }
   }
 
@@ -75,15 +73,13 @@ export class LoginService {
     if (!JWT_SECRET) {
       throw new Error('JWT secret is not configured');
     }
-    
+
     try {
       return jwt.sign({ userId }, JWT_SECRET, {
         expiresIn: '24h',
       });
     } catch (error) {
-      throw error instanceof Error 
-        ? error 
-        : new Error('Token generation failed');
+      throw error instanceof Error ? error : new Error('Token generation failed');
     }
   }
 }

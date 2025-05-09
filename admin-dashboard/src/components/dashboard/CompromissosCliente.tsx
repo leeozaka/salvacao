@@ -187,15 +187,13 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
   };
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    const date = new Date(dateString + 'T00:00:00Z');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
   };
 
-  // Função para obter o ícone com base no tipo de compromisso
   const getIconForType = (tipo: string): JSX.Element => {
     switch (tipo) {
       case "vacinação":
@@ -211,23 +209,21 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
     }
   };
 
-  // Função para obter a cor com base no tipo de compromisso
   const getColorForType = (tipo: string): string => {
     switch (tipo) {
       case "vacinação":
-        return "text-blue-600 bg-blue-50";
+        return "text-blue-600 bg-blue-50 dark:text-blue-300 dark:bg-blue-500 dark:bg-opacity-20";
       case "consulta":
-        return "text-green-600 bg-green-50";
+        return "text-green-600 bg-green-50 dark:text-green-300 dark:bg-green-500 dark:bg-opacity-20";
       case "exame":
-        return "text-purple-600 bg-purple-50";
+        return "text-purple-600 bg-purple-50 dark:text-purple-300 dark:bg-purple-500 dark:bg-opacity-20";
       case "medicação":
-        return "text-pink-600 bg-pink-50";
+        return "text-pink-600 bg-pink-50 dark:text-pink-300 dark:bg-pink-500 dark:bg-opacity-20";
       default:
-        return "text-amber-600 bg-amber-50";
+        return "text-amber-600 bg-amber-50 dark:text-amber-300 dark:bg-amber-500 dark:bg-opacity-20";
     }
   };
 
-  // Função para obter a classe do cartão baseado no tipo
   const getCardClass = (tipo: string): string => {
     switch (tipo) {
       case "vacinação":
@@ -261,7 +257,7 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
               name="status"
               value={filtros.status}
               onChange={handleFiltroChange}
-              className="bg-white border border-amber-200 text-gray-700 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 p-2.5"
+              className="bg-white dark:bg-gray-700 border border-amber-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 p-2.5"
             >
               <option value="">Status</option>
               <option value="pendente">Pendentes</option>
@@ -274,7 +270,7 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
               name="tipo"
               value={filtros.tipo}
               onChange={handleFiltroChange}
-              className="bg-white border border-amber-200 text-gray-700 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 p-2.5"
+              className="bg-white dark:bg-gray-700 border border-amber-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 p-2.5"
             >
               <option value="">Tipo</option>
               <option value="vacinação">Vacinação</option>
@@ -289,7 +285,7 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
               name="animal"
               value={filtros.animal}
               onChange={handleFiltroChange}
-              className="bg-white border border-amber-200 text-gray-700 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 p-2.5"
+              className="bg-white dark:bg-gray-700 border border-amber-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 p-2.5"
             >
               <option value="">Animal</option>
               <option value="Rex">Rex</option>
@@ -303,14 +299,14 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
             {/* Pesquisar */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <i className="bi bi-search text-gray-400"></i>
+                <i className="bi bi-search text-gray-400 dark:text-gray-500"></i>
               </div>
               <input
                 type="text"
                 name="busca"
                 value={filtros.busca}
                 onChange={handleFiltroChange}
-                className="block w-full p-2.5 pl-10 text-sm text-gray-700 border border-amber-200 rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-white"
+                className="block w-full p-2.5 pl-10 text-sm text-gray-700 dark:text-gray-200 border border-amber-200 dark:border-gray-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
                 placeholder="Buscar..."
               />
             </div>
@@ -322,7 +318,7 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
               filtros.busca) && (
               <button
                 onClick={limparFiltros}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg text-sm px-4 py-2.5 inline-flex items-center transition-colors duration-200"
+                className="bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-medium rounded-lg text-sm px-4 py-2.5 inline-flex items-center transition-colors duration-200"
               >
                 <i className="bi bi-x-circle mr-2"></i>
                 Limpar
@@ -334,14 +330,14 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
 
       {/* Exibir mensagem de erro, se houver */}
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded shadow-sm">
+        <div className="bg-red-50 dark:bg-red-900 dark:bg-opacity-75 border-l-4 border-red-500 p-4 mb-6 rounded shadow-sm">
           <div className="flex items-center">
             <i className="bi bi-exclamation-triangle-fill text-red-500 mr-3 text-xl"></i>
-            <p className="text-red-700">{error}</p>
+            <p className="text-red-700 dark:text-red-300">{error}</p>
           </div>
           <button
             onClick={() => setError(null)}
-            className="mt-2 bg-red-100 hover:bg-red-200 text-red-700 font-medium rounded-lg text-sm px-4 py-2"
+            className="mt-2 bg-red-100 dark:bg-red-700 dark:bg-opacity-50 hover:bg-red-200 dark:hover:bg-red-700 text-red-700 dark:text-red-200 font-medium rounded-lg text-sm px-4 py-2"
           >
             Fechar
           </button>
@@ -350,14 +346,14 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
 
       {/* Mensagem para lista vazia */}
       {compromissosFiltrados.length === 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white dark:bg-gray-700 rounded-lg shadow-sm p-8 text-center">
+          <div className="w-16 h-16 bg-amber-50 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <i className="bi bi-calendar-x text-amber-500 text-2xl"></i>
           </div>
-          <h3 className="text-lg font-medium text-gray-800 mb-2">
+          <h3 className="text-lg font-medium text-gray-800 dark:text-gray-100 mb-2">
             Nenhum compromisso encontrado
           </h3>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             {compromissos.length > 0
               ? "Nenhum resultado corresponde aos filtros aplicados."
               : "Você não possui compromissos agendados no momento."}
@@ -365,7 +361,7 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
           {compromissos.length > 0 && (
             <button
               onClick={limparFiltros}
-              className="bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-lg text-sm px-4 py-2.5 inline-flex items-center transition-colors duration-200 mr-3"
+              className="bg-amber-100 dark:bg-gray-600 hover:bg-amber-200 dark:hover:bg-gray-500 text-amber-800 dark:text-amber-200 font-medium rounded-lg text-sm px-4 py-2.5 inline-flex items-center transition-colors duration-200 mr-3"
             >
               <i className="bi bi-x-circle mr-2"></i>
               Limpar filtros
@@ -384,7 +380,7 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
           {compromissosFiltrados.map((compromisso) => (
             <div
               key={compromisso.id}
-              className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${getCardClass(
+              className={`bg-white dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${getCardClass(
                 compromisso.tipo,
               )}`}
             >
@@ -399,25 +395,32 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
                       {getIconForType(compromisso.tipo)}
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-800 line-clamp-1">
+                      <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 line-clamp-1">
                         {compromisso.titulo}
                       </h2>
-                      <p className="text-sm text-amber-600">
+                      <p className="text-sm text-amber-600 dark:text-amber-500">
                         {formatDate(compromisso.data)}
                       </p>
                     </div>
                   </div>
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 whitespace-nowrap">
-                    {compromisso.categoria}
+                  <span
+                    className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${getColorForType(
+                      compromisso.tipo,
+                    )}`}
+                  >
+                    {getIconForType(compromisso.tipo)}
+                    <span className="ml-1.5 capitalize">
+                      {compromisso.tipo}
+                    </span>
                   </span>
                 </div>
 
                 <div className="pl-[60px] mb-4">
-                  <div className="flex items-center text-gray-600 mb-3 bg-amber-50 px-3 py-2 rounded-md">
+                  <div className="flex items-center text-gray-600 dark:text-gray-300 mb-3 bg-amber-50 dark:bg-gray-600 px-3 py-2 rounded-md">
                     <i className="bi bi-emoji-smile mr-2 text-amber-500"></i>
                     <span className="text-sm">
                       Animal:{" "}
-                      <span className="font-medium text-gray-800">
+                      <span className="font-medium text-gray-800 dark:text-gray-100">
                         {compromisso.animal}
                       </span>
                     </span>
@@ -428,8 +431,8 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
                       onClick={() => handleToggleConcluido(compromisso.id)}
                       className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
                         compromisso.concluido
-                          ? "bg-green-100 text-green-800"
-                          : "bg-amber-100 text-amber-800"
+                          ? "bg-green-100 text-green-800 dark:bg-green-500 dark:bg-opacity-20 dark:text-green-300"
+                          : "bg-amber-100 text-amber-800 dark:bg-amber-500 dark:bg-opacity-20 dark:text-amber-300"
                       } hover:opacity-80 transition-opacity`}
                     >
                       <i
@@ -441,55 +444,24 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
                       ></i>
                       {compromisso.concluido ? "Concluído" : "Pendente"}
                     </button>
-                    <span
-                      className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${getColorForType(
-                        compromisso.tipo,
-                      )}`}
-                    >
-                      {getIconForType(compromisso.tipo)}
-                      <span className="ml-1.5 capitalize">
-                        {compromisso.tipo}
-                      </span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center mt-5 pt-3 border-t border-amber-100">
-                  <div>
-                    <button className="text-sm text-amber-600 hover:text-amber-800 font-medium">
-                      <i className="bi bi-pencil-square mr-1"></i> Editar
-                    </button>
-                  </div>
-
-                  <div className="flex space-x-1">
-                    <button
-                      onClick={() => handleToggleFavorite(compromisso.id)}
-                      className={`p-2 rounded-full hover:bg-amber-50 ${
-                        compromisso.favorito
-                          ? "text-amber-500"
-                          : "text-gray-400"
-                      } transition-colors duration-200`}
-                      title="Favoritar"
-                    >
-                      {compromisso.favorito ? (
-                        <i className="bi bi-star-fill"></i>
-                      ) : (
-                        <i className="bi bi-star"></i>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleExcluirCompromisso(compromisso.id)}
-                      className="p-2 rounded-full hover:bg-amber-50 text-gray-400 hover:text-red-500 transition-colors duration-200"
-                      title="Excluir"
-                    >
-                      <i className="bi bi-trash"></i>
-                    </button>
-                    <button
-                      className="p-2 rounded-full hover:bg-amber-50 text-gray-400 transition-colors duration-200"
-                      title="Mais opções"
-                    >
-                      <i className="bi bi-three-dots-vertical"></i>
-                    </button>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => handleToggleFavorite(compromisso.id)}
+                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                        aria-label="Favoritar"
+                      >
+                        <i
+                          className={`bi ${compromisso.favorito ? "bi-heart-fill text-red-500" : "bi-heart text-gray-400 dark:text-gray-500"} text-lg`}
+                        ></i>
+                      </button>
+                      <button
+                        onClick={() => handleExcluirCompromisso(compromisso.id)}
+                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                        aria-label="Excluir"
+                      >
+                        <i className="bi bi-trash3 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-500 transition-colors text-lg"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -507,41 +479,41 @@ const CompromissosCliente: React.FC<CompromissosClienteProps> = ({
           >
             <a
               href="#"
-              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-amber-200 bg-white text-sm font-medium text-amber-500 hover:bg-amber-50"
+              className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-amber-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-gray-600"
             >
               <span className="sr-only">Anterior</span>
               <i className="bi bi-chevron-left"></i>
             </a>
             <a
               href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-amber-200 bg-amber-50 text-sm font-medium text-amber-700 hover:bg-amber-100"
+              className="relative inline-flex items-center px-4 py-2 border border-amber-200 dark:border-gray-600 bg-amber-50 dark:bg-amber-700 dark:bg-opacity-25 text-sm font-medium text-amber-700 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-600 dark:hover:bg-opacity-25"
             >
               1
             </a>
             <a
               href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-amber-200 bg-white text-sm font-medium text-gray-700 hover:bg-amber-50"
+              className="relative inline-flex items-center px-4 py-2 border border-amber-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-600"
             >
               2
             </a>
             <a
               href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-amber-200 bg-white text-sm font-medium text-gray-700 hover:bg-amber-50"
+              className="relative inline-flex items-center px-4 py-2 border border-amber-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-600"
             >
               3
             </a>
-            <span className="relative inline-flex items-center px-4 py-2 border border-amber-200 bg-white text-sm font-medium text-gray-700">
+            <span className="relative inline-flex items-center px-4 py-2 border border-amber-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300">
               ...
             </span>
             <a
               href="#"
-              className="relative inline-flex items-center px-4 py-2 border border-amber-200 bg-white text-sm font-medium text-gray-700 hover:bg-amber-50"
+              className="relative inline-flex items-center px-4 py-2 border border-amber-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-600"
             >
               8
             </a>
             <a
               href="#"
-              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-amber-200 bg-white text-sm font-medium text-amber-500 hover:bg-amber-50"
+              className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-amber-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-amber-500 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-gray-600"
             >
               <span className="sr-only">Próximo</span>
               <i className="bi bi-chevron-right"></i>

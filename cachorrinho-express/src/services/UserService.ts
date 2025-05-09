@@ -1,8 +1,9 @@
-import { CreateUserRequest, IUserRepository, IUserService } from 'interfaces/UserInterface';
+import { IUserRepository, IUserService } from 'interfaces/UserInterface';
 import { hash } from 'bcrypt';
-import { User } from 'dtos/UserDTO';
+import { CreateUserDTO, User } from 'dtos/UserDTO';
 import UserModel from 'models/UserModel';
 import { UserMapper } from 'mapper/UserMapper';
+import { Role } from '@prisma/client';
 
 export class UserService implements IUserService {
   constructor(private readonly userRepository: IUserRepository) {}
@@ -18,21 +19,25 @@ export class UserService implements IUserService {
 
   /**
    * Creates a new user. Returns the created user or throws validation/DB errors.
-   * @param {CreateUserRequest} data - The input data for user creation
+   * @param {CreateUserDTO} data - The input data for user creation
    * @returns {Promise<User>}
    */
-  async create(data: CreateUserRequest): Promise<User> {
-    const userModel = new UserModel(data);
+  async create(data: CreateUserDTO): Promise<User> {
+    const isFirstUser = await this.userRepository.isFirstUser();
 
-    // Validate the user data
+    const userModel = new UserModel({
+      ...data,
+      role: isFirstUser ? Role.ADMIN : Role.USER,
+    });
+
     const validationResult = await userModel.validate();
     if (Array.isArray(validationResult)) {
       throw validationResult;
     }
 
-    // Hash password and create user
     const hashedPassword = await hash(data.password!, 12);
     userModel.password = hashedPassword;
+
     return this.userRepository.create(UserMapper.toEntity(userModel));
   }
 
@@ -44,9 +49,11 @@ export class UserService implements IUserService {
    */
   async update(id: string, data: Partial<User>): Promise<User> {
     const user = await this.userRepository.update(id, data);
+
     if (!user) {
       throw new Error('User not found');
     }
+
     return user;
   }
 

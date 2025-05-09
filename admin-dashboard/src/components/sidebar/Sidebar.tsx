@@ -12,7 +12,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     medicacao: false,
   });
 
-  // Memoize the setIsOpen function to avoid unnecessary re-renders
   const handleSetIsOpen = useCallback(
     (value: boolean) => {
       if (typeof setIsOpen === "function") {
@@ -93,19 +92,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <>
-      {/* Overlay para quando o sidebar estiver aberto em dispositivos móveis */}
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={toggleSidebar}
-        />
-      )}
-
-      {/* Botão mobile */}
       <button
         id="toggle-sidebar"
         onClick={toggleSidebar}
-        className="lg:hidden fixed top-4 left-4 text-3xl z-50 text-amber-600 hover:text-amber-700 transition-colors duration-200"
+        className="lg:hidden fixed top-4 left-4 text-3xl z-50 hover:text-amber-700 dark:hover:text-amber-400 transition-colors duration-200"
         aria-label="Menu"
       >
         <i className={`bi ${isOpen ? "bi-x" : "bi-filter-left"}`}></i>
@@ -114,44 +104,46 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       {/* Sidebar */}
       <aside
         id="sidebar"
-        className={`fixed top-0 left-0 w-64 h-screen bg-white shadow-md z-40 transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 w-64 h-screen shadow-md z-40 transition-transform duration-300 ease-in-out bg-bg-color dark:bg-menu-bg-dark ${
           !isOpen ? "-translate-x-full lg:translate-x-0" : "translate-x-0"
         }`}
       >
         {/* Logo/Título */}
-        <div className="bg-amber-600 text-white font-semibold text-xl py-4 px-4 mx-4 my-4 text-center rounded-lg shadow-sm">
+        <div 
+          className="font-semibold text-xl py-4 px-4 mx-4 my-4 text-center rounded-lg shadow-sm text-white bg-primary-color dark:bg-primary-color-dark border border-primary-color dark:border-primary-color-dark">
           PetControl
         </div>
 
         {/* Container de Menu com Rolagem */}
-        <div className="mx-4 my-4 p-2 rounded-xl bg-amber-50 overflow-y-auto max-h-[calc(100vh-10rem)]">
+        <div 
+          className="mx-4 my-4 p-2 rounded-xl bg-amber-50 dark:bg-gray-600 overflow-y-auto max-h-[calc(100vh-10rem)]">
           {/* Item Home */}
           <div
-            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
+            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
             onClick={() => navigateTo("/")}
           >
-            <i className="bi bi-house-door text-amber-500 text-lg mr-5"></i>
-            <span className="text-gray-800">Home</span>
+            <i className="bi bi-house-door text-lg mr-5"></i>
+            <span>Home</span>
           </div>
 
           {/* Item Animais */}
           <div
-            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
+            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
             onClick={() => navigateTo("/animais")}
           >
-            <i className="bi bi-piggy-bank text-amber-500 text-lg mr-5"></i>
-            <span className="text-gray-800">Animais</span>
+            <i className="bi bi-piggy-bank text-lg mr-5"></i>
+            <span>Animais</span>
           </div>
 
           {/* Item Medicação com Submenu */}
           <div
-            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
+            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
             onClick={() => toggleSubmenu("medicacao")}
           >
-            <i className="bi bi-capsule text-amber-500 text-lg mr-5"></i>
-            <span className="text-gray-800">Medicação</span>
+            <i className="bi bi-capsule text-lg mr-5"></i>
+            <span>Medicação</span>
             <i
-              className={`bi bi-chevron-down ml-auto transition-transform duration-300 ${
+              className={`bi bi-chevron-down ml-auto text-gray-600 dark:text-gray-300 transition-transform duration-300 ${
                 openSubmenus.medicacao ? "rotate-180" : ""
               }`}
             ></i>
@@ -166,50 +158,50 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             }`}
           >
             <div
-              className="flex items-center p-2 rounded hover:bg-amber-100 cursor-pointer transition-colors duration-200"
+              className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
               onClick={() => navigateTo("/dashboard/medicacao/efetuar")}
             >
-              <i className="bi bi-dot text-amber-500"></i>
-              <span className="ml-2 text-gray-700 text-sm">
+              <i className="bi bi-dot"></i>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
                 Efetuar Medicação
               </span>
             </div>
             <div
-              className="flex items-center p-2 rounded hover:bg-amber-100 cursor-pointer transition-colors duration-200"
+              className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
               onClick={() => navigateTo("/dashboard/medicacao/historico")}
             >
-              <i className="bi bi-dot text-amber-500"></i>
-              <span className="ml-2 text-gray-700 text-sm">Histórico</span>
+              <i className="bi bi-dot"></i>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">Histórico</span>
             </div>
           </div>
 
           {/* Item Vacinação */}
           <div
-            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
+            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
             onClick={() => navigateTo("/vacinacao")}
           >
-            <i className="bi bi-shield-plus text-amber-500 text-lg mr-5"></i>
-            <span className="text-gray-800">Vacinação</span>
+            <i className="bi bi-shield-plus text-lg mr-5"></i>
+            <span>Vacinação</span>
           </div>
 
           {/* Item Pessoas */}
           <div
-            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
+            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
             onClick={() => navigateTo("/pessoas")}
           >
-            <i className="bi bi-people text-amber-500 text-lg mr-5"></i>
-            <span className="text-gray-800">Pessoas</span>
+            <i className="bi bi-people text-lg mr-5"></i>
+            <span>Pessoas</span>
           </div>
 
           {/* Item Produtos com Submenu */}
           <div
-            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
+            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
             onClick={() => toggleSubmenu("produtos")}
           >
-            <i className="bi bi-plus-circle text-amber-500 text-lg mr-5"></i>
-            <span className="text-gray-800">Produtos</span>
+            <i className="bi bi-plus-circle text-lg mr-5"></i>
+            <span>Produtos</span>
             <i
-              className={`bi bi-chevron-down ml-auto transition-transform duration-300 ${
+              className={`bi bi-chevron-down ml-auto text-gray-600 dark:text-gray-300 transition-transform duration-300 ${
                 openSubmenus.produtos ? "rotate-180" : ""
               }`}
             ></i>
@@ -224,21 +216,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             }`}
           >
             <div
-              className="flex items-center p-2 rounded hover:bg-amber-100 cursor-pointer transition-colors duration-200"
+              className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
               onClick={() => navigateTo("/dashboard/produtos/cadastro")}
             >
-              <i className="bi bi-dot text-amber-500"></i>
-              <span className="ml-2 text-gray-700 text-sm">
+              <i className="bi bi-dot"></i>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
                 Gerenciar Produtos
               </span>
             </div>
 
             <div
-              className="flex items-center p-2 rounded hover:bg-amber-100 cursor-pointer transition-colors duration-200"
+              className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
               onClick={() => navigateTo("/dashboard/produtos/acerto")}
             >
-              <i className="bi bi-dot text-amber-500"></i>
-              <span className="ml-2 text-gray-700 text-sm">
+              <i className="bi bi-dot"></i>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
                 Efetuar Acerto de Estoque
               </span>
             </div>
@@ -246,21 +238,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
           {/* Item Estoque */}
           <div
-            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
+            className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
             onClick={() => navigateTo("/estoque")}
           >
-            <i className="bi bi-box text-amber-500 text-lg mr-5"></i>
-            <span className="text-gray-800">Estoque</span>
+            <i className="bi bi-box text-lg mr-5"></i>
+            <span>Estoque</span>
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-200 cursor-pointer">
+        <div className="absolute bottom-0 left-0 w-full p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 cursor-pointer">
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center w-full px-4 py-3 rounded-md bg-red-50 hover:bg-red-100 transition-colors duration-200"
+            className="flex items-center justify-center w-full px-4 py-3 rounded-md bg-red-50 dark:bg-red-700 dark:bg-opacity-20 hover:bg-red-100 dark:hover:bg-red-600 dark:hover:bg-opacity-30 transition-colors duration-200"
           >
-            <i className="bi bi-box-arrow-right text-red-500 text-lg mr-3"></i>
-            <span className="text-red-600 font-medium">Logout</span>
+            <i className="bi bi-box-arrow-right text-red-500 dark:text-red-400 text-lg mr-3"></i>
+            <span className="text-red-600 dark:text-red-300 font-medium">Logout</span>
           </button>
         </div>
       </aside>

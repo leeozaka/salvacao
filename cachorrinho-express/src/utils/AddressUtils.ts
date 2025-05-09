@@ -16,8 +16,7 @@ export default class AddressUtils {
    * AddressUtils.isValidPostalCode("123")
    */
   static isValidPostalCode(postalCode: string): boolean {
-    if (!postalCode?.trim()) 
-      throw new Error('Postal code cannot be empty or null');
+    if (!postalCode?.trim()) throw new Error('Postal code cannot be empty or null');
 
     const cleanPostalCode = this.sanitizePostalCode(postalCode);
 

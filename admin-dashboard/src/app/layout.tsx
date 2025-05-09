@@ -1,3 +1,4 @@
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
 export const metadata = {
@@ -11,15 +12,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
-        {/* Bootstrap Icons CSS */}
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          enableSystem={true}
+          defaultTheme="system"
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
