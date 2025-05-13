@@ -10,12 +10,15 @@ interface LoginResponse {
 }
 
 interface RegisterCredentials {
-  name: string;
+  nome: string;
   email: string;
-  password: string;
-  telephone: string;
-  cpf: string;
-  birthday: string;
+  senha: string;
+  telefone: string;
+  documentoIdentidade: string;
+  tipoDocumento: string;
+  dataNascimento: string;
+  endereco: string;
+  tipoUsuario: string;
 }
 
 interface RegisterResponse {

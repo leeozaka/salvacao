@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secret';
-import { UserService } from 'services/UserService';
+import { PessoaUsuarioService } from 'services/PessoaUsuarioService';
 import { EntityAttribute, EntityType } from 'enums/ErrorTypes';
 import JwtPayload from 'interfaces/JwtPayloadInterface';
 
@@ -10,7 +10,7 @@ import JwtPayload from 'interfaces/JwtPayloadInterface';
  * Validates JWT token and attaches user to request
  */
 export const authenticate =
-  (userService: UserService) =>
+  (userService: PessoaUsuarioService) =>
   async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const authHeader = req.headers.authorization;
@@ -54,7 +54,7 @@ export const authenticate =
         });
       }
 
-      const user = await userService.findOne(decoded.userId);
+      const user = await userService.findOne(Number(decoded.userId));
 
       if (!user) {
         return res.status(401).json({

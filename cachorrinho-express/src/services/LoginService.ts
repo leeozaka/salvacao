@@ -1,37 +1,54 @@
-import { compareSync } from 'bcrypt';
+import { compare } from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { prismaClient } from '../index';
 import { JWT_SECRET } from '../config/secret';
 import { LoginRequest, LoginResponse } from '../interfaces/LoginInterface';
+import { UsuarioRepository } from '../repositories/UsuarioRepository';
 
 export class LoginService {
+  constructor(private readonly usuarioRepository: UsuarioRepository) {}
+
   /**
    * Authenticates a user with email and password
-   * @param loginData Login credentials
-   * @returns Promise<LoginResponse>
+   * @param loginData Login credentials (email, password)
+   * @returns Promise<LoginResponse> Contains JWT token and expiry
+   * @throws {Error} If authentication fails (invalid credentials, user not found, etc.)
    */
   async authenticate(loginData: LoginRequest): Promise<LoginResponse> {
+    if (!loginData.email || !loginData.password) {
+        throw new Error('Email and password are required.');
+    }
+
     try {
-      const user = await prismaClient.user.findUnique({
-        where: { email: loginData.email },
-      });
+      const userWithPassword = await this.usuarioRepository.findByEmailForAuth(loginData.email);
 
-      if (!user) {
+      if (!userWithPassword || !userWithPassword.senha) {
         throw new Error('Invalid credentials');
       }
 
-      if (!this.validateCredentials(loginData.password, user.password)) {
+      const isPasswordValid = await this.validateCredentials(
+          loginData.password, 
+          userWithPassword.senha
+      );
+
+      if (!isPasswordValid) {
         throw new Error('Invalid credentials');
       }
 
-      const token = this.generateToken(user.id);
+      const token = this.generateToken(userWithPassword.id.toString());
+
+      const expiresIn = 24 * 60 * 60 * 1000;
+      const expiryDate = new Date(Date.now() + expiresIn);
 
       return {
-        expires: new Date(),
         token,
+        expires: expiryDate,
       };
     } catch (error) {
-      throw error instanceof Error ? error : new Error('Authentication failed');
+        console.error(`Authentication failed for email ${loginData.email}:`, error);
+         if (error instanceof Error && error.message === 'Invalid credentials') {
+             throw error;
+         }
+        throw new Error('Authentication failed due to an internal error.');
     }
   }
 
@@ -62,8 +79,8 @@ export class LoginService {
   /**
    * Validates user password against stored hash
    */
-  private validateCredentials(password: string, hash: string): boolean {
-    return compareSync(password, hash);
+  private async validateCredentials(password: string, hash: string): Promise<boolean> {
+    return compare(password, hash);
   }
 
   /**
