@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { UserService } from 'services/UserService';
+import { PessoaUsuarioService } from 'services/PessoaUsuarioService';
 
 /**
  * Controller handling HTTP requests for User operations
  * Manages user-related endpoints and coordinates with UserService
  */
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class PessoaUsuarioController {
+  constructor(private readonly userService: PessoaUsuarioService) {}
 
   /**
    * Creates a new user
@@ -43,7 +43,7 @@ export class UserController {
         return;
       }
 
-      const user = await this.userService.findOne(id as string);
+      const user = await this.userService.findOne(Number(id));
       res.status(StatusCodes.OK).json(user);
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

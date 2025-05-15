@@ -1,17 +1,17 @@
 import { LoginService } from './services/LoginService';
 import { PrismaClient } from '@prisma/client';
-import { UserRepository } from 'repositories/UserRepository';
-import { UserService } from 'services/UserService';
-import { UserController } from 'controllers/UserController';
+import { UsuarioRepository } from 'repositories/UsuarioRepository';
+import { PessoaUsuarioService } from 'services/PessoaUsuarioService';
+import { PessoaUsuarioController } from 'controllers/UserController';
 import { LoginController } from 'controllers/LoginController';
 import { authenticate } from 'middlewares/auth';
 
 export class Container {
   private static prisma: PrismaClient;
 
-  private static userRepository: UserRepository;
-  private static userService: UserService;
-  private static userController: UserController;
+  private static pessoaUsuarioRepository: UsuarioRepository;
+  private static pessoaUsuarioService: PessoaUsuarioService;
+  private static pessoaUsuarioController: PessoaUsuarioController;
 
   private static loginController: LoginController;
   private static loginService: LoginService;
@@ -21,19 +21,19 @@ export class Container {
   static init() {
     this.prisma = new PrismaClient();
 
-    this.userRepository = new UserRepository(this.prisma);
-    this.userService = new UserService(this.userRepository);
-    this.userController = new UserController(this.userService);
+    this.pessoaUsuarioRepository = new UsuarioRepository(this.prisma);
+    this.pessoaUsuarioService = new PessoaUsuarioService(this.pessoaUsuarioRepository);
+    this.pessoaUsuarioController = new PessoaUsuarioController(this.pessoaUsuarioService);
 
-    this.loginService = new LoginService();
+    this.loginService = new LoginService(this.pessoaUsuarioRepository);
     this.loginController = new LoginController(this.loginService);
 
-    this.authMiddleware = authenticate(this.userService);
+    this.authMiddleware = authenticate(this.pessoaUsuarioService);
   }
 
-  static getUserController(): UserController {
-    if (!this.userController) this.init();
-    return this.userController;
+  static getPessoaUsuarioController(): PessoaUsuarioController {
+    if (!this.pessoaUsuarioController) this.init();
+    return this.pessoaUsuarioController;
   }
 
   static getLoginController(): LoginController {

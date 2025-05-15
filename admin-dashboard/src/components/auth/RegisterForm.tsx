@@ -169,12 +169,15 @@ export default function RegisterForm({
       const birthdayDate = new Date(`${formData.birthday}T00:00:00Z`);
 
       const result = await registerUser({
-        name: formData.name,
+        nome: formData.name,
         email: formData.email,
-        password: formData.password,
-        telephone: formData.telephone.replace(/\D/g, ""),
-        cpf: formData.cpf.replace(/\D/g, ""),
-        birthday: birthdayDate.toISOString(),
+        senha: formData.password,
+        telefone: formData.telephone.replace(/\D/g, ""),
+        documentoIdentidade: formData.cpf.replace(/\D/g, ""),
+        tipoDocumento: 'CPF',
+        dataNascimento: birthdayDate.toISOString(),
+        tipoUsuario: 'USER',
+        endereco: '',
       });
 
       if (result.success) {

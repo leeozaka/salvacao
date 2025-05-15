@@ -1,4 +1,4 @@
-import { User } from 'dtos/UserDTO';
+import { Usuario } from '@prisma/client';
 
 export class UserUtils {
   /**
@@ -87,14 +87,14 @@ export class UserUtils {
     return passwordRegex.test(password);
   }
 
-  static validateUserInfo(user: User): boolean {
-    if (!user.password) return false;
+  // static validateUserInfo(user: Usuario): boolean {
+  //   if (!user.senhaHash) return false;
 
-    return (
-      this.isValidCPF(user.cpf) &&
-      this.isValidEmail(user.email) &&
-      this.isValidPhone(user.telephone) &&
-      this.isValidPassword(user.password)
-    );
-  }
+  //   return (
+  //     this.isValidCPF(user.) &&
+  //     this.isValidEmail(user.idPessoa.email) &&
+  //     this.isValidPhone(user.idPessoa.telefone) &&
+  //     this.isValidPassword(user.senhaHash)
+  //   );
+  // }
 }

@@ -8,81 +8,664 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
+enum TipoDocumento {
+  CPF
+  RG
+}
+
+enum TipoUsuario {
   ADMIN
   USER
-  PET
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String   @db.VarChar(100)
-  email     String   @unique @db.VarChar(50)
-  telephone String   @db.VarChar(20)
-  birthday  DateTime @db.Date
-  password  String   @db.VarChar(255)
-  cpf       String   @unique @db.Char(11)
-
-  address Address[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isActive  Boolean  @default(true)
-  isDeleted Boolean  @default(false)
-
-  role Role @default(USER)
+enum SexoAnimal {
+  MACHO
+  FEMEA
+  DESCONHECIDO
 }
 
-model Address {
-  id String @id @default(uuid())
-
-  cep           String  @db.Char(8)
-  street        String  @db.VarChar(100)
-  number        Int     @db.Integer
-  neighbourhood String  @db.VarChar(100)
-  city          String  @db.VarChar(100)
-  uf            String  @db.Char(2)
-  address2      String? @db.VarChar(100)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isActive  Boolean  @default(true)
-  isDeleted Boolean  @default(false)
-
-  user_id String
-  user    User   @relation(fields: [user_id], references: [id])
+enum PorteAnimal {
+  MINI
+  PEQUENO
+  MEDIO
+  GRANDE
+  GIGANTE
 }
 
-model ProductType {
-  id          String    @id @default(uuid())
-  description String    @db.VarChar(50)
-  Product     Product[]
+enum StatusAnimal {
+  RESGATADO
+  EM_TRATAMENTO
+  DISPONIVEL_ADOCAO
+  EM_LAR_TEMPORARIO
+  ADOTADO
+  FALECIDO
+  EM_OBSERVACAO
+  PERDIDO
+  DEVOLVIDO
 }
 
-model MeasureUnit {
-  id          String    @id @default(uuid())
-  description String    @db.VarChar(50)
-  Product     Product[]
+enum StatusAdocao {
+  SOLICITADA
+  EM_ANALISE
+  APROVADA
+  REJEITADA
+  CANCELADA
+  CONCLUIDA
+  ACOMPANHAMENTO
+  DEVOLVIDO
 }
 
-model Product {
-  id          String @id @default(uuid())
-  name        String @db.VarChar(100)
-  description String @db.Text
-  price       Float
-  stock       Int
-  image       String @db.VarChar(255)
+enum TipoMoradia {
+  CASA_COM_QUINTAL_TOTALMENTE_MURADO
+  CASA_COM_QUINTAL_PARCIALMENTE_MURADO
+  CASA_SEM_QUINTAL
+  APARTAMENTO_COM_TELA_PROTECAO
+  APARTAMENTO_SEM_TELA_PROTECAO
+  CHACARA
+  SITIO
+  FAZENDA
+  COMUNIDADE
+  OUTRO
+}
 
-  productType_id String
-  productType    ProductType @relation(fields: [productType_id], references: [id])
+enum StatusAgendamento {
+  AGENDADO
+  CONFIRMADO
+  REALIZADO
+  CANCELADO_PELO_USUARIO
+  CANCELADO_PELA_ONG
+  REAGENDADO
+  NAO_COMPARECEU
+  EM_ANDAMENTO
+}
 
-  measureUnit_id String
-  measureUnit    MeasureUnit @relation(fields: [measureUnit_id], references: [id])
+enum TipoCompromisso {
+  CONSULTA_VETERINARIA_ROTINA
+  CONSULTA_VETERINARIA_EMERGENCIA
+  VACINACAO
+  VERMIFUGACAO
+  CIRURGIA_CASTRACAO
+  CIRURGIA_GERAL
+  EXAME_LABORATORIAL
+  EXAME_IMAGEM
+  BANHO_E_TOSA
+  ENTREVISTA_ADOCAO_ADOTANTE
+  VISITA_PRE_ADOCAO_MORADIA
+  VISITA_ACOMPANHAMENTO_POS_ADOCAO
+  TRANSPORTE_ANIMAL
+  EVENTO_FEIRA_ADOCAO
+  TREINAMENTO_COMPORTAMENTAL
+  SESSAO_FISIOTERAPIA
+  OUTRO
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isActive  Boolean  @default(true)
-  isDeleted Boolean  @default(false)
+enum TipoDoacao {
+  MONETARIA_DINHEIRO
+  MONETARIA_PIX
+  MONETARIA_CARTAO_CREDITO
+  MONETARIA_BOLETO
+  PRODUTO_ALIMENTO
+  PRODUTO_MEDICAMENTO
+  PRODUTO_HIGIENE_LIMPEZA
+  PRODUTO_ACESSORIO_BRINQUEDO
+  PRODUTO_MATERIAL_CONSTRUCAO_REFORMA
+  SERVICO_VETERINARIO
+  SERVICO_TRANSPORTE
+  SERVICO_LAR_TEMPORARIO
+  SERVICO_TREINAMENTO
+  SERVICO_DIVULGACAO_MARKETING
+  SERVICO_FOTOGRAFIA_VIDEO
+  OUTRO
+}
 
-  @@index([name, price])
+enum TipoInteracao {
+  TELEFONEMA_REALIZADO
+  TELEFONEMA_RECEBIDO
+  MENSAGEM_TEXTO_WHATSAPP_ENVIADA
+  MENSAGEM_TEXTO_WHATSAPP_RECEBIDA
+  EMAIL_ENVIADO
+  EMAIL_RECEBIDO
+  VISITA_PRESENCIAL_REALIZADA_NA_ONG
+  VISITA_PRESENCIAL_REALIZADA_EXTERNA
+  VIDEO_CHAMADA_REALIZADA
+  CONTATO_REDES_SOCIAIS
+  RELATORIO_ESCRITO
+  OUTRO
+}
+
+enum ViaAdministracaoMedicamento {
+  ORAL_COMPRIMIDO
+  ORAL_LIQUIDO
+  ORAL_PASTA
+  INTRAMUSCULAR
+  SUBCUTANEA
+  INTRAVENOSA
+  TOPICA_PELE
+  TOPICA_OCULAR
+  TOPICA_AURICULAR
+  INALATORIA
+  RETAL
+  OUTRA
+}
+
+model Pessoa {
+  id                  Int            @id @default(autoincrement())
+  nome                String         @db.VarChar(255)
+  documentoIdentidade String?        @unique @map("documento_identidade") @db.VarChar(50)
+  tipoDocumento       TipoDocumento? @map("tipo_documento")
+  email               String?        @unique @db.VarChar(255)
+  telefone            String?        @db.VarChar(30)
+  endereco            String?        @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  usuario            Usuario?
+  adotante           Adotante?
+  laresTemporarios   LarTemporario[] @relation("PessoaResponsavelLarTemporario")
+  doacoes            Doacao[]        @relation("DoadorDoacao")
+  despesasFornecedor Despesa[]       @relation("FornecedorDespesa")
+
+  @@map("pessoa")
+}
+
+model Usuario {
+  id          Int         @id @default(autoincrement())
+  idPessoa    Int         @unique @map("id_pessoa")
+  tipoUsuario TipoUsuario @map("tipo_usuario")
+  senha       String      @map("senha") @db.VarChar(255)
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  pessoa                    Pessoa                     @relation(fields: [idPessoa], references: [id])
+  historicosAnimal          HistoricoAnimal[]          @relation("UsuarioResponsavelHistorico")
+  adocoes                   Adocao[]                   @relation("UsuarioResponsavelAdocao")
+  receitasVeterinario       Receita[]                  @relation("VeterinarioReceita")
+  medicamentosAdministrados AdministracaoMedicamento[] @relation("UsuarioAdministradorMedicamento")
+  vacinacoesRegistradas     RegistroVacinacao[]        @relation("ProfissionalResponsavelVacina")
+  agendamentosResponsavel   AgendamentoCompromisso[]   @relation("UsuarioResponsavelAgendamento")
+  agendamentosProfissional  AgendamentoCompromisso[]   @relation("UsuarioProfissionalAgendamento")
+  doacoesRecebidas          Doacao[]                   @relation("RecebedorDoacao")
+  despesasRegistradas       Despesa[]                  @relation("UsuarioRegistrouDespesa")
+  interacoesAcompanhamento  InteracaoAcompanhamento[]  @relation("UsuarioResponsavelInteracao")
+
+  @@map("usuario")
+}
+
+model Adotante {
+  id                         Int          @id @default(autoincrement())
+  idPessoa                   Int          @unique @map("id_pessoa") /// Each adopter must be a person, and a person can only be one adopter profile
+  motivacaoAdocao            String?      @map("motivacao_adocao") @db.Text
+  experienciaAnteriorAnimais String?      @map("experiencia_anterior_animais") @db.Text
+  tipoMoradia                TipoMoradia? @map("tipo_moradia") /// e.g., 'Casa com quintal', 'Apartamento'
+  permiteAnimaisMoradia      Boolean?     @map("permite_animais_moradia")
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  pessoa  Pessoa   @relation(fields: [idPessoa], references: [id])
+  adocoes Adocao[]
+
+  @@map("adotante")
+}
+
+model Animal {
+  id                      Int          @id @default(autoincrement())
+  nome                    String?      @db.VarChar(255)
+  raca                    String?      @default("SRD") @db.VarChar(100)
+  dataNascimentoEstimada  DateTime?    @map("data_nascimento_estimada") @db.Date
+  sexo                    SexoAnimal?
+  cor                     String?      @db.VarChar(100)
+  pelagem                 String?      @db.VarChar(100)
+  porte                   PorteAnimal?
+  microchipId             String?      @unique @map("microchip_id") @db.VarChar(50)
+  esterilizado            Boolean?     @default(false)
+  dataEsterilizacao       DateTime?    @map("data_esterilizacao") @db.Date
+  statusAnimal            StatusAnimal @default(RESGATADO) @map("status_animal")
+  dataResgate             DateTime?    @map("data_resgate") @db.Date
+  localResgate            String?      @map("local_resgate") @db.Text
+  descricaoComportamental String?      @map("descricao_comportamental") @db.Text
+  observacoesSaudeEntrada String?      @map("observacoes_saude_entrada") @db.Text
+  fotoPrincipalUrl        String?      @map("foto_principal_url") @db.VarChar(255)
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6) // Pode representar animais que já se foram 
+
+  historicos                HistoricoAnimal[]
+  adocao                    Adocao?
+  receitas                  Receita[]
+  medicamentosAdministrados AdministracaoMedicamento[]
+  vacinacoes                RegistroVacinacao[]
+  agendamentos              AgendamentoCompromisso[]
+  larTemporario             LarTemporario?
+  despesasAssociadas        Despesa[]
+  fotos                     FotoAnimal[]
+  interacoesAcompanhamento  InteracaoAcompanhamento[]
+
+  @@map("animal")
+}
+
+model HistoricoAnimal {
+  id                   Int      @id @default(autoincrement())
+  idAnimal             Int      @map("id_animal")
+  dataEvento           DateTime @default(now()) @map("data_evento") @db.Timestamp(6)
+  tipoEvento           String   @map("tipo_evento") @db.VarChar(100)
+  descricaoDetalhada   String   @map("descricao_detalhada") @db.Text
+  idUsuarioResponsavel Int?     @map("id_usuario_responsavel")
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  animal             Animal   @relation(fields: [idAnimal], references: [id])
+  usuarioResponsavel Usuario? @relation("UsuarioResponsavelHistorico", fields: [idUsuarioResponsavel], references: [id])
+
+  @@map("historico_animal")
+}
+
+model Adocao {
+  id                    Int          @id @default(autoincrement())
+  idAdotante            Int          @map("id_adotante")
+  idAnimal              Int          @unique @map("id_animal")
+  dataSolicitacaoAdocao DateTime     @map("data_solicitacao_adocao") @db.Date
+  dataEfetivacaoAdocao  DateTime?    @map("data_efetivacao_adocao") @db.Date
+  statusAdocao          StatusAdocao @default(SOLICITADA) @map("status_adocao")
+  observacoesProcesso   String?      @map("observacoes_processo") @db.Text
+  idUsuarioResponsavel  Int?         @map("id_usuario_responsavel")
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  adotante                 Adotante                  @relation(fields: [idAdotante], references: [id])
+  animal                   Animal                    @relation(fields: [idAnimal], references: [id])
+  usuarioResponsavel       Usuario?                  @relation("UsuarioResponsavelAdocao", fields: [idUsuarioResponsavel], references: [id])
+  interacoesAcompanhamento InteracaoAcompanhamento[]
+
+  @@map("adocao")
+}
+
+model TipoProduto {
+  id        Int     @id @default(autoincrement())
+  nome      String  @unique @db.VarChar(255)
+  descricao String? @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  produtos Produto[]
+
+  @@map("tipo_produto")
+}
+
+model UnidadeMedida {
+  id    Int    @id @default(autoincrement())
+  nome  String @unique @db.VarChar(100)
+  sigla String @unique @db.VarChar(10)
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  produtosPadrao Produto[] @relation("UnidadeMedidaPadrao")
+  estoques       Estoque[] @relation("UnidadeMedidaEstoque")
+  doacoesProduto Doacao[]  @relation("UnidadeMedidaDoacao")
+
+  @@map("unidade_medida")
+}
+
+model Produto {
+  id                    Int     @id @default(autoincrement())
+  nome                  String  @db.VarChar(255)
+  idTipoProduto         Int     @map("id_tipo_produto")
+  idUnidadeMedidaPadrao Int     @map("id_unidade_medida_padrao")
+  descricao             String? @db.Text
+  codigoBarras          String? @unique @map("codigo_barras") @db.VarChar(100)
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  tipoProduto               TipoProduto                @relation(fields: [idTipoProduto], references: [id])
+  unidadeMedidaPadrao       UnidadeMedida              @relation("UnidadeMedidaPadrao", fields: [idUnidadeMedidaPadrao], references: [id])
+  medicamentoDetalhe        MedicamentoDetalhe?
+  vacinaDetalhe             VacinaDetalhe?
+  estoques                  Estoque[]
+  receitaItens              ReceitaItem[]
+  administracoesMedicamento AdministracaoMedicamento[]
+  registrosVacinacao        RegistroVacinacao[]
+  agendamentosCompromisso   AgendamentoCompromisso[]
+  doacoes                   Doacao[]
+
+  @@unique([nome, idTipoProduto])
+  @@map("produto")
+}
+
+model MedicamentoDetalhe {
+  idProduto        Int      @id @map("id_produto")
+  dosagem          String?  @db.VarChar(100)
+  principioAtivo   String?  @map("principio_ativo") @db.VarChar(255)
+  fabricante       String?  @db.VarChar(255)
+  necessitaReceita Boolean? @default(true) @map("necessita_receita")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  produto Produto @relation(fields: [idProduto], references: [id], onDelete: Cascade)
+
+  @@map("medicamento_detalhe")
+}
+
+model VacinaDetalhe {
+  idProduto               Int      @id @map("id_produto")
+  tipoVacina              String   @map("tipo_vacina") @db.VarChar(100)
+  fabricante              String?  @db.VarChar(255)
+  numeroDosesSerie        Int?     @default(1) @map("numero_doses_serie")
+  intervaloEntreDosesDias Int?     @map("intervalo_entre_doses_dias")
+  createdAt               DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt               DateTime @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  produto Produto @relation(fields: [idProduto], references: [id], onDelete: Cascade)
+
+  @@map("vacina_detalhe")
+}
+
+model Estoque {
+  id                 Int       @id @default(autoincrement())
+  idProduto          Int       @map("id_produto")
+  quantidade         Decimal   @db.Decimal(10, 2)
+  idUnidadeMedida    Int       @map("id_unidade_medida")
+  lote               String?   @db.VarChar(100)
+  dataValidade       DateTime? @map("data_validade") @db.Date
+  dataEntradaEstoque DateTime  @default(now()) @map("data_entrada_estoque") @db.Date
+  precoCusto         Decimal?  @map("preco_custo") @db.Decimal(10, 2)
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  produto                   Produto                    @relation(fields: [idProduto], references: [id])
+  unidadeMedida             UnidadeMedida              @relation("UnidadeMedidaEstoque", fields: [idUnidadeMedida], references: [id])
+  administracoesMedicamento AdministracaoMedicamento[]
+  registrosVacinacao        RegistroVacinacao[]
+  doacoes                   Doacao[]
+
+  @@map("estoque")
+}
+
+model Receita {
+  id                   Int       @id @default(autoincrement())
+  idAnimal             Int       @map("id_animal")
+  idVeterinarioUsuario Int       @map("id_veterinario_usuario")
+  dataEmissao          DateTime  @default(now()) @map("data_emissao") @db.Date
+  instrucoesAdicionais String?   @map("instrucoes_adicionais") @db.Text
+  validadeReceita      DateTime? @map("validade_receita") @db.Date
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  animal             Animal        @relation(fields: [idAnimal], references: [id])
+  veterinarioUsuario Usuario       @relation("VeterinarioReceita", fields: [idVeterinarioUsuario], references: [id]) /// Assuming vets are users
+  itens              ReceitaItem[]
+
+  @@map("receita")
+}
+
+model Posologia {
+  id                 Int    @id @default(autoincrement())
+  descricaoPosologia String @unique @map("descricao_posologia") @db.VarChar(255)
+  dose               String @db.VarChar(100)
+  frequenciaHoras    Int?   @map("frequencia_horas")
+  duracaoDias        Int?   @map("duracao_dias")
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  receitaItens ReceitaItem[]
+
+  @@map("posologia")
+}
+
+model ReceitaItem {
+  id                             Int     @id @default(autoincrement())
+  idReceita                      Int     @map("id_receita")
+  idMedicamentoProduto           Int     @map("id_medicamento_produto")
+  idPosologia                    Int?    @map("id_posologia")
+  posologiaCustomizadaInstrucoes String? @map("posologia_customizada_instrucoes") @db.Text
+  quantidadePrescrita            String? @map("quantidade_prescrita") @db.VarChar(50)
+  observacoes                    String? @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  receita                   Receita                    @relation(fields: [idReceita], references: [id])
+  medicamentoProduto        Produto                    @relation(fields: [idMedicamentoProduto], references: [id]) /// Assuming it's a medicine product
+  posologia                 Posologia?                 @relation(fields: [idPosologia], references: [id])
+  administracoesMedicamento AdministracaoMedicamento[]
+
+  @@map("receita_item")
+}
+
+model AdministracaoMedicamento {
+  id                     Int                          @id @default(autoincrement())
+  idAnimal               Int                          @map("id_animal")
+  idMedicamentoProduto   Int                          @map("id_medicamento_produto")
+  idReceitaItem          Int?                         @map("id_receita_item")
+  dataAdministracao      DateTime                     @default(now()) @map("data_administracao") @db.Timestamp(6)
+  doseAdministrada       String                       @map("dose_administrada") @db.VarChar(100)
+  viaAdministracao       ViaAdministracaoMedicamento? @map("via_administracao")
+  idUsuarioAdministrador Int                          @map("id_usuario_administrador")
+  idEstoqueUtilizado     Int?                         @map("id_estoque_utilizado")
+  observacoes            String?                      @db.Text
+  isActive               Boolean                      @default(true) @map("is_active")
+  createdAt              DateTime                     @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt              DateTime                     @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt              DateTime?                    @map("deleted_at") @db.Timestamp(6)
+
+  animal               Animal       @relation(fields: [idAnimal], references: [id])
+  medicamentoProduto   Produto      @relation(fields: [idMedicamentoProduto], references: [id])
+  receitaItem          ReceitaItem? @relation(fields: [idReceitaItem], references: [id])
+  usuarioAdministrador Usuario      @relation("UsuarioAdministradorMedicamento", fields: [idUsuarioAdministrador], references: [id])
+  estoqueUtilizado     Estoque?     @relation(fields: [idEstoqueUtilizado], references: [id])
+
+  @@map("administracao_medicamento")
+}
+
+model RegistroVacinacao {
+  id                               Int       @id @default(autoincrement())
+  idAnimal                         Int       @map("id_animal")
+  idVacinaProduto                  Int       @map("id_vacina_produto")
+  idEstoqueUtilizado               Int?      @map("id_estoque_utilizado")
+  dataVacinacao                    DateTime  @default(now()) @map("data_vacinacao") @db.Date
+  doseAplicada                     String?   @map("dose_aplicada") @db.VarChar(50)
+  proximaDoseDataPrevista          DateTime? @map("proxima_dose_data_prevista") @db.Date
+  idProfissionalResponsavelUsuario Int       @map("id_profissional_responsavel_usuario")
+  localAplicacao                   String?   @map("local_aplicacao") @db.VarChar(100)
+  observacoes                      String?   @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  animal                         Animal   @relation(fields: [idAnimal], references: [id])
+  vacinaProduto                  Produto  @relation(fields: [idVacinaProduto], references: [id])
+  estoqueUtilizado               Estoque? @relation(fields: [idEstoqueUtilizado], references: [id])
+  profissionalResponsavelUsuario Usuario  @relation("ProfissionalResponsavelVacina", fields: [idProfissionalResponsavelUsuario], references: [id])
+
+  @@map("registro_vacinacao")
+}
+
+model AgendamentoCompromisso {
+  id                              Int               @id @default(autoincrement())
+  idAnimal                        Int               @map("id_animal")
+  tipoCompromisso                 TipoCompromisso   @map("tipo_compromisso")
+  idProdutoAssociado              Int?              @map("id_produto_associado")
+  dataHoraAgendada                DateTime          @map("data_hora_agendada") @db.Timestamp(6)
+  statusAgendamento               StatusAgendamento @default(AGENDADO) @map("status_agendamento")
+  idUsuarioResponsavelAgendamento Int?              @map("id_usuario_responsavel_agendamento")
+  idUsuarioProfissionalDesignado  Int?              @map("id_usuario_profissional_designado")
+  observacoes                     String?           @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  animal                        Animal   @relation(fields: [idAnimal], references: [id])
+  produtoAssociado              Produto? @relation(fields: [idProdutoAssociado], references: [id])
+  usuarioResponsavelAgendamento Usuario? @relation("UsuarioResponsavelAgendamento", fields: [idUsuarioResponsavelAgendamento], references: [id])
+  usuarioProfissionalDesignado  Usuario? @relation("UsuarioProfissionalAgendamento", fields: [idUsuarioProfissionalDesignado], references: [id])
+
+  @@map("agendamento_compromisso")
+}
+
+model LarTemporario {
+  id                  Int       @id @default(autoincrement())
+  idAnimal            Int       @unique @map("id_animal")
+  idPessoaResponsavel Int       @map("id_pessoa_responsavel")
+  dataInicio          DateTime  @map("data_inicio") @db.Date
+  dataFimPrevista     DateTime? @map("data_fim_prevista") @db.Date
+  dataFimReal         DateTime? @map("data_fim_real") @db.Date
+  condicoesAcordadas  String?   @map("condicoes_acordadas") @db.Text
+  observacoes         String?   @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  animal                   Animal                    @relation(fields: [idAnimal], references: [id])
+  pessoaResponsavel        Pessoa                    @relation("PessoaResponsavelLarTemporario", fields: [idPessoaResponsavel], references: [id])
+  interacoesAcompanhamento InteracaoAcompanhamento[]
+
+  @@map("lar_temporario")
+}
+
+model Doacao {
+  id                          Int        @id @default(autoincrement())
+  idPessoaDoador              Int?       @map("id_pessoa_doador")
+  nomeDoadorAnonimo           String?    @map("nome_doador_anonimo") @db.VarChar(255)
+  dataDoacao                  DateTime   @default(now()) @map("data_doacao") @db.Date
+  tipoDoacao                  TipoDoacao @map("tipo_doacao")
+  descricaoDoacao             String?    @map("descricao_doacao") @db.Text
+  valorMonetario              Decimal?   @map("valor_monetario") @db.Decimal(10, 2)
+  idProdutoDoado              Int?       @map("id_produto_doado")
+  idEstoqueDoado              Int?       @map("id_estoque_doado")
+  quantidadeProdutoDoado      Decimal?   @map("quantidade_produto_doado") @db.Decimal(10, 2)
+  idUnidadeMedidaProdutoDoado Int?       @map("id_unidade_medida_produto_doado")
+  idUsuarioRecebedor          Int        @map("id_usuario_recebedor")
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  pessoaDoador              Pessoa?        @relation("DoadorDoacao", fields: [idPessoaDoador], references: [id])
+  produtoDoado              Produto?       @relation(fields: [idProdutoDoado], references: [id])
+  estoqueDoado              Estoque?       @relation(fields: [idEstoqueDoado], references: [id])
+  unidadeMedidaProdutoDoado UnidadeMedida? @relation("UnidadeMedidaDoacao", fields: [idUnidadeMedidaProdutoDoado], references: [id])
+  usuarioRecebedor          Usuario        @relation("RecebedorDoacao", fields: [idUsuarioRecebedor], references: [id])
+
+  @@map("doacao")
+}
+
+model TipoDespesa {
+  id        Int     @id @default(autoincrement())
+  nome      String  @unique @db.VarChar(100)
+  descricao String? @db.Text
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  despesas Despesa[]
+
+  @@map("tipo_despesa")
+}
+
+model Despesa {
+  id                 Int      @id @default(autoincrement())
+  dataDespesa        DateTime @default(now()) @map("data_despesa") @db.Date
+  descricao          String   @db.Text
+  valor              Decimal  @db.Decimal(10, 2)
+  idTipoDespesa      Int      @map("id_tipo_despesa")
+  idAnimalAssociado  Int?     @map("id_animal_associado")
+  idFornecedorPessoa Int?     @map("id_fornecedor_pessoa")
+  comprovanteUrl     String?  @map("comprovante_url") @db.VarChar(255)
+  idUsuarioRegistrou Int      @map("id_usuario_registrou")
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  tipoDespesa      TipoDespesa @relation(fields: [idTipoDespesa], references: [id])
+  animalAssociado  Animal?     @relation(fields: [idAnimalAssociado], references: [id])
+  fornecedorPessoa Pessoa?     @relation("FornecedorDespesa", fields: [idFornecedorPessoa], references: [id])
+  usuarioRegistrou Usuario     @relation("UsuarioRegistrouDespesa", fields: [idUsuarioRegistrou], references: [id])
+
+  @@map("despesa")
+}
+
+model FotoAnimal {
+  id          Int      @id @default(autoincrement())
+  idAnimal    Int      @map("id_animal")
+  urlFoto     String   @map("url_foto") @db.VarChar(255)
+  legenda     String?  @db.Text
+  dataUpload  DateTime @default(now()) @map("data_upload") @db.Date
+  isPrincipal Boolean? @default(false) @map("is_principal")
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  animal Animal @relation(fields: [idAnimal], references: [id])
+
+  @@map("foto_animal")
+}
+
+model InteracaoAcompanhamento {
+  id                   Int           @id @default(autoincrement())
+  idAnimal             Int           @map("id_animal")
+  idAdocao             Int?          @map("id_adocao")
+  idLarTemporario      Int?          @map("id_lar_temporario")
+  dataInteracao        DateTime      @default(now()) @map("data_interacao") @db.Timestamp(6)
+  tipoInteracao        TipoInteracao @map("tipo_interacao")
+  resumoInteracao      String        @map("resumo_interacao") @db.Text
+  idUsuarioResponsavel Int           @map("id_usuario_responsavel")
+  isActive             Boolean       @default(true) @map("is_active")
+  createdAt            DateTime      @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt            DateTime      @updatedAt @map("updated_at") @db.Timestamp(6)
+  deletedAt            DateTime?     @map("deleted_at") @db.Timestamp(6)
+
+  animal             Animal         @relation(fields: [idAnimal], references: [id])
+  adocao             Adocao?        @relation(fields: [idAdocao], references: [id])
+  larTemporario      LarTemporario? @relation(fields: [idLarTemporario], references: [id])
+  usuarioResponsavel Usuario        @relation("UsuarioResponsavelInteracao", fields: [idUsuarioResponsavel], references: [id])
+
+  @@map("interacao_acompanhamento")
 }

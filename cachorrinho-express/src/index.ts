@@ -9,23 +9,35 @@ const app = express();
 const MAX_RETRIES = 10;
 const RETRY_DELAY = 5000;
 
+const allowedOrigins: (string | RegExp)[] = [
+  /^http:\/\/localhost(:[0-9]+)?$/,
+  /^http:\/\/127\.0\.0\.1(:[0-9]+)?$/,
+  'http://dashboard:3000',
+  /^http:\/\/nginx(:[0-9]+)?$/,
+  'https://localhost',
+  'https://127.0.0.1',
+];
+
 app.use(
   cors({
-    origin: [
-      'http://localhost',
-      'http://localhost:3000',
-      'http://localhost:80',
-      'http://127.0.0.1',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:80',
-      'http://dashboard:3000',
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-      'http://nginx',
-      'http://nginx:80',
-      'https://localhost',
-      'https://127.0.0.1',
-    ],
+    origin: function (requestOrigin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+      if (!requestOrigin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.some(pattern => {
+        if (typeof pattern === 'string') {
+          return pattern === requestOrigin;
+        } else if (pattern instanceof RegExp) {
+          return pattern.test(requestOrigin);
+        }
+        return false; 
+      })) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
