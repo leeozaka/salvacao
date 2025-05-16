@@ -128,195 +128,294 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg mx-4 relative z-10">
-      <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-        <h3 className="text-lg font-semibold text-primary-color dark:text-primary-color-dark">
-          {title}
+    <div className="bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow-lg w-full max-w-2xl overflow-hidden">
+      <div className="bg-[var(--color-menu-bg)] dark:bg-[var(--color-menu-bg-dark)] border-b border-[var(--color-primary-color)]/20 dark:border-[var(--color-primary-color-dark)]/20 px-6 py-4">
+        <h3 className="text-xl font-semibold text-[var(--color-primary-color)] dark:text-white">
+          {isEditMode ? (
+            <span className="flex items-center">
+              <i className="bi bi-pencil-square mr-2"></i> {title}
+            </span>
+          ) : (
+            <span className="flex items-center">
+              <i className="bi bi-plus-circle mr-2"></i> {title}
+            </span>
+          )}
         </h3>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="p-0">
         <div className="p-6">
           {formError && (
-            <div className="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-4 mb-4">
-              <p>{formError}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 mb-6 rounded-r-md animate-fadeIn">
+              <div className="flex items-center">
+                <i className="bi bi-exclamation-circle text-lg mr-3"></i>
+                <p>{formError}</p>
+              </div>
             </div>
           )}
 
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Nome:
-            </label>
-            <input
-              type="text"
-              name="nome"
-              className={`w-full px-3 py-2 border ${
-                formValidation.nome
-                  ? "border-red-500 dark:border-red-700"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white`}
-              placeholder="Nome do medicamento"
-              value={formData.nome || ""}
-              onChange={handleTextChange}
-              required
-            />
-            {formValidation.nome && (
-              <p className="text-red-500 text-xs mt-1">{formValidation.nome}</p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Código de Barras:
-            </label>
-            <input
-              type="text"
-              name="codigoBarras"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              placeholder="Código de barras (opcional)"
-              value={formData.codigoBarras || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Tipo de Produto:
-            </label>
-            <select
-              name="idTipoProduto"
-              className={`w-full px-3 py-2 border ${
-                formValidation.idTipoProduto
-                  ? "border-red-500 dark:border-red-700"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white`}
-              value={formData.idTipoProduto || 0}
-              onChange={handleNumberChange}
-              required
-            >
-              <option value={0}>Selecione um tipo</option>
-              {tiposProduto.map((tipo) => (
-                <option key={tipo.idtipoproduto} value={tipo.idtipoproduto}>
-                  {tipo.descricao}
-                </option>
-              ))}
-            </select>
-            {formValidation.idTipoProduto && (
-              <p className="text-red-500 text-xs mt-1">
-                {formValidation.idTipoProduto}
-              </p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Unidade de Medida:
-            </label>
-            <select
-              name="idUnidadeMedidaPadrao"
-              className={`w-full px-3 py-2 border ${
-                formValidation.idUnidadeMedidaPadrao
-                  ? "border-red-500 dark:border-red-700"
-                  : "border-gray-300 dark:border-gray-700"
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white`}
-              value={formData.idUnidadeMedidaPadrao || 0}
-              onChange={handleNumberChange}
-              required
-            >
-              <option value={0}>Selecione uma unidade</option>
-              {unidadesMedida.map((unidade) => (
-                <option
-                  key={unidade.idunidademedida}
-                  value={unidade.idunidademedida}
-                >
-                  {unidade.descricao}
-                </option>
-              ))}
-            </select>
-            {formValidation.idUnidadeMedidaPadrao && (
-              <p className="text-red-500 text-xs mt-1">
-                {formValidation.idUnidadeMedidaPadrao}
-              </p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Descrição:
-            </label>
-            <textarea
-              name="descricao"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              rows={2}
-              placeholder="Descrição do medicamento (opcional)"
-              value={formData.descricao || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Princípio Ativo:
-            </label>
-            <input
-              type="text"
-              name="principioAtivo"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              placeholder="Princípio ativo do medicamento"
-              value={formData.principioAtivo || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Dosagem:
-            </label>
-            <input
-              type="text"
-              name="dosagem"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              placeholder="Dosagem do medicamento"
-              value={formData.dosagem || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-semibold mb-2">
-              Fabricante:
-            </label>
-            <input
-              type="text"
-              name="fabricante"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              placeholder="Nome do fabricante"
-              value={formData.fabricante || ""}
-              onChange={handleTextChange}
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="flex items-center text-gray-700 dark:text-gray-300 text-sm font-semibold">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+            {/* Campo Nome */}
+            <div className="md:col-span-2">
+              <label
+                htmlFor="nome"
+                className={`block text-sm font-medium mb-1.5 ${
+                  formValidation.nome
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                }`}
+              >
+                Nome do Medicamento <span className="text-red-500">*</span>
+              </label>
               <input
-                type="checkbox"
-                name="necessitaReceita"
-                className="rounded text-amber-600 focus:ring-amber-500 h-4 w-4 mr-2 dark:bg-gray-700"
-                checked={formData.necessitaReceita || false}
-                onChange={handleCheckboxChange}
+                id="nome"
+                type="text"
+                name="nome"
+                className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-colors
+                ${
+                  formValidation.nome
+                    ? "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-900/20 focus:border-red-500 focus:ring-red-500/50 dark:focus:ring-red-500/30 text-red-900 dark:text-red-300"
+                    : "border-gray-300 dark:border-gray-600 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 dark:focus:border-[var(--color-primary-color-dark)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                }`}
+                placeholder="Nome completo do medicamento"
+                value={formData.nome || ""}
+                onChange={handleTextChange}
+                required
               />
-              Necessita Receita
-            </label>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
-              Marque esta opção se o medicamento exige prescrição médica
-            </p>
+              {formValidation.nome && (
+                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center">
+                  <i className="bi bi-exclamation-triangle-fill mr-1.5"></i>
+                  {formValidation.nome}
+                </p>
+              )}
+            </div>
+
+            {/* Código de Barras e Tipo de Produto */}
+            <div>
+              <label
+                htmlFor="codigoBarras"
+                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+              >
+                Código de Barras
+              </label>
+              <input
+                id="codigoBarras"
+                type="text"
+                name="codigoBarras"
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                placeholder="Código de barras (opcional)"
+                value={formData.codigoBarras || ""}
+                onChange={handleTextChange}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="idTipoProduto"
+                className={`block text-sm font-medium mb-1.5 ${
+                  formValidation.idTipoProduto
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                }`}
+              >
+                Tipo de Produto <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="idTipoProduto"
+                name="idTipoProduto"
+                className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white
+                ${
+                  formValidation.idTipoProduto
+                    ? "border-red-300 dark:border-red-800 focus:border-red-500 focus:ring-red-500/50 dark:focus:ring-red-500/30 dark:bg-red-900/20 text-red-900 dark:text-red-300"
+                    : "border-gray-300 dark:border-gray-600 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 dark:focus:border-[var(--color-primary-color-dark)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                }`}
+                value={formData.idTipoProduto || 0}
+                onChange={handleNumberChange}
+                required
+              >
+                <option value={0} disabled>
+                  Selecione um tipo
+                </option>
+                {tiposProduto.map((tipo) => (
+                  <option key={tipo.idtipoproduto} value={tipo.idtipoproduto}>
+                    {tipo.descricao}
+                  </option>
+                ))}
+              </select>
+              {formValidation.idTipoProduto && (
+                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center">
+                  <i className="bi bi-exclamation-triangle-fill mr-1.5"></i>
+                  {formValidation.idTipoProduto}
+                </p>
+              )}
+            </div>
+
+            {/* Unidade de Medida e Dosagem */}
+            <div>
+              <label
+                htmlFor="idUnidadeMedidaPadrao"
+                className={`block text-sm font-medium mb-1.5 ${
+                  formValidation.idUnidadeMedidaPadrao
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                }`}
+              >
+                Unidade de Medida <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="idUnidadeMedidaPadrao"
+                name="idUnidadeMedidaPadrao"
+                className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white
+                ${
+                  formValidation.idUnidadeMedidaPadrao
+                    ? "border-red-300 dark:border-red-800 focus:border-red-500 focus:ring-red-500/50 dark:focus:ring-red-500/30 dark:bg-red-900/20 text-red-900 dark:text-red-300"
+                    : "border-gray-300 dark:border-gray-600 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 dark:focus:border-[var(--color-primary-color-dark)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                }`}
+                value={formData.idUnidadeMedidaPadrao || 0}
+                onChange={handleNumberChange}
+                required
+              >
+                <option value={0} disabled>
+                  Selecione uma unidade
+                </option>
+                {unidadesMedida.map((unidade) => (
+                  <option
+                    key={unidade.idunidademedida}
+                    value={unidade.idunidademedida}
+                  >
+                    {unidade.descricao}
+                  </option>
+                ))}
+              </select>
+              {formValidation.idUnidadeMedidaPadrao && (
+                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center">
+                  <i className="bi bi-exclamation-triangle-fill mr-1.5"></i>
+                  {formValidation.idUnidadeMedidaPadrao}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="dosagem"
+                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+              >
+                Dosagem
+              </label>
+              <input
+                id="dosagem"
+                type="text"
+                name="dosagem"
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                placeholder="Ex: 500, 10, 250"
+                value={formData.dosagem || ""}
+                onChange={handleTextChange}
+              />
+            </div>
+
+            {/* Princípio Ativo e Fabricante */}
+            <div>
+              <label
+                htmlFor="principioAtivo"
+                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+              >
+                Princípio Ativo
+              </label>
+              <input
+                id="principioAtivo"
+                type="text"
+                name="principioAtivo"
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                placeholder="Ex: Paracetamol, Dipirona, etc."
+                value={formData.principioAtivo || ""}
+                onChange={handleTextChange}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="fabricante"
+                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+              >
+                Fabricante
+              </label>
+              <input
+                id="fabricante"
+                type="text"
+                name="fabricante"
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                placeholder="Nome do fabricante"
+                value={formData.fabricante || ""}
+                onChange={handleTextChange}
+              />
+            </div>
+
+            {/* Descrição */}
+            <div className="md:col-span-2">
+              <label
+                htmlFor="descricao"
+                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+              >
+                Descrição
+              </label>
+              <textarea
+                id="descricao"
+                name="descricao"
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                rows={3}
+                placeholder="Informações adicionais sobre o medicamento (opcional)"
+                value={formData.descricao || ""}
+                onChange={handleTextChange}
+              />
+            </div>
+
+            {/* Necessita Receita */}
+            <div className="md:col-span-2 mt-2">
+              <div className="bg-[var(--color-menu-bg)] dark:bg-[var(--color-menu-bg-dark)] p-4 rounded-lg border border-[var(--color-primary-color)]/20 dark:border-[var(--color-primary-color-dark)]/20">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      name="necessitaReceita"
+                      className="sr-only"
+                      checked={formData.necessitaReceita || false}
+                      onChange={handleCheckboxChange}
+                    />
+                    <div
+                      className={`block w-14 h-8 rounded-full transition-colors ${
+                        formData.necessitaReceita
+                          ? "bg-[var(--color-primary-color)] dark:bg-[var(--color-primary-color-dark)]"
+                          : "bg-gray-300 dark:bg-gray-600"
+                      }`}
+                    ></div>
+                    <div
+                      className={`absolute left-1 top-1 bg-white dark:bg-gray-200 w-6 h-6 rounded-full transition-transform ${
+                        formData.necessitaReceita
+                          ? "transform translate-x-6"
+                          : ""
+                      }`}
+                    ></div>
+                  </div>
+                  <div className="ml-3">
+                    <span className="font-medium text-[var(--color-secondary-color)] dark:text-[var(--color-text-color-dark)]">
+                      Necessita de Receita Médica
+                    </span>
+                    <p className="text-xs text-[var(--color-secondary-color)]/80 dark:text-[var(--color-text-color-dark)]/80 mt-0.5">
+                      {formData.necessitaReceita
+                        ? "Este medicamento só pode ser vendido mediante apresentação de receita."
+                        : "Este medicamento pode ser vendido sem necessidade de receita."}
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-end">
+        <div className="bg-[var(--color-menu-bg)]/50 dark:bg-[var(--color-menu-bg-dark)]/50 border-t border-[var(--color-primary-color)]/10 dark:border-[var(--color-primary-color-dark)]/10 px-6 py-4 flex justify-end gap-3">
           <button
             type="button"
-            className="mr-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="px-4 py-2.5 bg-white dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-650 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500/30 dark:focus:ring-gray-400/30"
             onClick={onCancel}
             disabled={isSubmitting}
           >
@@ -324,10 +423,41 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-primary-color hover:bg-primary-color-hover text-white rounded-lg disabled:opacity-50"
+            className={`px-5 py-2.5 bg-[var(--color-primary-color)] hover:bg-[var(--color-secondary-color)] dark:bg-[var(--color-primary-color-dark)] dark:hover:bg-[var(--color-primary-color-dark)]/80 text-white dark:text-[var(--color-text-color-dark)] rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 dark:focus:ring-[var(--color-primary-color-dark)]/50 flex items-center justify-center min-w-[100px] ${
+              isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+            }`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Salvando..." : "Salvar"}
+            {isSubmitting ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white dark:text-[var(--color-text-color-dark)]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Salvando...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check-lg mr-1.5"></i>
+                Salvar
+              </>
+            )}
           </button>
         </div>
       </form>

@@ -1,4 +1,3 @@
-// components/medicamento/MedicamentosClient.tsx
 "use client";
 import MedicamentoForm from "./MedicamentoForm";
 
@@ -221,8 +220,7 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
       if (response.success) {
         setModalEditOpen(false);
         setSuccess("Medicamento atualizado com sucesso!");
-        setTimeout(() => setSuccess(""), 3000);
-        // Recarregar lista após atualizar
+        setMedicamentoEmEdicao(null);
         carregarMedicamentos({});
       } else {
         throw new Error(response.message);
@@ -259,297 +257,333 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
   };
 
   return (
-    <div className="container mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-primary-color dark:text-primary-color-dark mb-2">
-          Gerenciamento de Medicamentos
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Cadastre e gerencie medicamentos para seu estoque.
-        </p>
-      </div>
-
-      {/* Mensagens */}
-      {error && (
-        <div className="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-4 mb-4">
-          <p>{error}</p>
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-400 p-4 mb-4">
-          <p>{success}</p>
-        </div>
-      )}
-
-      <div className="flex justify-between items-center mb-4">
-        <div className="relative max-w-md w-full">
-          <input
-            type="text"
-            placeholder="Buscar medicamentos..."
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-800 dark:text-white"
-            value={pesquisaMedicamento}
-            onChange={(e) => setPesquisaMedicamento(e.target.value)}
-          />
-          <i className="bi bi-search absolute right-3 top-3 text-gray-400"></i>
-        </div>
-        <button
-          className="bg-primary-color hover:bg-primary-color-hover text-white py-2 px-4 rounded-lg flex items-center"
-          onClick={handleNovoMedicamento}
-        >
-          <i className="bi bi-plus-lg mr-2"></i>
-          Novo Medicamento
-        </button>
-      </div>
-
-      {/* Barra de filtros */}
-      <div className="bg-amber-50 dark:bg-gray-800 p-4 rounded-lg mb-4 border border-amber-100 dark:border-gray-700">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <label className="block text-amber-800 dark:text-amber-300 text-sm font-medium mb-1">
-              Filtrar por Tipo:
-            </label>
-            <select
-              className="w-full px-3 py-2 border border-amber-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              value={filtroTipo}
-              onChange={(e) => setFiltroTipo(parseInt(e.target.value))}
-            >
-              <option value={0}>Todos os tipos</option>
-              {tiposProduto.map((tipo) => (
-                <option key={tipo.idtipoproduto} value={tipo.idtipoproduto}>
-                  {tipo.descricao}
-                </option>
-              ))}
-            </select>
+    <div className="bg-[var(--color-bg-color)] dark:bg-[var(--color-bg-color-dark)] min-h-screen py-8 px-4">
+      <div className="container mx-auto max-w-7xl">
+        <div className="bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow-md p-6 mb-8">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-[var(--color-primary-color)] dark:text-white mb-2">
+              Gerenciamento de Medicamentos
+            </h1>
+            <p className="text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]">
+              Cadastre e gerencie medicamentos para seu estoque.
+            </p>
           </div>
 
-          <div className="flex-1">
-            <label className="block text-amber-800 dark:text-amber-300 text-sm font-medium mb-1">
-              Princípio Ativo:
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-amber-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              placeholder="Filtrar por princípio ativo"
-              value={filtroPrincipioAtivo}
-              onChange={(e) => setFiltroPrincipioAtivo(e.target.value)}
-            />
-          </div>
+          {/* Mensagens de feedback */}
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 mb-6 rounded-r-md animate-fadeIn">
+              <div className="flex items-center">
+                <i className="bi bi-exclamation-circle text-xl mr-3"></i>
+                <p>{error}</p>
+              </div>
+            </div>
+          )}
 
-          <div className="flex-1">
-            <label className="block text-amber-800 dark:text-amber-300 text-sm font-medium mb-1">
-              Necessita Receita:
-            </label>
-            <select
-              className="w-full px-3 py-2 border border-amber-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              value={filtroNecessitaReceita}
-              onChange={(e) => setFiltroNecessitaReceita(e.target.value)}
-            >
-              <option value="todos">Todos</option>
-              <option value="sim">Sim</option>
-              <option value="nao">Não</option>
-            </select>
-          </div>
+          {success && (
+            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4 mb-6 rounded-r-md animate-fadeIn">
+              <div className="flex items-center">
+                <i className="bi bi-check-circle text-xl mr-3"></i>
+                <p>{success}</p>
+              </div>
+            </div>
+          )}
 
-          <div className="flex items-end">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+            <div className="relative w-full md:max-w-md">
+              <input
+                type="text"
+                placeholder="Buscar medicamentos..."
+                className="w-full px-4 py-3 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)] focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)] dark:focus:border-[var(--color-primary-color-dark)] transition-colors dark:bg-gray-700 dark:text-[var(--color-text-color-dark)]"
+                value={pesquisaMedicamento}
+                onChange={(e) => setPesquisaMedicamento(e.target.value)}
+              />
+              <i className="bi bi-search absolute left-3 top-3.5 text-[var(--color-placeholder-color)]"></i>
+            </div>
             <button
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-              onClick={limparFiltros}
+              className="w-full md:w-auto bg-[var(--color-primary-color)] hover:bg-[var(--color-secondary-color)] text-white dark:text-[var(--color-text-color-dark)] py-3 px-6 rounded-lg font-medium flex items-center justify-center transition-colors shadow-md hover:shadow-lg"
+              onClick={handleNovoMedicamento}
             >
-              <i className="bi bi-x-circle mr-2"></i>
-              Limpar Filtros
+              <i className="bi bi-plus-lg mr-2"></i>
+              Novo Medicamento
+            </button>
+          </div>
+
+          {/* Barra de filtros */}
+          <div className="bg-[var(--color-menu-bg)] dark:bg-[var(--color-menu-bg-dark)] p-5 rounded-xl mb-6 border border-[var(--color-primary-color)]/20 dark:border-[var(--color-primary-color-dark)]/20 shadow-sm">
+            <h2 className="text-lg font-semibold text-[var(--color-secondary-color)] dark:text-white mb-4">
+              Filtros Avançados
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+              <div>
+                <label className="block text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] text-sm font-medium mb-2">
+                  Filtrar por Tipo:
+                </label>
+                <select
+                  className="w-full px-3 py-2 border border-[var(--color-primary-color)]/20 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)] focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)] dark:focus:border-[var(--color-primary-color-dark)] transition-colors bg-white dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                  value={filtroTipo}
+                  onChange={(e) => setFiltroTipo(parseInt(e.target.value))}
+                >
+                  <option value={0}>Todos os tipos</option>
+                  {tiposProduto.map((tipo) => (
+                    <option key={tipo.idtipoproduto} value={tipo.idtipoproduto}>
+                      {tipo.descricao}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] text-sm font-medium mb-2">
+                  Princípio Ativo:
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-[var(--color-primary-color)]/20 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)] focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)] dark:focus:border-[var(--color-primary-color-dark)] transition-colors dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                  placeholder="Filtrar por princípio ativo"
+                  value={filtroPrincipioAtivo}
+                  onChange={(e) => setFiltroPrincipioAtivo(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] text-sm font-medium mb-2">
+                  Necessita Receita:
+                </label>
+                <select
+                  className="w-full px-3 py-2 border border-[var(--color-primary-color)]/20 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)] focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)] dark:focus:border-[var(--color-primary-color-dark)] transition-colors bg-white dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                  value={filtroNecessitaReceita}
+                  onChange={(e) => setFiltroNecessitaReceita(e.target.value)}
+                >
+                  <option value="todos">Todos</option>
+                  <option value="sim">Sim</option>
+                  <option value="nao">Não</option>
+                </select>
+              </div>
+
+              <div className="flex items-end">
+                <button
+                  className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-600 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] rounded-lg hover:bg-[var(--color-menu-hover)] dark:hover:bg-[var(--color-menu-hover-dark)] transition-colors flex items-center justify-center font-medium"
+                  onClick={limparFiltros}
+                >
+                  <i className="bi bi-x-circle mr-2"></i>
+                  Limpar Filtros
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12 bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow border border-gray-100 dark:border-gray-700">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-3 border-b-3 border-[var(--color-primary-color)] dark:border-[var(--color-primary-color-dark)] mb-4"></div>
+              <p className="text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] text-lg">
+                Carregando medicamentos...
+              </p>
+            </div>
+          ) : medicamentos.length > 0 ? (
+            <div className="bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-[var(--color-menu-bg)] dark:bg-[var(--color-menu-bg-dark)]">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-secondary-color)] dark:text-[var(--color-primary-color-dark)] uppercase tracking-wider"
+                      >
+                        Nome
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-secondary-color)] dark:text-[var(--color-primary-color-dark)] uppercase tracking-wider"
+                      >
+                        Princípio Ativo
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-secondary-color)] dark:text-[var(--color-primary-color-dark)] uppercase tracking-wider"
+                      >
+                        Dosagem
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-secondary-color)] dark:text-[var(--color-primary-color-dark)] uppercase tracking-wider"
+                      >
+                        Fabricante
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-secondary-color)] dark:text-[var(--color-primary-color-dark)] uppercase tracking-wider"
+                      >
+                        Receita
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-4 text-right text-xs font-semibold text-[var(--color-secondary-color)] dark:text-[var(--color-primary-color-dark)] uppercase tracking-wider"
+                      >
+                        Ações
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-[var(--color-secondary-color-dark)] divide-y divide-gray-200 dark:divide-gray-700">
+                    {medicamentos.map((medicamento) => (
+                      <tr
+                        key={medicamento.id}
+                        className="group transition-colors hover:bg-[var(--color-menu-bg)]/50 dark:hover:bg-[var(--color-menu-bg-dark)]/50"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]">
+                            {medicamento.nome}
+                          </div>
+                          <div className="text-xs text-[var(--color-placeholder-color)] dark:text-[var(--color-placeholder-color-dark)]">
+                            {medicamento.codigoBarras || "Sem código"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]">
+                            {medicamento.principioAtivo || "-"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]">
+                            {medicamento.dosagem
+                              ? `${medicamento.dosagem} ${medicamento.siglaUnidadeMedida || ""}`
+                              : "-"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]">
+                            {medicamento.fabricante || "-"}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]">
+                            {medicamento.necessitaReceita ? (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/70 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800">
+                                <i className="bi bi-prescription2 mr-1"></i>{" "}
+                                Necessária
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/70 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800">
+                                <i className="bi bi-check-circle mr-1"></i>{" "}
+                                Dispensada
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end space-x-1">
+                            <button
+                              className="p-2 text-[var(--color-primary-color)] dark:text-[var(--color-primary-color-dark)] hover:text-[var(--color-secondary-color)] dark:hover:text-[var(--color-primary-color-dark)]/80 hover:bg-[var(--color-primary-color)]/10 dark:hover:bg-[var(--color-primary-color-dark)]/10 rounded-full transition-colors opacity-70 group-hover:opacity-100"
+                              onClick={() =>
+                                handleEditarMedicamento(medicamento)
+                              }
+                              title="Editar"
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button
+                              className="p-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full transition-colors opacity-70 group-hover:opacity-100"
+                              onClick={() =>
+                                handleExcluirMedicamento(medicamento.id)
+                              }
+                              title="Excluir"
+                            >
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--color-primary-color)]/20 dark:bg-[var(--color-primary-color-dark)]/20 text-[var(--color-primary-color)] dark:text-[var(--color-primary-color-dark)] mb-4">
+                <i className="bi bi-capsule text-3xl"></i>
+              </div>
+              <h3 className="text-xl font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-2">
+                Nenhum medicamento encontrado
+              </h3>
+              <p className="text-[var(--color-placeholder-color)] dark:text-[var(--color-placeholder-color-dark)] mb-6 max-w-md mx-auto">
+                Não foram encontrados medicamentos com os filtros selecionados.
+              </p>
+              <button
+                className="px-6 py-3 text-[var(--color-primary-color)] dark:text-[var(--color-primary-color-dark)] bg-[var(--color-menu-bg)] dark:bg-[var(--color-menu-bg-dark)]/50 hover:bg-[var(--color-menu-hover)] dark:hover:bg-[var(--color-menu-hover-dark)] border border-[var(--color-primary-color)]/30 dark:border-[var(--color-primary-color-dark)]/30 rounded-lg font-medium transition-colors"
+                onClick={handleNovoMedicamento}
+              >
+                <i className="bi bi-plus-circle mr-2"></i>
+                Adicionar medicamento
+              </button>
+            </div>
+          )}
+
+          {/* Botão de voltar */}
+          <div className="mt-8">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="group flex items-center text-[var(--color-primary-color)] dark:text-[var(--color-primary-color-dark)] hover:text-[var(--color-secondary-color)] dark:hover:text-[var(--color-primary-color-dark)]/80 transition-colors font-medium"
+            >
+              <i className="bi bi-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>
+              Voltar para Dashboard
             </button>
           </div>
         </div>
       </div>
 
-      {loading ? (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-color mb-2"></div>
-          <p className="text-gray-600 dark:text-gray-400">
-            Carregando medicamentos...
-          </p>
-        </div>
-      ) : medicamentos.length > 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-amber-50 dark:bg-gray-700">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-amber-800 dark:text-amber-300 uppercase tracking-wider"
-                >
-                  Nome
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-amber-800 dark:text-amber-300 uppercase tracking-wider"
-                >
-                  Princípio Ativo
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-amber-800 dark:text-amber-300 uppercase tracking-wider"
-                >
-                  Dosagem
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-amber-800 dark:text-amber-300 uppercase tracking-wider"
-                >
-                  Fabricante
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-amber-800 dark:text-amber-300 uppercase tracking-wider"
-                >
-                  Receita
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-amber-800 dark:text-amber-300 uppercase tracking-wider"
-                >
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {medicamentos.map((medicamento) => (
-                <tr
-                  key={medicamento.id}
-                  className="hover:bg-amber-50 dark:hover:bg-gray-700"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900 dark:text-white">
-                      {medicamento.nome}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {medicamento.codigoBarras || "Sem código"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-gray-700 dark:text-gray-300">
-                      {medicamento.principioAtivo || "-"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-gray-700 dark:text-gray-300">
-                      {medicamento.dosagem
-                        ? `${medicamento.dosagem} ${medicamento.siglaUnidadeMedida || ""}`
-                        : "-"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-gray-700 dark:text-gray-300">
-                      {medicamento.fabricante || "-"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-gray-700 dark:text-gray-300">
-                      {medicamento.necessitaReceita ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300">
-                          <i className="bi bi-prescription2 mr-1"></i>{" "}
-                          Necessária
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300">
-                          <i className="bi bi-check-circle mr-1"></i> Dispensada
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      className="text-amber-600 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 mx-1"
-                      onClick={() => handleEditarMedicamento(medicamento)}
-                    >
-                      <i className="bi bi-pencil"></i>
-                    </button>
-                    <button
-                      className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 mx-1"
-                      onClick={() => handleExcluirMedicamento(medicamento.id)}
-                    >
-                      <i className="bi bi-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="text-center py-8 bg-white dark:bg-gray-800 rounded-lg shadow">
-          <i className="bi bi-capsule text-amber-400 text-5xl mb-3"></i>
-          <p className="text-gray-500 dark:text-gray-400">
-            Nenhum medicamento encontrado.
-          </p>
-          <button
-            className="mt-4 text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 border border-amber-600 dark:border-amber-400 hover:border-amber-800 dark:hover:border-amber-300 rounded-lg px-4 py-2"
-            onClick={handleNovoMedicamento}
-          >
-            Adicionar um medicamento
-          </button>
-        </div>
-      )}
-
       {/* Modal para Novo Medicamento */}
       {modalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black opacity-50"></div>
-          <MedicamentoForm
-            medicamento={novoMedicamento}
-            tiposProduto={tiposProduto}
-            unidadesMedida={unidadesMedida}
-            onSubmit={async (medicamento) => {
-              // Usamos type assertion para garantir que estamos passando o tipo correto
-              try {
-                const createDto = medicamento as CreateMedicamentoDTO;
-                await handleSalvarMedicamento(createDto);
-              } catch (error) {
-                throw error;
-              }
-            }}
-            onCancel={() => setModalOpen(false)}
-            isEditMode={false}
-            title="Novo Medicamento"
-          />
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+          <div className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow-2xl flex flex-col transform transition-all animate-modalFadeIn">
+            <div className="flex-1 overflow-y-auto">
+              <MedicamentoForm
+                medicamento={novoMedicamento}
+                tiposProduto={tiposProduto}
+                unidadesMedida={unidadesMedida}
+                onSubmit={async (medicamento) => {
+                  try {
+                    const createDto = medicamento as CreateMedicamentoDTO;
+                    await handleSalvarMedicamento(createDto);
+                  } catch (error) {
+                    throw error;
+                  }
+                }}
+                onCancel={() => setModalOpen(false)}
+                isEditMode={false}
+                title="Novo Medicamento"
+              />
+            </div>
+          </div>
         </div>
       )}
 
       {/* Modal para Editar Medicamento */}
       {modalEditOpen && medicamentoEmEdicao && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="fixed inset-0 bg-black opacity-50"></div>
-          <MedicamentoForm
-            medicamento={medicamentoEmEdicao}
-            tiposProduto={tiposProduto}
-            unidadesMedida={unidadesMedida}
-            onSubmit={async (medicamento) => {
-              // Usamos type assertion para garantir que estamos passando o tipo correto
-              try {
-                const updateDto = medicamento as UpdateMedicamentoDTO;
-                await handleSalvarEdicao(updateDto);
-              } catch (error) {
-                throw error;
-              }
-            }}
-            onCancel={() => setModalEditOpen(false)}
-            isEditMode={true}
-            title="Editar Medicamento"
-          />
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+          <div className="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow-2xl flex flex-col transform transition-all animate-modalFadeIn">
+            <div className="flex-1 overflow-y-auto">
+              <MedicamentoForm
+                medicamento={medicamentoEmEdicao}
+                tiposProduto={tiposProduto}
+                unidadesMedida={unidadesMedida}
+                onSubmit={async (medicamento) => {
+                  try {
+                    const updateDto = medicamento as UpdateMedicamentoDTO;
+                    await handleSalvarEdicao(updateDto);
+                  } catch (error) {
+                    throw error;
+                  }
+                }}
+                onCancel={() => setModalEditOpen(false)}
+                isEditMode={true}
+                title="Editar Medicamento"
+              />
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Botão de voltar */}
-      <div className="mt-6">
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="flex items-center text-primary-color dark:text-primary-color-dark hover:text-primary-color-hover dark:hover:text-primary-color-hover transition-colors"
-        >
-          <i className="bi bi-arrow-left mr-2"></i>
-          Voltar para Dashboard
-        </button>
-      </div>
     </div>
   );
 };
