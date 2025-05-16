@@ -33,10 +33,6 @@ export interface Produto {
   dataValidade: Date | null;
 }
 
-export interface Medicamento extends Produto {
-  composicao: string;
-}
-
 export interface Vacina extends Produto {
   lote: string;
   validade: Date;

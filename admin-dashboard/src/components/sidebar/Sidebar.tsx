@@ -109,14 +109,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         }`}
       >
         {/* Logo/Título */}
-        <div 
-          className="font-semibold text-xl py-4 px-4 mx-4 my-4 text-center rounded-lg shadow-sm text-white bg-primary-color dark:bg-primary-color-dark border border-primary-color dark:border-primary-color-dark">
+        <div className="font-semibold text-xl py-4 px-4 mx-4 my-4 text-center rounded-lg shadow-sm text-white bg-primary-color dark:bg-primary-color-dark border border-primary-color dark:border-primary-color-dark">
           PetControl
         </div>
 
         {/* Container de Menu com Rolagem */}
-        <div 
-          className="mx-4 my-4 p-2 rounded-xl bg-amber-50 dark:bg-gray-600 overflow-y-auto max-h-[calc(100vh-10rem)]">
+        <div className="mx-4 my-4 p-2 rounded-xl bg-amber-50 dark:bg-gray-600 overflow-y-auto max-h-[calc(100vh-10rem)]">
           {/* Item Home */}
           <div
             className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
@@ -159,6 +157,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           >
             <div
               className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
+              onClick={() => navigateTo("/dashboard/medicamento")}
+            >
+              <i className="bi bi-dot"></i>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
+                Gerenciar Medicamentos
+              </span>
+            </div>
+            <div
+              className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
               onClick={() => navigateTo("/dashboard/medicacao/efetuar")}
             >
               <i className="bi bi-dot"></i>
@@ -171,7 +178,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
               onClick={() => navigateTo("/dashboard/medicacao/historico")}
             >
               <i className="bi bi-dot"></i>
-              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">Histórico</span>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
+                Histórico
+              </span>
             </div>
           </div>
 
@@ -252,7 +261,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             className="flex items-center justify-center w-full px-4 py-3 rounded-md bg-red-50 dark:bg-red-700 dark:bg-opacity-20 hover:bg-red-100 dark:hover:bg-red-600 dark:hover:bg-opacity-30 transition-colors duration-200"
           >
             <i className="bi bi-box-arrow-right text-red-500 dark:text-red-400 text-lg mr-3"></i>
-            <span className="text-red-600 dark:text-red-300 font-medium">Logout</span>
+            <span className="text-red-600 dark:text-red-300 font-medium">
+              Logout
+            </span>
           </button>
         </div>
       </aside>

@@ -1,230 +1,251 @@
+// src/services/produtoService.ts
 import { Produto, TipoProduto, UnidadeDeMedida } from "@/types/entities";
 import { NovoProdutoDTO } from "@/dto/NovoProdutoDTO";
 import { NovoTipoDTO } from "@/dto/NovoTipoDTO";
+import { getClientAuthToken } from "@/utils/client-auth";
+import { buildApiUrl } from "./api-config";
 
-// Dados simulados
-const tiposExemplo: TipoProduto[] = [
-  {
-    idtipoproduto: 1,
-    descricao: "Medicamentos",
-    controlaValidade: true,
-  },
-  { idtipoproduto: 2, descricao: "Vacinas", controlaValidade: true },
-  {
-    idtipoproduto: 3,
-    descricao: "Alimentos",
-    controlaValidade: true,
-  },
-  {
-    idtipoproduto: 4,
-    descricao: "Acessórios",
-    controlaValidade: false,
-  },
-  { idtipoproduto: 5, descricao: "Higiene", controlaValidade: true },
-];
+// Função auxiliar para fazer requisições autenticadas
+async function fetchWithAuth(
+  endpoint: string,
+  options: RequestInit = {},
+  providedToken?: string,
+) {
+  // Usar o token fornecido, ou tentar obter via ambiente apropriado
+  let token = providedToken;
 
-const unidadesExemplo: UnidadeDeMedida[] = [
-  { idunidademedida: 1, descricao: "Unidade" },
-  { idunidademedida: 2, descricao: "Kg" },
-  { idunidademedida: 3, descricao: "g" },
-  { idunidademedida: 4, descricao: "ml" },
-  { idunidademedida: 5, descricao: "L" },
-];
-
-const produtosExemplo: Produto[] = [
-  {
-    idproduto: 1,
-    nome: "Ração Premium Cães",
-    idtipoproduto: 3,
-    idunidademedida: 2,
-    fabricante: "PetNutri",
-    dataValidade: new Date("2025-07-15"),
-  },
-  {
-    idproduto: 2,
-    nome: "Antipulgas Gatos",
-    idtipoproduto: 1,
-    idunidademedida: 1,
-    fabricante: "VetPharma",
-    dataValidade: new Date("2025-03-10"),
-  },
-  {
-    idproduto: 3,
-    nome: "Vacina Antirrábica",
-    idtipoproduto: 2,
-    idunidademedida: 1,
-    fabricante: "BioVet",
-    dataValidade: new Date("2025-05-22"),
-  },
-  {
-    idproduto: 4,
-    nome: "Shampoo Hipoalergênico",
-    idtipoproduto: 5,
-    idunidademedida: 5,
-    fabricante: "PetClean",
-    dataValidade: new Date("2026-01-30"),
-  },
-  {
-    idproduto: 5,
-    nome: "Coleira Ajustável P",
-    idtipoproduto: 4,
-    idunidademedida: 1,
-    fabricante: "PetAcessórios",
-    dataValidade: null,
-  },
-];
-
-// Função para simular o tempo de resposta da API
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// Funções para buscar dados
-export const buscarTiposProduto = async (): Promise<TipoProduto[]> => {
-  try {
-    // Simulando chamada à API
-    await delay(1000);
-    return [...tiposExemplo];
-  } catch (error) {
-    console.error("Erro ao buscar tipos de produto:", error);
-    throw new Error("Falha ao carregar tipos de produto.");
-  }
-};
-
-export const buscarUnidadesMedida = async (): Promise<UnidadeDeMedida[]> => {
-  try {
-    // Simulando chamada à API
-    await delay(800);
-    return [...unidadesExemplo];
-  } catch (error) {
-    console.error("Erro ao buscar unidades de medida:", error);
-    throw new Error("Falha ao carregar unidades de medida.");
-  }
-};
-
-export const buscarProdutos = async (): Promise<Produto[]> => {
-  try {
-    // Simulando chamada à API
-    await delay(1200);
-    return [...produtosExemplo];
-  } catch (error) {
-    console.error("Erro ao buscar produtos:", error);
-    throw new Error("Falha ao carregar produtos.");
-  }
-};
-
-// Funções para adicionar novos dados
-export const adicionarProduto = async (
-  produto: NovoProdutoDTO,
-): Promise<Produto> => {
-  try {
-    // Simulando chamada à API
-    await delay(1500);
-
-    // Validações
-    if (!produto.nome.trim()) {
-      throw new Error("Nome do produto é obrigatório");
-    }
-
-    if (produto.idtipoproduto === 0) {
-      throw new Error("Selecione um tipo de produto");
-    }
-
-    if (produto.idunidademedida === 0) {
-      throw new Error("Selecione uma unidade de medida");
-    }
-
-    // Verificar se o tipo controla validade
-    const tipo = tiposExemplo.find(
-      (t) => t.idtipoproduto === produto.idtipoproduto,
-    );
-    if (tipo && tipo.controlaValidade && !produto.dataValidade) {
-      throw new Error(
-        "Data de validade é obrigatória para este tipo de produto",
+  if (!token) {
+    if (typeof window !== "undefined") {
+      // Estamos no navegador (Client Component)
+      token = await getClientAuthToken();
+    } else {
+      // Estamos no servidor (Server Component)
+      console.warn(
+        "Aviso: Tentando obter token no servidor sem fornecê-lo explicitamente",
       );
     }
+  }
 
-    // Criar novo produto
-    const novoProduto: Produto = {
-      idproduto: Math.max(...produtosExemplo.map((p) => p.idproduto)) + 1,
-      nome: produto.nome,
-      idtipoproduto: produto.idtipoproduto,
-      idunidademedida: produto.idunidademedida,
-      fabricante: produto.fabricante,
-      dataValidade: produto.dataValidade
-        ? new Date(produto.dataValidade)
-        : null,
-    };
+  if (!token) {
+    throw new Error("Usuário não autenticado");
+  }
 
-    // Adicionar produto à lista (simulando o banco de dados)
-    produtosExemplo.push(novoProduto);
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+    ...options.headers,
+  };
 
-    return novoProduto;
+  // Construir URL completa usando a função centralizada
+  const url = buildApiUrl(endpoint);
+
+  console.log(`Fazendo requisição para: ${url}`);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      cache: typeof window === "undefined" ? "no-store" : undefined, // Apenas no servidor
+    });
+
+    if (!response.ok) {
+      let errorMessage;
+      try {
+        const errorData = await response.json();
+        errorMessage =
+          errorData?.mensagem ||
+          `Erro ${response.status}: ${response.statusText}`;
+      } catch (jsonError) {
+        errorMessage = `Erro ${response.status}: ${response.statusText}`;
+      }
+
+      console.error(`Erro na requisição para ${url}:`, errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error(`Falha ao fazer requisição para ${url}:`, error);
+    throw error;
+  }
+}
+
+// Buscar todos os tipos de produto
+export async function buscarTiposProduto(filtro?: any, token?: string) {
+  try {
+    const queryParams = filtro
+      ? `?${new URLSearchParams(
+          Object.entries(filtro)
+            .filter(([_, v]) => v !== undefined && v !== null)
+            .map(([k, v]) => [k, String(v)]) as [string, string][],
+        )}`
+      : "";
+
+    console.log("Buscando tipos de produto...");
+    return fetchWithAuth(`tipo-produto${queryParams}`, {}, token);
+  } catch (error) {
+    console.error("Erro ao buscar tipos de produto:", error);
+    throw error;
+  }
+}
+
+// Buscar todas as unidades de medida
+export async function buscarUnidadesMedida(filtro?: any, token?: string) {
+  try {
+    const queryParams = filtro
+      ? `?${new URLSearchParams(
+          Object.entries(filtro)
+            .filter(([_, v]) => v !== undefined && v !== null)
+            .map(([k, v]) => [k, String(v)]) as [string, string][],
+        )}`
+      : "";
+
+    console.log("Buscando unidades de medida...");
+    return fetchWithAuth(`unidade-medida${queryParams}`, {}, token);
+  } catch (error) {
+    console.error("Erro ao buscar unidades de medida:", error);
+    throw error;
+  }
+}
+
+// Buscar todos os produtos
+export async function buscarProdutos(
+  filtro?: Partial<Produto>,
+  token?: string,
+) {
+  try {
+    const queryParams = filtro
+      ? `?${new URLSearchParams(
+          Object.entries(filtro)
+            .filter(([_, v]) => v !== undefined && v !== null)
+            .map(([k, v]) => [k, String(v)]) as [string, string][],
+        )}`
+      : "";
+
+    return fetchWithAuth(`produto${queryParams}`, {}, token);
+  } catch (error) {
+    console.error("Erro ao buscar produtos:", error);
+    throw error;
+  }
+}
+
+// Adicionar novo produto
+export async function adicionarProduto(
+  produto: NovoProdutoDTO,
+  token?: string,
+) {
+  try {
+    return fetchWithAuth(
+      "produto",
+      {
+        method: "POST",
+        body: JSON.stringify(produto),
+      },
+      token,
+    );
   } catch (error) {
     console.error("Erro ao adicionar produto:", error);
     throw error;
   }
-};
+}
 
-export const adicionarTipoProduto = async (
-  tipo: NovoTipoDTO,
-): Promise<TipoProduto> => {
+// Adicionar novo tipo de produto
+export async function adicionarTipoProduto(tipo: NovoTipoDTO, token?: string) {
   try {
-    // Simulando chamada à API
-    await delay(1500);
-
-    // Validações
-    if (!tipo.descricao.trim()) {
-      throw new Error("Descrição do tipo de produto é obrigatória");
-    }
-
-    // Verificar duplicação
-    if (
-      tiposExemplo.some(
-        (t) => t.descricao.toLowerCase() === tipo.descricao.toLowerCase(),
-      )
-    ) {
-      throw new Error("Já existe um tipo de produto com esta descrição");
-    }
-
-    // Criar novo tipo de produto
-    const novoTipo: TipoProduto = {
-      idtipoproduto: Math.max(...tiposExemplo.map((t) => t.idtipoproduto)) + 1,
-      descricao: tipo.descricao,
-      controlaValidade: tipo.controlaValidade,
-    };
-
-    // Adicionar tipo à lista (simulando o banco de dados)
-    tiposExemplo.push(novoTipo);
-
-    return novoTipo;
+    return fetchWithAuth(
+      "tipo-produto",
+      {
+        method: "POST",
+        body: JSON.stringify(tipo),
+      },
+      token,
+    );
   } catch (error) {
     console.error("Erro ao adicionar tipo de produto:", error);
     throw error;
   }
-};
+}
 
-export const excluirTipoProduto = async (id: number): Promise<void> => {
+// Excluir tipo de produto
+export async function excluirTipoProduto(id: number, token?: string) {
   try {
-    // Simulando chamada à API
-    await delay(1000);
-
-    // Verificar se existem produtos usando este tipo
-    if (produtosExemplo.some((produto) => produto.idtipoproduto === id)) {
-      throw new Error(
-        "Não é possível excluir este tipo de produto pois existem produtos cadastrados com ele",
-      );
-    }
-
-    // Encontrar o índice do tipo de produto
-    const index = tiposExemplo.findIndex((tipo) => tipo.idtipoproduto === id);
-
-    if (index === -1) {
-      throw new Error("Tipo de produto não encontrado");
-    }
-
-    // Remover o tipo de produto da lista
-    tiposExemplo.splice(index, 1);
+    return fetchWithAuth(
+      `tipo-produto/${id}`,
+      {
+        method: "DELETE",
+      },
+      token,
+    );
   } catch (error) {
     console.error("Erro ao excluir tipo de produto:", error);
     throw error;
   }
-};
+}
+
+// Atualizar tipo de produto
+export async function atualizarTipoProduto(
+  id: number,
+  tipo: NovoTipoDTO,
+  token?: string,
+) {
+  try {
+    return fetchWithAuth(
+      `tipo-produto/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(tipo),
+      },
+      token,
+    );
+  } catch (error) {
+    console.error("Erro ao atualizar tipo de produto:", error);
+    throw error;
+  }
+}
+
+// Buscar um produto por ID
+export async function buscarProdutoPorId(id: number, token?: string) {
+  try {
+    return fetchWithAuth(`produto/${id}`, {}, token);
+  } catch (error) {
+    console.error("Erro ao buscar produto por ID:", error);
+    throw error;
+  }
+}
+
+// Atualizar produto
+export async function atualizarProduto(
+  id: number,
+  produto: NovoProdutoDTO,
+  token?: string,
+) {
+  try {
+    return fetchWithAuth(
+      `produto/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(produto),
+      },
+      token,
+    );
+  } catch (error) {
+    console.error("Erro ao atualizar produto:", error);
+    throw error;
+  }
+}
+
+// Excluir produto
+export async function excluirProduto(id: number, token?: string) {
+  try {
+    return fetchWithAuth(
+      `produto/${id}`,
+      {
+        method: "DELETE",
+      },
+      token,
+    );
+  } catch (error) {
+    console.error("Erro ao excluir produto:", error);
+    throw error;
+  }
+}
