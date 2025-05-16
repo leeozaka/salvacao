@@ -1,138 +1,223 @@
-// src/services/medicamentoService.ts
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+
 import {
   CreateMedicamentoDTO,
   UpdateMedicamentoDTO,
 } from "../dto/MedicamentoDTO";
 
 import { MedicamentoBackend } from "@/types/medicamento/medicamento";
-import { getClientAuthToken } from "@/utils/client-auth";
-import { buildApiUrl } from "./api-config";
 
-// Função auxiliar para fazer requisições autenticadas
-async function fetchWithAuth(
-  endpoint: string,
-  options: RequestInit = {},
-  providedToken?: string,
-) {
-  // Usar o token fornecido, ou tentar obter via ambiente apropriado
-  let token = providedToken;
-
-  if (!token) {
-    if (typeof window !== "undefined") {
-      // Estamos no navegador (Client Component)
-      token = await getClientAuthToken();
-    } else {
-      // Estamos no servidor (Server Component)
-      console.warn(
-        "Aviso: Tentando obter token no servidor sem fornecê-lo explicitamente",
-      );
-    }
-  }
-
-  if (!token) {
-    throw new Error("Usuário não autenticado");
-  }
-
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-    ...options.headers,
-  };
-
-  // Construir URL completa usando a função centralizada
-  const url = buildApiUrl(endpoint);
-
-  console.log(`Fazendo requisição para: ${url}`);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      cache: typeof window === "undefined" ? "no-store" : undefined, // Apenas no servidor
-    });
-
-    if (!response.ok) {
-      let errorMessage;
-      try {
-        const errorData = await response.json();
-        errorMessage =
-          errorData?.mensagem ||
-          `Erro ${response.status}: ${response.statusText}`;
-      } catch (jsonError) {
-        errorMessage = `Erro ${response.status}: ${response.statusText}`;
-      }
-
-      console.error(`Erro na requisição para ${url}:`, errorMessage);
-      throw new Error(errorMessage);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error(`Falha ao fazer requisição para ${url}:`, error);
-    throw error;
-  }
-}
-
-// Buscar todos os medicamentos
+/**
+ * Buscar todos os medicamentos
+ */
 export async function buscarMedicamentos(
   filtro?: Partial<MedicamentoBackend>,
-  token?: string,
-) {
-  const queryParams = filtro
-    ? `?${new URLSearchParams(
-        Object.entries(filtro)
-          .filter(([_, v]) => v !== undefined && v !== null)
-          .map(([k, v]) => [k, String(v)]) as [string, string][],
-      )}`
-    : "";
+): Promise<any> {
+  try {
+    const queryParams = filtro
+      ? `?${new URLSearchParams(
+          Object.entries(filtro)
+            .filter(([_, v]) => v !== undefined && v !== null)
+            .map(([k, v]) => [k, String(v)]) as [string, string][],
+        )}`
+      : "";
 
-  console.log("Buscando medicamentos...");
-  return fetchWithAuth(`medicamento${queryParams}`, {}, token);
+    const response = await fetch(`${API_URL}/medicamento${queryParams}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getTokenFromCookie()}`,
+      },
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        data: data,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Falha ao buscar medicamentos",
+      };
+    }
+  } catch (error) {
+    console.error("Erro ao buscar medicamentos:", error);
+    return {
+      success: false,
+      message: "Erro de rede ocorreu",
+    };
+  }
 }
 
-// Buscar um medicamento por ID
-export async function buscarMedicamentoPorId(id: number, token?: string) {
-  return fetchWithAuth(`medicamento/${id}`, {}, token);
+/**
+ * Buscar um medicamento por ID
+ */
+export async function buscarMedicamentoPorId(id: number): Promise<any> {
+  try {
+    const response = await fetch(`${API_URL}/medicamento/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getTokenFromCookie()}`,
+      },
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        data: data,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Medicamento não encontrado",
+      };
+    }
+  } catch (error) {
+    console.error("Erro ao buscar medicamento:", error);
+    return {
+      success: false,
+      message: "Erro de rede ocorreu",
+    };
+  }
 }
 
-// Adicionar novo medicamento
+/**
+ * Adicionar novo medicamento
+ */
 export async function adicionarMedicamento(
   medicamento: CreateMedicamentoDTO,
-  token?: string,
-) {
-  return fetchWithAuth(
-    "medicamento",
-    {
+): Promise<any> {
+  try {
+    const response = await fetch(`${API_URL}/medicamento`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getTokenFromCookie()}`,
+      },
       body: JSON.stringify(medicamento),
-    },
-    token,
-  );
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        data: data,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Falha ao adicionar medicamento",
+      };
+    }
+  } catch (error) {
+    console.error("Erro ao adicionar medicamento:", error);
+    return {
+      success: false,
+      message: "Erro de rede ocorreu",
+    };
+  }
 }
 
-// Atualizar medicamento
+/**
+ * Atualizar medicamento
+ */
 export async function atualizarMedicamento(
   id: number,
   medicamento: UpdateMedicamentoDTO,
-  token?: string,
-) {
-  return fetchWithAuth(
-    `medicamento/${id}`,
-    {
+): Promise<any> {
+  try {
+    const response = await fetch(`${API_URL}/medicamento/${id}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getTokenFromCookie()}`,
+      },
       body: JSON.stringify(medicamento),
-    },
-    token,
-  );
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        data: data,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Falha ao atualizar medicamento",
+      };
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar medicamento:", error);
+    return {
+      success: false,
+      message: "Erro de rede ocorreu",
+    };
+  }
 }
 
-// Excluir medicamento
-export async function excluirMedicamento(id: number, token?: string) {
-  return fetchWithAuth(
-    `medicamento/${id}`,
-    {
+/**
+ * Excluir medicamento
+ */
+export async function excluirMedicamento(id: number): Promise<any> {
+  try {
+    const response = await fetch(`${API_URL}/medicamento/${id}`, {
       method: "DELETE",
-    },
-    token,
-  );
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getTokenFromCookie()}`,
+      },
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return {
+        success: true,
+        data: data,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || "Falha ao excluir medicamento",
+      };
+    }
+  } catch (error) {
+    console.error("Erro ao excluir medicamento:", error);
+    return {
+      success: false,
+      message: "Erro de rede ocorreu",
+    };
+  }
+}
+
+/**
+ * Gets token from cookie
+ */
+function getTokenFromCookie(): string | null {
+  if (typeof document === "undefined") return null;
+
+  const tokenCookie = document.cookie
+    .split(";")
+    .find((c) => c.trim().startsWith("authToken="));
+
+  return tokenCookie ? tokenCookie.split("=")[1].trim() : null;
 }

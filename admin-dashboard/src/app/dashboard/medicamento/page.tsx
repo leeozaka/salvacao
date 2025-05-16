@@ -6,33 +6,35 @@ import {
   buscarUnidadesMedida,
 } from "@/services/produtoService";
 import { buscarMedicamentos } from "@/services/medicamentoService";
-import { getAuthToken, verifyToken, isAuthenticated } from "@/utils/auth";
+import { verifyAuthToken } from "@/services/authService";
+import { cookies } from "next/headers";
+
+// Função auxiliar para obter token no ambiente de servidor
+async function getServerSideToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get("authToken")?.value || null;
+}
 
 // Componente de página assíncrono para App Router
 export default async function MedicamentosPage() {
   console.log("Renderizando MedicamentosPage...");
 
-  // Verificar autenticação
-  const isAuth = await isAuthenticated();
-  console.log("Autenticado?", isAuth);
+  // Verificar autenticação no servidor
+  const authToken = await getServerSideToken();
 
-  if (!isAuth) {
+  if (!authToken) {
+    console.log("Token não encontrado, redirecionando para login");
     redirect("/login");
   }
 
-  // Obter token
-  const token = await getAuthToken();
-
-  if (!token) {
-    redirect("/login");
-  }
   console.log("Token obtido com sucesso");
 
   // Verificar token com o backend
-  const isValid = await verifyToken(token);
+  const isValid = await verifyAuthToken();
   console.log("Token válido?", isValid);
 
   if (!isValid) {
+    console.log("Token inválido, redirecionando para login");
     redirect("/login");
   }
 
@@ -46,13 +48,21 @@ export default async function MedicamentosPage() {
   try {
     console.log("Iniciando carregamento de dados no servidor...");
 
-    // Para identificar qual chamada está falhando, vamos tentar uma a uma
     // Passo 1: Buscar tipos
     console.log("Buscando tipos de produto...");
     try {
-      const tipos = await buscarTiposProduto(undefined, token);
-      console.log(`Tipos de produto carregados: ${tipos.length}`);
-      dadosIniciais.tipos = tipos;
+      const tiposResponse = await buscarTiposProduto();
+      if (tiposResponse.success) {
+        console.log(
+          `Tipos de produto carregados: ${tiposResponse.data.length}`,
+        );
+        dadosIniciais.tipos = tiposResponse.data;
+      } else {
+        console.error(
+          "Falha ao buscar tipos de produto:",
+          tiposResponse.message,
+        );
+      }
     } catch (error) {
       console.error("Erro ao buscar tipos de produto:", error);
     }
@@ -60,9 +70,18 @@ export default async function MedicamentosPage() {
     // Passo 2: Buscar unidades
     console.log("Buscando unidades de medida...");
     try {
-      const unidades = await buscarUnidadesMedida(undefined, token);
-      console.log(`Unidades de medida carregadas: ${unidades.length}`);
-      dadosIniciais.unidades = unidades;
+      const unidadesResponse = await buscarUnidadesMedida();
+      if (unidadesResponse.success) {
+        console.log(
+          `Unidades de medida carregadas: ${unidadesResponse.data.length}`,
+        );
+        dadosIniciais.unidades = unidadesResponse.data;
+      } else {
+        console.error(
+          "Falha ao buscar unidades de medida:",
+          unidadesResponse.message,
+        );
+      }
     } catch (error) {
       console.error("Erro ao buscar unidades de medida:", error);
     }
@@ -70,9 +89,18 @@ export default async function MedicamentosPage() {
     // Passo 3: Buscar medicamentos
     console.log("Buscando medicamentos...");
     try {
-      const medicamentos = await buscarMedicamentos(undefined, token);
-      console.log(`Medicamentos carregados: ${medicamentos.length}`);
-      dadosIniciais.medicamentos = medicamentos;
+      const medicamentosResponse = await buscarMedicamentos();
+      if (medicamentosResponse.success) {
+        console.log(
+          `Medicamentos carregados: ${medicamentosResponse.data.length}`,
+        );
+        dadosIniciais.medicamentos = medicamentosResponse.data;
+      } else {
+        console.error(
+          "Falha ao buscar medicamentos:",
+          medicamentosResponse.message,
+        );
+      }
     } catch (error) {
       console.error("Erro ao buscar medicamentos:", error);
     }
