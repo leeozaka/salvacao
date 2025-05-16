@@ -1,13 +1,16 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+const API_URL = "/api";
 
 import { Produto, TipoProduto, UnidadeDeMedida } from "@/types/entities";
 import { NovoProdutoDTO } from "@/dto/NovoProdutoDTO";
 import { NovoTipoDTO } from "@/dto/NovoTipoDTO";
+import { cookies } from "next/headers";
 
 /**
  * Buscar todos os tipos de produto
  */
 export async function buscarTiposProduto(filtro?: any): Promise<any> {
+  const cookie = (await cookies()).get("authToken")?.value;
+
   try {
     const queryParams = filtro
       ? `?${new URLSearchParams(
@@ -17,11 +20,11 @@ export async function buscarTiposProduto(filtro?: any): Promise<any> {
         )}`
       : "";
 
-    const response = await fetch(`${API_URL}/tipo-produto${queryParams}`, {
+    const response = await fetch(`http://${API_URL}/tipo-produto${queryParams}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
       credentials: "same-origin",
@@ -54,6 +57,8 @@ export async function buscarTiposProduto(filtro?: any): Promise<any> {
  */
 export async function buscarUnidadesMedida(filtro?: any): Promise<any> {
   try {
+    const cookie = (await cookies()).get("authToken")?.value;
+
     const queryParams = filtro
       ? `?${new URLSearchParams(
           Object.entries(filtro)
@@ -62,11 +67,11 @@ export async function buscarUnidadesMedida(filtro?: any): Promise<any> {
         )}`
       : "";
 
-    const response = await fetch(`${API_URL}/unidade-medida${queryParams}`, {
+    const response = await fetch(`http://${API_URL}/unidade-medida${queryParams}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
       credentials: "same-origin",
@@ -99,6 +104,8 @@ export async function buscarUnidadesMedida(filtro?: any): Promise<any> {
  */
 export async function buscarProdutos(filtro?: Partial<Produto>): Promise<any> {
   try {
+    const cookie = (await cookies()).get("authToken")?.value;
+
     const queryParams = filtro
       ? `?${new URLSearchParams(
           Object.entries(filtro)
@@ -111,7 +118,7 @@ export async function buscarProdutos(filtro?: Partial<Produto>): Promise<any> {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
       credentials: "same-origin",
@@ -144,11 +151,13 @@ export async function buscarProdutos(filtro?: Partial<Produto>): Promise<any> {
  */
 export async function adicionarProduto(produto: NovoProdutoDTO): Promise<any> {
   try {
-    const response = await fetch(`${API_URL}/produto`, {
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    const response = await fetch(`http://${API_URL}/produto`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       body: JSON.stringify(produto),
       cache: "no-store",
@@ -182,11 +191,13 @@ export async function adicionarProduto(produto: NovoProdutoDTO): Promise<any> {
  */
 export async function adicionarTipoProduto(tipo: NovoTipoDTO): Promise<any> {
   try {
-    const response = await fetch(`${API_URL}/tipo-produto`, {
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    const response = await fetch(`http://${API_URL}/tipo-produto`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       body: JSON.stringify(tipo),
       cache: "no-store",
@@ -220,11 +231,13 @@ export async function adicionarTipoProduto(tipo: NovoTipoDTO): Promise<any> {
  */
 export async function excluirTipoProduto(id: number): Promise<any> {
   try {
-    const response = await fetch(`${API_URL}/tipo-produto/${id}`, {
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    const response = await fetch(`http://${API_URL}/tipo-produto/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
       credentials: "same-origin",
@@ -260,11 +273,13 @@ export async function atualizarTipoProduto(
   tipo: NovoTipoDTO,
 ): Promise<any> {
   try {
-    const response = await fetch(`${API_URL}/tipo-produto/${id}`, {
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    const response = await fetch(`http://${API_URL}/tipo-produto/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       body: JSON.stringify(tipo),
       cache: "no-store",
@@ -298,11 +313,13 @@ export async function atualizarTipoProduto(
  */
 export async function buscarProdutoPorId(id: number): Promise<any> {
   try {
-    const response = await fetch(`${API_URL}/produto/${id}`, {
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    const response = await fetch(`http://${API_URL}/produto/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
       credentials: "same-origin",
@@ -338,11 +355,13 @@ export async function atualizarProduto(
   produto: NovoProdutoDTO,
 ): Promise<any> {
   try {
-    const response = await fetch(`${API_URL}/produto/${id}`, {
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    const response = await fetch(`http://${API_URL}/produto/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       body: JSON.stringify(produto),
       cache: "no-store",
@@ -376,11 +395,13 @@ export async function atualizarProduto(
  */
 export async function excluirProduto(id: number): Promise<any> {
   try {
-    const response = await fetch(`${API_URL}/produto/${id}`, {
+    const cookie = (await cookies()).get("authToken")?.value;
+
+    const response = await fetch(`http://${API_URL}/produto/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTokenFromCookie()}`,
+        Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
       credentials: "same-origin",
@@ -406,17 +427,4 @@ export async function excluirProduto(id: number): Promise<any> {
       message: "Erro de rede ocorreu",
     };
   }
-}
-
-/**
- * Gets token from cookie
- */
-function getTokenFromCookie(): string | null {
-  if (typeof document === "undefined") return null;
-
-  const tokenCookie = document.cookie
-    .split(";")
-    .find((c) => c.trim().startsWith("authToken="));
-
-  return tokenCookie ? tokenCookie.split("=")[1].trim() : null;
 }
