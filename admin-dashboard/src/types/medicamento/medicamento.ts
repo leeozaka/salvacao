@@ -3,16 +3,15 @@ import { Produto } from "../entities";
 export interface Medicamento extends Produto {
   composicao: string;
 }
-
-// Tipos específicos para o backend
 export interface MedicamentoBackend {
+  // Campos da tabela Produto
   id: number;
   nome: string;
   idTipoProduto: number;
-  nomeTipoProduto?: string;
+  nomeTipoProduto?: string; // Campo calculado - join com TipoProduto
   idUnidadeMedidaPadrao: number;
-  siglaUnidadeMedida?: string;
-  nomeUnidadeMedida?: string;
+  siglaUnidadeMedida?: string; // Campo calculado - join com UnidadeMedida
+  nomeUnidadeMedida?: string; // Campo calculado - join com UnidadeMedida
   descricao?: string | null;
   codigoBarras?: string | null;
   isActive: boolean;
@@ -20,7 +19,7 @@ export interface MedicamentoBackend {
   updatedAt: Date;
   deletedAt?: Date | null;
 
-  // Dados específicos de medicamentos
+  // Campos da tabela MedicamentoDetalhe
   dosagem?: string | null;
   principioAtivo?: string | null;
   fabricante?: string | null;

@@ -1,4 +1,3 @@
-// Props do componente
 import {
   CreateMedicamentoDTO,
   UpdateMedicamentoDTO,
@@ -8,11 +7,15 @@ import { TipoProduto, UnidadeDeMedida } from "@/types/entities";
 
 export interface MedicamentoFormProps {
   // Pode receber tanto um medicamento existente quanto um novo
-  medicamento: CreateMedicamentoDTO | MedicamentoBackend;
+  medicamento: MedicamentoBackend | CreateMedicamentoDTO | UpdateMedicamentoDTO;
   tiposProduto: TipoProduto[];
   unidadesMedida: UnidadeDeMedida[];
+  // Alterado para aceitar união de tipos em vez de interseção
   onSubmit: (
-    medicamento: CreateMedicamentoDTO | UpdateMedicamentoDTO,
+    medicamento:
+      | MedicamentoBackend
+      | CreateMedicamentoDTO
+      | UpdateMedicamentoDTO,
   ) => Promise<void>;
   onCancel: () => void;
   isEditMode: boolean;

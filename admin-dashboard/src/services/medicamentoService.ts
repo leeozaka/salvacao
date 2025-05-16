@@ -1,3 +1,4 @@
+// src/services/medicamentoService.ts
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 import {
@@ -7,22 +8,25 @@ import {
 
 import { MedicamentoBackend } from "@/types/medicamento/medicamento";
 
-/**
- * Buscar todos os medicamentos
- */
-export async function buscarMedicamentos(
-  filtro?: Partial<MedicamentoBackend>,
-): Promise<any> {
+import { getTokenFromCookie } from "@/services/authService";
+
+export async function buscarMedicamentos(filtros = {}): Promise<any> {
   try {
-    const queryParams = filtro
-      ? `?${new URLSearchParams(
-          Object.entries(filtro)
-            .filter(([_, v]) => v !== undefined && v !== null)
-            .map(([k, v]) => [k, String(v)]) as [string, string][],
-        )}`
+    // Construir query params a partir do objeto de filtros
+    const queryParams = new URLSearchParams();
+
+    // Adicionar cada filtro como query param
+    Object.entries(filtros).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        queryParams.append(key, String(value));
+      }
+    });
+
+    const queryString = queryParams.toString()
+      ? `?${queryParams.toString()}`
       : "";
 
-    const response = await fetch(`${API_URL}/medicamento${queryParams}`, {
+    const response = await fetch(`${API_URL}/medicamento${queryString}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -207,17 +211,4 @@ export async function excluirMedicamento(id: number): Promise<any> {
       message: "Erro de rede ocorreu",
     };
   }
-}
-
-/**
- * Gets token from cookie
- */
-function getTokenFromCookie(): string | null {
-  if (typeof document === "undefined") return null;
-
-  const tokenCookie = document.cookie
-    .split(";")
-    .find((c) => c.trim().startsWith("authToken="));
-
-  return tokenCookie ? tokenCookie.split("=")[1].trim() : null;
 }

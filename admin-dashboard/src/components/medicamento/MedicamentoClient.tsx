@@ -10,10 +10,6 @@ import {
   atualizarMedicamento,
   excluirMedicamento,
 } from "@/services/medicamentoService";
-import {
-  buscarTiposProduto,
-  buscarUnidadesMedida,
-} from "@/services/produtoService";
 import { MedicamentoBackend } from "@/types/medicamento/medicamento";
 import {
   CreateMedicamentoDTO,
@@ -23,44 +19,42 @@ import { TipoProduto, UnidadeDeMedida } from "@/types/entities";
 import { MedicamentosClientProps } from "@/types/medicamento/MedicamentosClientProps";
 
 const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
-  dadosIniciais = { medicamentos: [], tipos: [], unidades: [] }, // Valores padrão
+  dadosIniciais = { medicamentos: [], tipos: [], unidades: [] },
 }) => {
   const router = useRouter();
 
   // Estados para gestão da interface
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalEditOpen, setModalEditOpen] = useState<boolean>(false);
-  // Se temos dados iniciais, não precisamos mostrar o loading
-  const [loading, setLoading] = useState<boolean>(
-    !dadosIniciais.medicamentos?.length,
-  );
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
 
-  // Estados para medicamentos - use dados iniciais se disponíveis
-  const [medicamentos, setMedicamentos] = useState<MedicamentoBackend[]>(
-    dadosIniciais.medicamentos || [],
-  );
+  // Estados para medicamentos
+  const [medicamentos, setMedicamentos] = useState<MedicamentoBackend[]>([]);
   const [tiposProduto, setTiposProduto] = useState<TipoProduto[]>(
     dadosIniciais.tipos || [],
   );
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadeDeMedida[]>(
     dadosIniciais.unidades || [],
   );
-  const [pesquisaMedicamento, setPesquisaMedicamento] = useState<string>("");
-  const [medicamentosFiltrados, setMedicamentosFiltrados] = useState<
-    MedicamentoBackend[]
-  >(dadosIniciais.medicamentos || []);
-  const [medicamentoEmEdicao, setMedicamentoEmEdicao] =
-    useState<MedicamentoBackend | null>(null);
 
-  // Estados para filtros (permanecem iguais)
+  // Filtros - serão usados para requisições ao backend
+  const [pesquisaMedicamento, setPesquisaMedicamento] = useState<string>("");
   const [filtroTipo, setFiltroTipo] = useState<number>(0);
   const [filtroPrincipioAtivo, setFiltroPrincipioAtivo] = useState<string>("");
   const [filtroNecessitaReceita, setFiltroNecessitaReceita] =
     useState<string>("todos");
 
-  // Estado para novo medicamento - use o primeiro tipo e unidade se disponíveis
+  // Debounce para não executar muitas requisições durante digitação
+  const [debouncedPesquisa, setDebouncedPesquisa] = useState<string>("");
+  const [debouncedPrincipioAtivo, setDebouncedPrincipioAtivo] =
+    useState<string>("");
+
+  const [medicamentoEmEdicao, setMedicamentoEmEdicao] =
+    useState<MedicamentoBackend | null>(null);
+
+  // Estado para novo medicamento
   const [novoMedicamento, setNovoMedicamento] = useState<CreateMedicamentoDTO>({
     nome: "",
     idTipoProduto: dadosIniciais.tipos?.length
@@ -77,108 +71,85 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
     necessitaReceita: false,
   });
 
-  // Função para limpar filtros (permanece igual)
+  // Função para limpar filtros
   const limparFiltros = () => {
     setPesquisaMedicamento("");
     setFiltroTipo(0);
     setFiltroPrincipioAtivo("");
     setFiltroNecessitaReceita("todos");
+    // Após limpar, buscar sem filtros
+    carregarMedicamentos({});
   };
 
-  // Carregar dados iniciais - só carrega se não tiver recebido via props
+  // Efeito para debounce da pesquisa
   useEffect(() => {
-    // Se já temos dados iniciais, não precisamos carregar novamente
-    if (
-      dadosIniciais.medicamentos?.length &&
-      dadosIniciais.tipos?.length &&
-      dadosIniciais.unidades?.length
-    ) {
-      return;
+    const timer = setTimeout(() => {
+      setDebouncedPesquisa(pesquisaMedicamento);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [pesquisaMedicamento]);
+
+  // Efeito para debounce do princípio ativo
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedPrincipioAtivo(filtroPrincipioAtivo);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [filtroPrincipioAtivo]);
+
+  // Efeito para carregar medicamentos ao mudar filtros
+  useEffect(() => {
+    const filtros: any = {};
+
+    if (debouncedPesquisa) {
+      filtros.termo = debouncedPesquisa;
     }
 
-    const carregarDados = async () => {
-      try {
-        setLoading(true);
-        const [tipos, unidades, medicamentosData] = await Promise.all([
-          buscarTiposProduto(),
-          buscarUnidadesMedida(),
-          buscarMedicamentos(),
-        ]);
-
-        setTiposProduto(tipos);
-        setUnidadesMedida(unidades);
-        setMedicamentos(medicamentosData);
-        setMedicamentosFiltrados(medicamentosData);
-        setLoading(false);
-      } catch (err) {
-        setError("Erro ao carregar dados. Tente novamente mais tarde.");
-        setLoading(false);
-      }
-    };
-
-    carregarDados();
-  }, [dadosIniciais]);
-
-  // Efeito para filtrar medicamentos
-  useEffect(() => {
-    let filtered = [...medicamentos];
-
-    // Filtro por texto de busca
-    if (pesquisaMedicamento.trim() !== "") {
-      filtered = filtered.filter(
-        (medicamento) =>
-          medicamento.nome
-            .toLowerCase()
-            .includes(pesquisaMedicamento.toLowerCase()) ||
-          (medicamento.principioAtivo &&
-            medicamento.principioAtivo
-              .toLowerCase()
-              .includes(pesquisaMedicamento.toLowerCase())) ||
-          (medicamento.fabricante &&
-            medicamento.fabricante
-              .toLowerCase()
-              .includes(pesquisaMedicamento.toLowerCase())) ||
-          (medicamento.codigoBarras &&
-            medicamento.codigoBarras
-              .toLowerCase()
-              .includes(pesquisaMedicamento.toLowerCase())),
-      );
-    }
-
-    // Filtro por tipo de produto
     if (filtroTipo > 0) {
-      filtered = filtered.filter(
-        (medicamento) => medicamento.idTipoProduto === filtroTipo,
-      );
+      filtros.idTipoProduto = filtroTipo;
     }
 
-    // Filtro por princípio ativo
-    if (filtroPrincipioAtivo.trim() !== "") {
-      filtered = filtered.filter(
-        (medicamento) =>
-          medicamento.principioAtivo &&
-          medicamento.principioAtivo
-            .toLowerCase()
-            .includes(filtroPrincipioAtivo.toLowerCase()),
-      );
+    if (debouncedPrincipioAtivo) {
+      filtros.principioAtivo = debouncedPrincipioAtivo;
     }
 
-    // Filtro por necessidade de receita
     if (filtroNecessitaReceita !== "todos") {
-      filtered = filtered.filter(
-        (medicamento) =>
-          medicamento.necessitaReceita === (filtroNecessitaReceita === "sim"),
-      );
+      filtros.necessitaReceita = filtroNecessitaReceita === "sim";
     }
 
-    setMedicamentosFiltrados(filtered);
+    carregarMedicamentos(filtros);
   }, [
-    pesquisaMedicamento,
-    medicamentos,
+    debouncedPesquisa,
+    debouncedPrincipioAtivo,
     filtroTipo,
-    filtroPrincipioAtivo,
     filtroNecessitaReceita,
   ]);
+
+  // Função para carregar medicamentos com filtros
+  const carregarMedicamentos = async (filtros: any) => {
+    try {
+      setLoading(true);
+      const response = await buscarMedicamentos(filtros);
+
+      if (response.success) {
+        setMedicamentos(response.data);
+      } else {
+        setError("Falha ao carregar medicamentos: " + response.message);
+        setTimeout(() => setError(""), 5000);
+      }
+    } catch (err) {
+      setError("Erro ao carregar medicamentos. Tente novamente mais tarde.");
+      setTimeout(() => setError(""), 5000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carregar dados iniciais
+  useEffect(() => {
+    // Carregar medicamentos ao iniciar
+    carregarMedicamentos({});
+  }, []);
 
   // Função auxiliar para obter o nome do tipo de produto
   const getTipoProdutoNome = (id: number): string => {
@@ -212,18 +183,24 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
     setModalOpen(true);
   };
 
-  const handleSalvarMedicamento = async () => {
+  const handleSalvarMedicamento = async (medicamento: CreateMedicamentoDTO) => {
     try {
-      const medicamentoAdicionado = await adicionarMedicamento(novoMedicamento);
-      setMedicamentos([...medicamentos, medicamentoAdicionado]);
-      setModalOpen(false);
-      setSuccess("Medicamento cadastrado com sucesso!");
-      setTimeout(() => setSuccess(""), 3000);
+      const response = await adicionarMedicamento(medicamento);
+      if (response.success) {
+        setModalOpen(false);
+        setSuccess("Medicamento cadastrado com sucesso!");
+        setTimeout(() => setSuccess(""), 3000);
+        // Recarregar lista após adicionar
+        carregarMedicamentos({});
+      } else {
+        throw new Error(response.message);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Erro ao salvar medicamento",
       );
       setTimeout(() => setError(""), 5000);
+      throw err;
     }
   };
 
@@ -232,51 +209,46 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
     setModalEditOpen(true);
   };
 
-  const handleSalvarEdicao = async () => {
+  const handleSalvarEdicao = async (medicamento: UpdateMedicamentoDTO) => {
     if (!medicamentoEmEdicao) return;
 
     try {
-      const dadosAtualizacao: UpdateMedicamentoDTO = {
-        nome: medicamentoEmEdicao.nome,
-        idTipoProduto: medicamentoEmEdicao.idTipoProduto,
-        idUnidadeMedidaPadrao: medicamentoEmEdicao.idUnidadeMedidaPadrao,
-        descricao: medicamentoEmEdicao.descricao,
-        codigoBarras: medicamentoEmEdicao.codigoBarras,
-        dosagem: medicamentoEmEdicao.dosagem,
-        principioAtivo: medicamentoEmEdicao.principioAtivo,
-        fabricante: medicamentoEmEdicao.fabricante,
-        necessitaReceita: medicamentoEmEdicao.necessitaReceita,
-      };
-
-      const medicamentoAtualizado = await atualizarMedicamento(
+      const response = await atualizarMedicamento(
         medicamentoEmEdicao.id,
-        dadosAtualizacao,
+        medicamento,
       );
 
-      setMedicamentos(
-        medicamentos.map((med) =>
-          med.id === medicamentoAtualizado.id ? medicamentoAtualizado : med,
-        ),
-      );
-
-      setModalEditOpen(false);
-      setSuccess("Medicamento atualizado com sucesso!");
-      setTimeout(() => setSuccess(""), 3000);
+      if (response.success) {
+        setModalEditOpen(false);
+        setSuccess("Medicamento atualizado com sucesso!");
+        setTimeout(() => setSuccess(""), 3000);
+        // Recarregar lista após atualizar
+        carregarMedicamentos({});
+      } else {
+        throw new Error(response.message);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Erro ao atualizar medicamento",
       );
       setTimeout(() => setError(""), 5000);
+      throw err;
     }
   };
 
   const handleExcluirMedicamento = async (id: number) => {
     if (confirm("Tem certeza que deseja excluir este medicamento?")) {
       try {
-        await excluirMedicamento(id);
-        setMedicamentos(medicamentos.filter((med) => med.id !== id));
-        setSuccess("Medicamento excluído com sucesso!");
-        setTimeout(() => setSuccess(""), 3000);
+        const response = await excluirMedicamento(id);
+
+        if (response.success) {
+          setSuccess("Medicamento excluído com sucesso!");
+          setTimeout(() => setSuccess(""), 3000);
+          // Recarregar lista após excluir
+          carregarMedicamentos({});
+        } else {
+          throw new Error(response.message);
+        }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Erro ao excluir medicamento",
@@ -398,7 +370,7 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
             Carregando medicamentos...
           </p>
         </div>
-      ) : medicamentosFiltrados.length > 0 ? (
+      ) : medicamentos.length > 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-amber-50 dark:bg-gray-700">
@@ -442,7 +414,7 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {medicamentosFiltrados.map((medicamento) => (
+              {medicamentos.map((medicamento) => (
                 <tr
                   key={medicamento.id}
                   className="hover:bg-amber-50 dark:hover:bg-gray-700"
@@ -529,22 +501,12 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
             tiposProduto={tiposProduto}
             unidadesMedida={unidadesMedida}
             onSubmit={async (medicamento) => {
+              // Usamos type assertion para garantir que estamos passando o tipo correto
               try {
-                const medicamentoAdicionado = await adicionarMedicamento(
-                  medicamento as CreateMedicamentoDTO,
-                );
-                setMedicamentos([...medicamentos, medicamentoAdicionado]);
-                setModalOpen(false);
-                setSuccess("Medicamento cadastrado com sucesso!");
-                setTimeout(() => setSuccess(""), 3000);
-              } catch (err) {
-                setError(
-                  err instanceof Error
-                    ? err.message
-                    : "Erro ao salvar medicamento",
-                );
-                setTimeout(() => setError(""), 5000);
-                throw err; // Re-throw para que o componente do formulário possa lidar com isso
+                const createDto = medicamento as CreateMedicamentoDTO;
+                await handleSalvarMedicamento(createDto);
+              } catch (error) {
+                throw error;
               }
             }}
             onCancel={() => setModalOpen(false)}
@@ -563,45 +525,12 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
             tiposProduto={tiposProduto}
             unidadesMedida={unidadesMedida}
             onSubmit={async (medicamento) => {
+              // Usamos type assertion para garantir que estamos passando o tipo correto
               try {
-                if (!medicamentoEmEdicao) return;
-
-                const dadosAtualizacao: UpdateMedicamentoDTO = {
-                  nome: medicamento.nome,
-                  idTipoProduto: medicamento.idTipoProduto,
-                  idUnidadeMedidaPadrao: medicamento.idUnidadeMedidaPadrao,
-                  descricao: medicamento.descricao,
-                  codigoBarras: medicamento.codigoBarras,
-                  dosagem: medicamento.dosagem,
-                  principioAtivo: medicamento.principioAtivo,
-                  fabricante: medicamento.fabricante,
-                  necessitaReceita: medicamento.necessitaReceita,
-                };
-
-                const medicamentoAtualizado = await atualizarMedicamento(
-                  medicamentoEmEdicao.id,
-                  dadosAtualizacao,
-                );
-
-                setMedicamentos(
-                  medicamentos.map((med) =>
-                    med.id === medicamentoAtualizado.id
-                      ? medicamentoAtualizado
-                      : med,
-                  ),
-                );
-
-                setModalEditOpen(false);
-                setSuccess("Medicamento atualizado com sucesso!");
-                setTimeout(() => setSuccess(""), 3000);
-              } catch (err) {
-                setError(
-                  err instanceof Error
-                    ? err.message
-                    : "Erro ao atualizar medicamento",
-                );
-                setTimeout(() => setError(""), 5000);
-                throw err; // Re-throw para que o componente do formulário possa lidar com isso
+                const updateDto = medicamento as UpdateMedicamentoDTO;
+                await handleSalvarEdicao(updateDto);
+              } catch (error) {
+                throw error;
               }
             }}
             onCancel={() => setModalEditOpen(false)}

@@ -16,12 +16,15 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
   isEditMode,
   title,
 }) => {
-  // Estado do formulário
+  // Estado do formulário para lidar com os três tipos possíveis
   const [formData, setFormData] = useState<
-    CreateMedicamentoDTO | MedicamentoBackend
+    MedicamentoBackend | CreateMedicamentoDTO | UpdateMedicamentoDTO
   >(medicamento);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
+  const [formValidation, setFormValidation] = useState<{
+    [key: string]: string;
+  }>({});
 
   // Atualiza o formData se o medicamento mudar
   useEffect(() => {
@@ -39,6 +42,15 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
       ...prev,
       [name]: value,
     }));
+
+    // Limpar erro de validação ao editar campo
+    if (formValidation[name]) {
+      setFormValidation((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
+    }
   };
 
   // Handler para campos numéricos
@@ -48,6 +60,15 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
       ...prev,
       [name]: parseInt(value),
     }));
+
+    // Limpar erro de validação ao editar campo
+    if (formValidation[name]) {
+      setFormValidation((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
+    }
   };
 
   // Handler para checkbox
@@ -59,19 +80,43 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
     }));
   };
 
+  // Validação de formulário no cliente (mínima, o backend fará a validação completa)
+  const validateForm = (): boolean => {
+    const errors: { [key: string]: string } = {};
+
+    if (!formData.nome || !formData.nome.trim()) {
+      errors.nome = "Nome do medicamento é obrigatório";
+    }
+
+    if (!formData.idTipoProduto || formData.idTipoProduto === 0) {
+      errors.idTipoProduto = "Selecione um tipo de produto";
+    }
+
+    if (
+      !formData.idUnidadeMedidaPadrao ||
+      formData.idUnidadeMedidaPadrao === 0
+    ) {
+      errors.idUnidadeMedidaPadrao = "Selecione uma unidade de medida";
+    }
+
+    setFormValidation(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   // Handler para envio do formulário
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validação básica
-    if (!formData.nome?.trim()) {
-      setFormError("Nome do medicamento é obrigatório");
+    // Validação no cliente antes de enviar ao backend
+    if (!validateForm()) {
       return;
     }
 
     try {
       setIsSubmitting(true);
       setFormError("");
+
+      // Passamos o formData diretamente como está
       await onSubmit(formData);
     } catch (error) {
       setFormError(
@@ -105,12 +150,19 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             <input
               type="text"
               name="nome"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
+              className={`w-full px-3 py-2 border ${
+                formValidation.nome
+                  ? "border-red-500 dark:border-red-700"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white`}
               placeholder="Nome do medicamento"
-              value={formData.nome}
+              value={formData.nome || ""}
               onChange={handleTextChange}
               required
             />
+            {formValidation.nome && (
+              <p className="text-red-500 text-xs mt-1">{formValidation.nome}</p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -133,8 +185,12 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             </label>
             <select
               name="idTipoProduto"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              value={formData.idTipoProduto}
+              className={`w-full px-3 py-2 border ${
+                formValidation.idTipoProduto
+                  ? "border-red-500 dark:border-red-700"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white`}
+              value={formData.idTipoProduto || 0}
               onChange={handleNumberChange}
               required
             >
@@ -145,6 +201,11 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 </option>
               ))}
             </select>
+            {formValidation.idTipoProduto && (
+              <p className="text-red-500 text-xs mt-1">
+                {formValidation.idTipoProduto}
+              </p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -153,8 +214,12 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             </label>
             <select
               name="idUnidadeMedidaPadrao"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white"
-              value={formData.idUnidadeMedidaPadrao}
+              className={`w-full px-3 py-2 border ${
+                formValidation.idUnidadeMedidaPadrao
+                  ? "border-red-500 dark:border-red-700"
+                  : "border-gray-300 dark:border-gray-700"
+              } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-color dark:bg-gray-700 dark:text-white`}
+              value={formData.idUnidadeMedidaPadrao || 0}
               onChange={handleNumberChange}
               required
             >
@@ -168,6 +233,11 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 </option>
               ))}
             </select>
+            {formValidation.idUnidadeMedidaPadrao && (
+              <p className="text-red-500 text-xs mt-1">
+                {formValidation.idUnidadeMedidaPadrao}
+              </p>
+            )}
           </div>
 
           <div className="mb-4">
