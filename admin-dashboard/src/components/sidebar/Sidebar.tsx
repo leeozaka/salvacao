@@ -10,6 +10,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const [openSubmenus, setOpenSubmenus] = useState<OpenSubmenus>({
     produtos: false,
     medicacao: false,
+    pessoas: false,
   });
 
   const handleSetIsOpen = useCallback(
@@ -184,13 +185,47 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             <span>Vacinação</span>
           </div>
 
-          {/* Item Pessoas */}
+          {/* Item Pessoas com Submenu */}
           <div
             className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
-            onClick={() => navigateTo("/pessoas")}
+            onClick={() => toggleSubmenu("pessoas")}
           >
             <i className="bi bi-people text-lg mr-5"></i>
             <span>Pessoas</span>
+            <i
+              className={`bi bi-chevron-down ml-auto text-gray-600 dark:text-gray-300 transition-transform duration-300 ${
+                openSubmenus.pessoas ? "rotate-180" : ""
+              }`}
+            ></i>
+          </div>
+
+          {/* Submenu de Pessoas */}
+          <div
+            className={`ml-10 mt-1 mb-2 flex flex-col space-y-1 overflow-hidden transition-all duration-300 ${
+              openSubmenus.pessoas
+                ? "max-h-52 opacity-100"
+                : "max-h-0 opacity-0"
+            }`}
+          >
+            <div
+              className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
+              onClick={() => navigateTo("/dashboard/pessoas/adotante")}
+            >
+              <i className="bi bi-dot"></i>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
+                Gerenciar adotantes
+              </span>
+            </div>
+
+            <div
+              className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
+              onClick={() => navigateTo("/dashboard/pessoas/doacao")}
+            >
+              <i className="bi bi-dot"></i>
+              <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
+                Efetuar doacao
+              </span>
+            </div>
           </div>
 
           {/* Item Produtos com Submenu */}
