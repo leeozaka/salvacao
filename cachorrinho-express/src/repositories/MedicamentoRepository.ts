@@ -21,7 +21,6 @@ export class MedicamentoRepository {
             },
           });
 
-          // Em seguida, criar o MedicamentoDetalhe associado
           await tx.medicamentoDetalhe.create({
             data: {
               idProduto: produto.id,
@@ -32,7 +31,6 @@ export class MedicamentoRepository {
             },
           });
 
-          // Buscar o produto completo com relações
           return await tx.produto.findUnique({
             where: { id: produto.id },
             include: {
@@ -98,10 +96,6 @@ export class MedicamentoRepository {
 
   async findAll(filter?: Partial<Medicamento>): Promise<Medicamento[]> {
     try {
-      // Buscar IDs de tipos de produto que são medicamentos
-      // Na prática, você precisaria identificar qual TipoProduto é usado para medicamentos
-      // Aqui estou assumindo que há um tipo específico para medicamentos
-
       const where: Prisma.ProdutoWhereInput = {
         isActive: true,
         deletedAt: null,
@@ -149,7 +143,6 @@ export class MedicamentoRepository {
     try {
       const updatedMedicamento = await this.prisma.$transaction(
         async (tx: Prisma.TransactionClient) => {
-          // Verificar se o produto existe e é um medicamento
           const existingProduto = await tx.produto.findUnique({
             where: { id: id, isActive: true, deletedAt: null },
             include: { medicamentoDetalhe: true },
@@ -159,7 +152,6 @@ export class MedicamentoRepository {
             throw new Error(`Medicamento com ID ${id} não encontrado ou está inativo/excluído.`);
           }
 
-          // Atualizar Produto
           const produtoData: Prisma.ProdutoUpdateInput = {};
           if (data.nome !== undefined) produtoData.nome = data.nome;
           if (data.idTipoProduto !== undefined)
@@ -177,7 +169,6 @@ export class MedicamentoRepository {
             });
           }
 
-          // Atualizar MedicamentoDetalhe
           const medicamentoDetalheData: Prisma.MedicamentoDetalheUpdateInput = {};
           if (data.dosagem !== undefined) medicamentoDetalheData.dosagem = data.dosagem;
           if (data.principioAtivo !== undefined)
@@ -193,7 +184,6 @@ export class MedicamentoRepository {
             });
           }
 
-          // Buscar o produto atualizado com todas as relações
           return await tx.produto.findUnique({
             where: { id: id },
             include: {
@@ -244,10 +234,6 @@ export class MedicamentoRepository {
           return false;
         }
 
-        // Não é necessário atualizar MedicamentoDetalhe explicitamente
-        // devido à relação onDelete: Cascade configurada no schema
-
-        // Realizar exclusão lógica do Produto
         const produtoUpdate = await tx.produto.update({
           where: { id: id },
           data: {

@@ -1,5 +1,3 @@
-// Atualização do arquivo container.ts para incluir as dependências de UnidadeMedida
-
 import { LoginService } from './services/LoginService';
 import { PrismaClient } from '@prisma/client';
 import { UsuarioRepository } from 'repositories/UsuarioRepository';

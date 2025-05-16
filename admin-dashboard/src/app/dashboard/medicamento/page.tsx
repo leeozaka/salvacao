@@ -6,11 +6,9 @@ import {
 } from "@/services/produtoService";
 import { buscarMedicamentos } from "@/services/medicamentoService";
 
-// Componente de página assíncrono para App Router
 export default async function MedicamentosPage() {
   console.log("Renderizando MedicamentosPage...");
 
-  // Carregar dados iniciais no servidor
   let dadosIniciais = {
     tipos: [],
     unidades: [],
@@ -18,7 +16,6 @@ export default async function MedicamentosPage() {
   };
 
   try {
-    // Passo 1: Buscar tipos
     console.log("Buscando tipos de produto...");
     const tiposResponse = await buscarTiposProduto();
     if (tiposResponse.success) {
@@ -28,7 +25,6 @@ export default async function MedicamentosPage() {
       console.error("Falha ao buscar tipos de produto:", tiposResponse.message);
     }
 
-    // Passo 2: Buscar unidades
     console.log("Buscando unidades de medida...");
     const unidadesResponse = await buscarUnidadesMedida();
     if (unidadesResponse.success) {
@@ -43,15 +39,11 @@ export default async function MedicamentosPage() {
       );
     }
 
-    // Não carregamos todos os medicamentos inicialmente
-    // O componente cliente irá buscar medicamentos com filtros do backend
-
     console.log("Carregamento de dados iniciais concluído");
   } catch (error) {
     console.error("Erro geral ao carregar dados iniciais:", error);
   }
 
-  // Renderizar o componente cliente com os dados iniciais
   console.log("Renderizando componente cliente...");
   return <MedicamentosClient dadosIniciais={dadosIniciais} />;
 }

@@ -9,11 +9,6 @@ import { TipoProdutoRepository } from '../repositories/TipoProdutoRepository';
 export class TipoProdutoService {
   constructor(private readonly tipoProdutoRepository: TipoProdutoRepository) {}
 
-  /**
-   * Cria um novo tipo de produto
-   * @param data Dados do tipo de produto a ser criado
-   * @returns Tipo de produto criado
-   */
   async create(data: CreateTipoProdutoDTO): Promise<TipoProduto> {
     if (!data.nome) {
       throw new Error('Nome do tipo de produto é obrigatório.');
@@ -31,12 +26,6 @@ export class TipoProdutoService {
     }
   }
 
-  /**
-   * Atualiza um tipo de produto existente
-   * @param id ID do tipo de produto a ser atualizado
-   * @param data Dados de atualização
-   * @returns Tipo de produto atualizado
-   */
   async update(id: number, data: UpdateTipoProdutoDTO): Promise<TipoProduto> {
     if (Object.keys(data).length === 0) {
       throw new Error('Nenhum dado de atualização fornecido.');
@@ -62,11 +51,6 @@ export class TipoProdutoService {
     }
   }
 
-  /**
-   * Exclui um tipo de produto (exclusão lógica)
-   * @param id ID do tipo de produto a ser excluído
-   * @returns True se excluído com sucesso, False se não encontrado
-   */
   async delete(id: number): Promise<boolean> {
     try {
       const result = await this.tipoProdutoRepository.delete(id);
@@ -85,11 +69,6 @@ export class TipoProdutoService {
     }
   }
 
-  /**
-   * Busca um tipo de produto pelo ID
-   * @param id ID do tipo de produto
-   * @returns Tipo de produto encontrado
-   */
   async findOne(id: number): Promise<TipoProduto> {
     try {
       const tipoProduto = await this.tipoProdutoRepository.findOne(id);
@@ -106,11 +85,6 @@ export class TipoProdutoService {
     }
   }
 
-  /**
-   * Lista todos os tipos de produto com opção de filtragem
-   * @param filter Filtros opcionais
-   * @returns Lista de tipos de produto
-   */
   async findAll(filter?: Partial<TipoProdutoDTO>): Promise<TipoProduto[]> {
     try {
       const tiposProduto = await this.tipoProdutoRepository.findAll(filter);

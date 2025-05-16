@@ -1,4 +1,3 @@
-// types/medicamento/adapter.ts
 import { Medicamento as MedicamentoFrontend } from "./medicamento";
 import { Produto } from "../entities";
 import { MedicamentoBackend } from "./medicamento";
@@ -7,7 +6,6 @@ import {
   UpdateMedicamentoDTO,
 } from "../../dto/MedicamentoDTO";
 
-// Converter do backend para o frontend
 export function backendToFrontend(
   med: MedicamentoBackend,
 ): MedicamentoFrontend {
@@ -22,7 +20,6 @@ export function backendToFrontend(
   };
 }
 
-// Converter produto frontend para medicamento
 export function produtoToMedicamento(
   produto: Produto,
 ): Partial<MedicamentoFrontend> {
@@ -33,11 +30,10 @@ export function produtoToMedicamento(
     idunidademedida: produto.idunidademedida,
     fabricante: produto.fabricante,
     dataValidade: produto.dataValidade,
-    composicao: "", // Valor padrão para composição
+    composicao: "",
   };
 }
 
-// Converter do frontend para criar no backend
 export function frontendToCreateDTO(
   med: Partial<MedicamentoFrontend>,
 ): CreateMedicamentoDTO {
@@ -54,7 +50,6 @@ export function frontendToCreateDTO(
   };
 }
 
-// Converter do frontend para atualizar no backend
 export function frontendToUpdateDTO(
   med: Partial<MedicamentoFrontend>,
 ): UpdateMedicamentoDTO {

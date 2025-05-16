@@ -12,10 +12,8 @@ import { getTokenFromCookie } from "@/services/authService";
 
 export async function buscarMedicamentos(filtros = {}): Promise<any> {
   try {
-    // Construir query params a partir do objeto de filtros
     const queryParams = new URLSearchParams();
 
-    // Adicionar cada filtro como query param
     Object.entries(filtros).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
         queryParams.append(key, String(value));
@@ -58,9 +56,6 @@ export async function buscarMedicamentos(filtros = {}): Promise<any> {
   }
 }
 
-/**
- * Buscar um medicamento por ID
- */
 export async function buscarMedicamentoPorId(id: number): Promise<any> {
   try {
     const response = await fetch(`${API_URL}/medicamento/${id}`, {
@@ -95,9 +90,6 @@ export async function buscarMedicamentoPorId(id: number): Promise<any> {
   }
 }
 
-/**
- * Adicionar novo medicamento
- */
 export async function adicionarMedicamento(
   medicamento: CreateMedicamentoDTO,
 ): Promise<any> {
@@ -135,9 +127,6 @@ export async function adicionarMedicamento(
   }
 }
 
-/**
- * Atualizar medicamento
- */
 export async function atualizarMedicamento(
   id: number,
   medicamento: UpdateMedicamentoDTO,
@@ -176,9 +165,6 @@ export async function atualizarMedicamento(
   }
 }
 
-/**
- * Excluir medicamento
- */
 export async function excluirMedicamento(id: number): Promise<any> {
   try {
     const response = await fetch(`${API_URL}/medicamento/${id}`, {

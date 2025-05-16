@@ -4,14 +4,13 @@ export interface Medicamento extends Produto {
   composicao: string;
 }
 export interface MedicamentoBackend {
-  // Campos da tabela Produto
   id: number;
   nome: string;
   idTipoProduto: number;
-  nomeTipoProduto?: string; // Campo calculado - join com TipoProduto
+  nomeTipoProduto?: string;
   idUnidadeMedidaPadrao: number;
-  siglaUnidadeMedida?: string; // Campo calculado - join com UnidadeMedida
-  nomeUnidadeMedida?: string; // Campo calculado - join com UnidadeMedida
+  siglaUnidadeMedida?: string;
+  nomeUnidadeMedida?: string;
   descricao?: string | null;
   codigoBarras?: string | null;
   isActive: boolean;
@@ -19,7 +18,6 @@ export interface MedicamentoBackend {
   updatedAt: Date;
   deletedAt?: Date | null;
 
-  // Campos da tabela MedicamentoDetalhe
   dosagem?: string | null;
   principioAtivo?: string | null;
   fabricante?: string | null;

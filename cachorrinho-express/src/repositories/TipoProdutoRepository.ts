@@ -4,11 +4,6 @@ import { TipoProduto, CreateTipoProdutoDTO, UpdateTipoProdutoDTO } from '../dtos
 export class TipoProdutoRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  /**
-   * Cria um novo tipo de produto
-   * @param data Dados do tipo de produto
-   * @returns Tipo de produto criado
-   */
   async create(data: CreateTipoProdutoDTO): Promise<TipoProduto> {
     try {
       const novaTipoProduto = await this.prisma.tipoProduto.create({
@@ -36,11 +31,6 @@ export class TipoProdutoRepository {
     }
   }
 
-  /**
-   * Busca um tipo de produto pelo ID
-   * @param id ID do tipo de produto
-   * @returns Tipo de produto ou null se não encontrado
-   */
   async findOne(id: number): Promise<TipoProduto | null> {
     try {
       const tipoProduto = await this.prisma.tipoProduto.findUnique({
@@ -64,11 +54,6 @@ export class TipoProdutoRepository {
     }
   }
 
-  /**
-   * Lista todos os tipos de produto com opção de filtragem
-   * @param filter Filtros opcionais
-   * @returns Lista de tipos de produto
-   */
   async findAll(filter?: Partial<TipoProduto>): Promise<TipoProduto[]> {
     try {
       const where: Prisma.TipoProdutoWhereInput = {
@@ -95,12 +80,6 @@ export class TipoProdutoRepository {
     }
   }
 
-  /**
-   * Atualiza um tipo de produto existente
-   * @param id ID do tipo de produto
-   * @param data Dados de atualização
-   * @returns Tipo de produto atualizado ou null se não encontrado
-   */
   async update(id: number, data: UpdateTipoProdutoDTO): Promise<TipoProduto | null> {
     try {
       // Verificar se o tipo de produto existe
@@ -143,11 +122,6 @@ export class TipoProdutoRepository {
     }
   }
 
-  /**
-   * Exclui um tipo de produto (exclusão lógica)
-   * @param id ID do tipo de produto
-   * @returns True se excluído com sucesso, False se não encontrado
-   */
   async delete(id: number): Promise<boolean> {
     try {
       const now = new Date();
@@ -161,7 +135,6 @@ export class TipoProdutoRepository {
         return false;
       }
 
-      // Verificar se existem produtos associados a este tipo
       const produtosAssociados = await this.prisma.produto.count({
         where: {
           idTipoProduto: id,
@@ -176,7 +149,6 @@ export class TipoProdutoRepository {
         );
       }
 
-      // Realizar exclusão lógica
       const tipoProdutoUpdate = await this.prisma.tipoProduto.update({
         where: { id: id },
         data: {
@@ -195,11 +167,6 @@ export class TipoProdutoRepository {
     }
   }
 
-  /**
-   * Mapeia o modelo do prisma para o DTO
-   * @param prismaModel Modelo do prisma
-   * @returns DTO TipoProduto
-   */
   private mapToTipoProduto(prismaModel: any): TipoProduto {
     return {
       id: prismaModel.id,

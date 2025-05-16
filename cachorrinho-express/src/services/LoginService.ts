@@ -7,15 +7,9 @@ import { UsuarioRepository } from '../repositories/UsuarioRepository';
 export class LoginService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
 
-  /**
-   * Authenticates a user with email and password
-   * @param loginData Login credentials (email, password)
-   * @returns Promise<LoginResponse> Contains JWT token and expiry
-   * @throws {Error} If authentication fails (invalid credentials, user not found, etc.)
-   */
   async authenticate(loginData: LoginRequest): Promise<LoginResponse> {
     if (!loginData.email || !loginData.password) {
-        throw new Error('Email and password are required.');
+      throw new Error('Email and password are required.');
     }
 
     try {
@@ -26,8 +20,8 @@ export class LoginService {
       }
 
       const isPasswordValid = await this.validateCredentials(
-          loginData.password, 
-          userWithPassword.senha
+        loginData.password,
+        userWithPassword.senha,
       );
 
       if (!isPasswordValid) {
@@ -44,19 +38,14 @@ export class LoginService {
         expires: expiryDate,
       };
     } catch (error) {
-        console.error(`Authentication failed for email ${loginData.email}:`, error);
-         if (error instanceof Error && error.message === 'Invalid credentials') {
-             throw error;
-         }
-        throw new Error('Authentication failed due to an internal error.');
+      console.error(`Authentication failed for email ${loginData.email}:`, error);
+      if (error instanceof Error && error.message === 'Invalid credentials') {
+        throw error;
+      }
+      throw new Error('Authentication failed due to an internal error.');
     }
   }
 
-  /**
-   * Verifies if a JWT token is valid
-   * @param token The JWT token to verify
-   * @returns Promise<boolean>
-   */
   async verifyToken(token: string): Promise<boolean> {
     if (!JWT_SECRET) {
       throw new Error('JWT secret is not configured');
@@ -76,16 +65,10 @@ export class LoginService {
     }
   }
 
-  /**
-   * Validates user password against stored hash
-   */
   private async validateCredentials(password: string, hash: string): Promise<boolean> {
     return compare(password, hash);
   }
 
-  /**
-   * Generates JWT token for authenticated user
-   */
   private generateToken(userId: string): string {
     if (!JWT_SECRET) {
       throw new Error('JWT secret is not configured');

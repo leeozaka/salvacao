@@ -9,11 +9,6 @@ import { UnidadeMedidaRepository } from '../repositories/UnidadeMedidaRepository
 export class UnidadeMedidaService {
   constructor(private readonly unidadeMedidaRepository: UnidadeMedidaRepository) {}
 
-  /**
-   * Cria uma nova unidade de medida
-   * @param data Dados da unidade de medida a ser criada
-   * @returns Unidade de medida criada
-   */
   async create(data: CreateUnidadeMedidaDTO): Promise<UnidadeMedida> {
     if (!data.nome || !data.sigla) {
       throw new Error('Nome e sigla da unidade de medida são obrigatórios.');
@@ -31,12 +26,6 @@ export class UnidadeMedidaService {
     }
   }
 
-  /**
-   * Atualiza uma unidade de medida existente
-   * @param id ID da unidade de medida a ser atualizada
-   * @param data Dados de atualização
-   * @returns Unidade de medida atualizada
-   */
   async update(id: number, data: UpdateUnidadeMedidaDTO): Promise<UnidadeMedida> {
     if (Object.keys(data).length === 0) {
       throw new Error('Nenhum dado de atualização fornecido.');
@@ -64,11 +53,6 @@ export class UnidadeMedidaService {
     }
   }
 
-  /**
-   * Exclui uma unidade de medida (exclusão lógica)
-   * @param id ID da unidade de medida a ser excluída
-   * @returns True se excluída com sucesso, False se não encontrada
-   */
   async delete(id: number): Promise<boolean> {
     try {
       const result = await this.unidadeMedidaRepository.delete(id);
@@ -87,11 +71,6 @@ export class UnidadeMedidaService {
     }
   }
 
-  /**
-   * Busca uma unidade de medida pelo ID
-   * @param id ID da unidade de medida
-   * @returns Unidade de medida encontrada
-   */
   async findOne(id: number): Promise<UnidadeMedida> {
     try {
       const unidadeMedida = await this.unidadeMedidaRepository.findOne(id);
@@ -108,11 +87,6 @@ export class UnidadeMedidaService {
     }
   }
 
-  /**
-   * Lista todas as unidades de medida com opção de filtragem
-   * @param filter Filtros opcionais
-   * @returns Lista de unidades de medida
-   */
   async findAll(filter?: Partial<UnidadeMedidaDTO>): Promise<UnidadeMedida[]> {
     try {
       const unidadesMedida = await this.unidadeMedidaRepository.findAll(filter);

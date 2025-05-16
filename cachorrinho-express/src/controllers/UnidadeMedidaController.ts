@@ -5,10 +5,6 @@ import { UnidadeMedidaService } from '../services/UnidadeMedidaService';
 export class UnidadeMedidaController {
   constructor(private readonly unidadeMedidaService: UnidadeMedidaService) {}
 
-  /**
-   * Cria uma nova unidade de medida
-   * @route POST /unidade-medida
-   */
   create = async (req: Request, res: Response): Promise<void> => {
     try {
       const unidadeMedida = await this.unidadeMedidaService.create(req.body);
@@ -24,10 +20,6 @@ export class UnidadeMedidaController {
     }
   };
 
-  /**
-   * Busca uma unidade de medida pelo ID
-   * @route GET /unidade-medida/:id
-   */
   findOne = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = req.params.id || req.query.id || req.body.id;
@@ -52,10 +44,6 @@ export class UnidadeMedidaController {
     }
   };
 
-  /**
-   * Lista todas as unidades de medida com opção de filtragem
-   * @route GET /unidade-medida
-   */
   findAll = async (req: Request, res: Response): Promise<void> => {
     try {
       const unidadesMedida = await this.unidadeMedidaService.findAll(req.query);
@@ -67,10 +55,6 @@ export class UnidadeMedidaController {
     }
   };
 
-  /**
-   * Atualiza uma unidade de medida existente
-   * @route PUT /unidade-medida/:id
-   */
   update = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = req.params.id || req.body.id;
@@ -95,10 +79,6 @@ export class UnidadeMedidaController {
     }
   };
 
-  /**
-   * Exclui uma unidade de medida (exclusão lógica)
-   * @route DELETE /unidade-medida/:id
-   */
   delete = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = req.params.id || req.body.id;

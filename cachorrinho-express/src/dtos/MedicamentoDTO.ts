@@ -15,7 +15,6 @@ export type Medicamento = {
   updatedAt: Date;
   deletedAt?: Date | null;
 
-  // Dados de MedicamentoDetalhe
   dosagem?: string | null;
   principioAtivo?: string | null;
   fabricante?: string | null;
@@ -29,7 +28,6 @@ export type CreateMedicamentoDTO = {
   descricao?: string | null;
   codigoBarras?: string | null;
 
-  // Dados de MedicamentoDetalhe
   dosagem?: string | null;
   principioAtivo?: string | null;
   fabricante?: string | null;
@@ -44,7 +42,6 @@ export type UpdateMedicamentoDTO = Partial<{
   codigoBarras: string | null;
   isActive: boolean;
 
-  // Dados de MedicamentoDetalhe
   dosagem: string | null;
   principioAtivo: string | null;
   fabricante: string | null;

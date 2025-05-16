@@ -8,11 +8,6 @@ import {
 export class UnidadeMedidaRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  /**
-   * Cria uma nova unidade de medida
-   * @param data Dados da unidade de medida
-   * @returns Unidade de medida criada
-   */
   async create(data: CreateUnidadeMedidaDTO): Promise<UnidadeMedida> {
     try {
       const novaUnidadeMedida = await this.prisma.unidadeMedida.create({
@@ -43,11 +38,6 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  /**
-   * Busca uma unidade de medida pelo ID
-   * @param id ID da unidade de medida
-   * @returns Unidade de medida ou null se não encontrada
-   */
   async findOne(id: number): Promise<UnidadeMedida | null> {
     try {
       const unidadeMedida = await this.prisma.unidadeMedida.findUnique({
@@ -71,11 +61,6 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  /**
-   * Lista todas as unidades de medida com opção de filtragem
-   * @param filter Filtros opcionais
-   * @returns Lista de unidades de medida
-   */
   async findAll(filter?: Partial<UnidadeMedida>): Promise<UnidadeMedida[]> {
     try {
       const where: Prisma.UnidadeMedidaWhereInput = {
@@ -102,15 +87,8 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  /**
-   * Atualiza uma unidade de medida existente
-   * @param id ID da unidade de medida
-   * @param data Dados de atualização
-   * @returns Unidade de medida atualizada ou null se não encontrada
-   */
   async update(id: number, data: UpdateUnidadeMedidaDTO): Promise<UnidadeMedida | null> {
     try {
-      // Verificar se a unidade de medida existe
       const existingUnidadeMedida = await this.prisma.unidadeMedida.findUnique({
         where: { id: id, isActive: true, deletedAt: null },
       });
@@ -153,16 +131,10 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  /**
-   * Exclui uma unidade de medida (exclusão lógica)
-   * @param id ID da unidade de medida
-   * @returns True se excluída com sucesso, False se não encontrada
-   */
   async delete(id: number): Promise<boolean> {
     try {
       const now = new Date();
 
-      // Verificar se a unidade de medida existe e está ativa
       const existingUnidadeMedida = await this.prisma.unidadeMedida.findUnique({
         where: { id: id, isActive: true, deletedAt: null },
       });
@@ -171,7 +143,6 @@ export class UnidadeMedidaRepository {
         return false;
       }
 
-      // Verificar se existem produtos associados a esta unidade
       const produtosAssociados = await this.prisma.produto.count({
         where: {
           idUnidadeMedidaPadrao: id,
@@ -186,7 +157,6 @@ export class UnidadeMedidaRepository {
         );
       }
 
-      // Verificar se existem estoques associados a esta unidade
       const estoquesAssociados = await this.prisma.estoque.count({
         where: {
           idUnidadeMedida: id,
@@ -201,7 +171,6 @@ export class UnidadeMedidaRepository {
         );
       }
 
-      // Realizar exclusão lógica
       const unidadeMedidaUpdate = await this.prisma.unidadeMedida.update({
         where: { id: id },
         data: {
@@ -220,11 +189,6 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  /**
-   * Mapeia o modelo do prisma para o DTO
-   * @param prismaModel Modelo do prisma
-   * @returns DTO UnidadeMedida
-   */
   private mapToUnidadeMedida(prismaModel: any): UnidadeMedida {
     return {
       id: prismaModel.id,

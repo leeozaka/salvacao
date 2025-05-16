@@ -5,10 +5,6 @@ import { TipoProdutoService } from '../services/TipoProdutoService';
 export class TipoProdutoController {
   constructor(private readonly tipoProdutoService: TipoProdutoService) {}
 
-  /**
-   * Cria um novo tipo de produto
-   * @route POST /tipo-produto
-   */
   create = async (req: Request, res: Response): Promise<void> => {
     try {
       const tipoProduto = await this.tipoProdutoService.create(req.body);
@@ -24,10 +20,6 @@ export class TipoProdutoController {
     }
   };
 
-  /**
-   * Busca um tipo de produto pelo ID
-   * @route GET /tipo-produto/:id
-   */
   findOne = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = req.params.id || req.query.id || req.body.id;
@@ -52,10 +44,6 @@ export class TipoProdutoController {
     }
   };
 
-  /**
-   * Lista todos os tipos de produto com opção de filtragem
-   * @route GET /tipo-produto
-   */
   findAll = async (req: Request, res: Response): Promise<void> => {
     try {
       const tiposProduto = await this.tipoProdutoService.findAll(req.query);
@@ -67,10 +55,6 @@ export class TipoProdutoController {
     }
   };
 
-  /**
-   * Atualiza um tipo de produto existente
-   * @route PUT /tipo-produto/:id
-   */
   update = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = req.params.id || req.body.id;
@@ -95,10 +79,6 @@ export class TipoProdutoController {
     }
   };
 
-  /**
-   * Exclui um tipo de produto (exclusão lógica)
-   * @route DELETE /tipo-produto/:id
-   */
   delete = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = req.params.id || req.body.id;
