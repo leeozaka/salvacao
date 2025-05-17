@@ -1,3 +1,5 @@
+import { param } from "framer-motion/client";
+
 /**
  * Validates a Brazilian CPF number
  * @param cpf CPF number to validate
@@ -171,6 +173,22 @@ export function formatPhone(phone: string): string {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
+
+/**
+ * Format CEP number with parentheses and dash
+ * @param cep CEP string (with or without formatting)
+ * @returns Formatted CEP string
+ */
+
+export const formatCEP = (cep: string): string => {
+  cep = cep.replace(/\D/g, '');
+  
+  if (cep.length <= 8) {
+    cep = cep.replace(/(\d{5})(\d)/, '$1-$2');
+  }
+  
+  return cep;
+};
 
 /**
  * Validates if email format is correct

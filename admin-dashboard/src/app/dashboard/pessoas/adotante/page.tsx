@@ -1,155 +1,20 @@
-"use client";
+"use client"
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { Adotante } from "@/types/entities";
+import { Pessoa , formularioAdotante} from "@/types/entities";
+import { adotanteService } from "@/services/adotanteService";
+import {
+  formatCPF,
+  formatPhone,
+  formatCEP,
+  isValidEmail,
+  isValidBirthday
+} from "@/utils/validationUtils";
+import { buscarCEP } from "@/services/cepService";
 
-// Interface para os dados do formulário
-interface FormDataType {
-  id?: string;
-  cpf: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  endereco: {
-    logradouro: string;
-    numero: string;
-    complemento: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-    cep: string;
-  };
-}
-
-// Interface para representar um endereço
-interface Endereco {
-  logradouro: string;
-  numero: string;
-  complemento: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-}
-
-// Serviço para operações de adotante
-const adotanteService = {
-  // Método para buscar todos os adotantes
-  buscarAdotantes: async (): Promise<Adotante[]> => {
-    try {
-      const response = await fetch('/api/adotantes');
-      if (!response.ok) {
-        throw new Error('Erro ao buscar adotantes');
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Erro ao buscar adotantes:', error);
-      return [];
-    }
-  },
-
-  // Método para cadastrar um novo adotante
-  cadastrarAdotante: async (adotante: FormDataType): Promise<Adotante> => {
-    try {
-      const response = await fetch('/api/adotantes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(adotante),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao cadastrar adotante');
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('Erro ao cadastrar adotante:', error);
-      throw error;
-    }
-  },
-
-  // Método para atualizar um adotante existente
-  atualizarAdotante: async (id: string, adotante: FormDataType): Promise<Adotante> => {
-    try {
-      const response = await fetch(`/api/adotantes/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(adotante),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao atualizar adotante');
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('Erro ao atualizar adotante:', error);
-      throw error;
-    }
-  },
-
-  // Método para excluir um adotante
-  excluirAdotante: async (id: string): Promise<void> => {
-    try {
-      const response = await fetch(`/api/adotantes/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao excluir adotante');
-      }
-    } catch (error) {
-      console.error('Erro ao excluir adotante:', error);
-      throw error;
-    }
-  }
-};
-
-// Função para formatar CPF
-const formatarCPF = (cpf: string): string => {
-  cpf = cpf.replace(/\D/g, '');
-  
-  if (cpf.length <= 11) {
-    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
-    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
-    cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-  }
-  
-  return cpf;
-};
-
-// Função para formatar telefone
-const formatarTelefone = (telefone: string): string => {
-  telefone = telefone.replace(/\D/g, '');
-  
-  if (telefone.length <= 11) {
-    if (telefone.length === 11) {
-      telefone = telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    } else {
-      telefone = telefone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
-    }
-  }
-  
-  return telefone;
-};
-
-// Função para formatar CEP
-const formatarCEP = (cep: string): string => {
-  cep = cep.replace(/\D/g, '');
-  
-  if (cep.length <= 8) {
-    cep = cep.replace(/(\d{5})(\d)/, '$1-$2');
-  }
-  
-  return cep;
-};
 
 const GerenciamentoAdotante: React.FC = () => {
   // Estado para armazenar a lista de adotantes
-  const [adotantes, setAdotantes] = useState<Adotante[]>([]);
+  const [adotantes, setAdotantes] = useState<formularioAdotante[]>([]);
   
   // Estado para controlar se está em modo de edição
   const [modoEdicao, setModoEdicao] = useState<boolean>(false);
@@ -158,12 +23,13 @@ const GerenciamentoAdotante: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [cep, setCep] = useState('');
   
   // Estado para controlar se a lista está sendo exibida ou o formulário
   const [mostrarFormulario, setMostrarFormulario] = useState<boolean>(false);
   
   // Estado para armazenar os dados do formulário
-  const [formData, setFormData] = useState<FormDataType>({
+  const [formData, setFormData] = useState<formularioAdotante>({
     cpf: "",
     nome: "",
     email: "",
@@ -213,19 +79,19 @@ const GerenciamentoAdotante: React.FC = () => {
     } else if (name === "cpf") {
       setFormData(prev => ({
         ...prev,
-        [name]: formatarCPF(value)
+        [name]: formatCPF(value)
       }));
     } else if (name === "telefone") {
       setFormData(prev => ({
         ...prev,
-        [name]: formatarTelefone(value)
+        [name]: formatPhone(value)
       }));
     } else if (name === "endereco.cep") {
       setFormData(prev => ({
         ...prev,
         endereco: {
           ...prev.endereco,
-          cep: formatarCEP(value)
+          cep: formatCEP(value)
         }
       }));
     } else {
@@ -233,50 +99,6 @@ const GerenciamentoAdotante: React.FC = () => {
         ...prev,
         [name]: value
       }));
-    }
-  };
-
-  // Função para buscar CEP
-  const buscarCEP = async () => {
-    const cep = formData.endereco.cep.replace(/\D/g, '');
-    
-    if (cep.length !== 8) {
-      setError("CEP inválido");
-      return;
-    }
-    
-    setLoading(true);
-    setError("");
-    
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-      
-      if (!response.ok) {
-        throw new Error('Erro ao buscar CEP');
-      }
-      
-      const data = await response.json();
-      
-      if (data.erro) {
-        setError("CEP não encontrado");
-        return;
-      }
-      
-      setFormData(prev => ({
-        ...prev,
-        endereco: {
-          ...prev.endereco,
-          logradouro: data.logradouro || prev.endereco.logradouro,
-          bairro: data.bairro || prev.endereco.bairro,
-          cidade: data.localidade || prev.endereco.cidade,
-          estado: data.uf || prev.endereco.estado
-        }
-      }));
-    } catch (error) {
-      setError("Erro ao buscar CEP");
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -327,14 +149,16 @@ const GerenciamentoAdotante: React.FC = () => {
   };
 
   // Função para iniciar a edição de um adotante
-  const editarAdotante = (adotante: Adotante) => {
+  //mecher depois no back
+  /* const editarAdotante = (adotante: formularioAdotante) => {
     setFormData({
-      id: adotante.id,
+      id: adotante.idpessoa,
       cpf: adotante.cpf,
       nome: adotante.nome,
       email: adotante.email,
       telefone: adotante.telefone,
-      endereco: {
+      endereco: adotante.endereco
+      /* endereco: {
         logradouro: adotante.endereco.logradouro,
         numero: adotante.endereco.numero,
         complemento: adotante.endereco.complemento || "",
@@ -342,12 +166,12 @@ const GerenciamentoAdotante: React.FC = () => {
         cidade: adotante.endereco.cidade,
         estado: adotante.endereco.estado,
         cep: adotante.endereco.cep
-      }
+      } 
     });
     
     setModoEdicao(true);
     setMostrarFormulario(true);
-  };
+  }; */
 
   // Função para iniciar um novo cadastro
   const novoAdotante = () => {
@@ -372,7 +196,8 @@ const GerenciamentoAdotante: React.FC = () => {
   };
 
   // Função para excluir um adotante
-  const excluirAdotante = async (id: string) => {
+  //nao entendi a parte do DTO
+  /* const excluirAdotante = async (id: string) => {
     if (!window.confirm("Tem certeza que deseja excluir este adotante?")) {
       return;
     }
@@ -394,7 +219,7 @@ const GerenciamentoAdotante: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }; */
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
@@ -423,86 +248,114 @@ const GerenciamentoAdotante: React.FC = () => {
 
       {!mostrarFormulario ? (
         <div>
-          <div className="flex justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-700">Lista de Adotantes</h3>
-            <button
-              onClick={novoAdotante}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
-            >
-              <i className="bi bi-plus-circle mr-2"></i>
-              Novo Adotante
-            </button>
-          </div>
+        <div className="flex justify-between mb-4">
+          <h3
+            className="text-lg font-medium"
+            style={{ color: 'var(--color-text-color)' }}
+          >
+            Lista de Adotantes
+          </h3>
+          <button
+            onClick={novoAdotante}
+            className="text-white px-4 py-2 rounded flex items-center"
+            style={{
+              backgroundColor: 'var(--color-login-button)',
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = 'var(--color-login-button-hover)')
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = 'var(--color-login-button)')
+            }
+          >
+            <i className="bi bi-plus-circle mr-2"></i>
+            Novo Adotante
+          </button>
+        </div>
 
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Nome
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div
+              className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
+              style={{ borderColor: 'var(--color-secondary-color)' }}
+            ></div>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table
+              className="min-w-full border"
+              style={{ backgroundColor: 'var(--color-bg-color)', borderColor: '#e5e7eb' }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: 'var(--color-menu-bg)' }}>
+                  {['Nome', 'CPF', 'Email', 'Telefone', 'Cidade/UF', 'Ações'].map((label) => (
+                    <th
+                      key={label}
+                      className="py-2 px-4 border-b text-left text-xs font-medium uppercase tracking-wider"
+                      style={{ color: 'var(--color-placeholder-color)' }}
+                    >
+                      {label}
                     </th>
-                    <th className="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      CPF
-                    </th>
-                    <th className="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Telefone
-                    </th>
-                    <th className="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Cidade/UF
-                    </th>
-                    <th className="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ações
-                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {adotantes.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="py-4 px-4 border-b text-center"
+                      style={{ color: 'var(--color-placeholder-color)' }}
+                    >
+                      Nenhum adotante cadastrado
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {adotantes.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-4 px-4 border-b text-center text-gray-500">
-                        Nenhum adotante cadastrado
+                ) : (
+                  adotantes.map((adotante) => (
+                    <tr key={adotante.id} className="transition-colors" style={{ transition: 'background-color 0.3s' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-menu-hover)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                      <td className="py-2 px-4 border-b" style={{ color: 'var(--color-text-color)' }}>
+                        {adotante.nome}
                       </td>
+                      <td className="py-2 px-4 border-b" style={{ color: 'var(--color-text-color)' }}>
+                        {adotante.cpf}
+                      </td>
+                      <td className="py-2 px-4 border-b" style={{ color: 'var(--color-text-color)' }}>
+                        {adotante.email}
+                      </td>
+                      <td className="py-2 px-4 border-b" style={{ color: 'var(--color-text-color)' }}>
+                        {adotante.telefone}
+                      </td>
+                      <td className="py-2 px-4 border-b" style={{ color: 'var(--color-text-color)' }}>
+                        {`${adotante.endereco.cidade}/${adotante.endereco.estado}`}
+                      </td>
+                      {/* <td className="py-2 px-4 border-b">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => editarAdotante(adotante)}
+                            style={{ color: 'var(--color-primary-color)' }}
+                            title="Editar"
+                          >
+                            <i className="bi bi-pencil"></i>
+                          </button>
+                          {/* <button
+                            onClick={() => excluirAdotante(adotante.id)}
+                            style={{ color: '#dc2626' }} // vermelho fixo para deletar
+                            title="Excluir"
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button> }
+                        </div>
+                      </td> */}
                     </tr>
-                  ) : (
-                    adotantes.map((adotante) => (
-                      <tr key={adotante.id} className="hover:bg-gray-50">
-                        <td className="py-2 px-4 border-b">{adotante.nome}</td>
-                        <td className="py-2 px-4 border-b">{adotante.cpf}</td>
-                        <td className="py-2 px-4 border-b">{adotante.email}</td>
-                        <td className="py-2 px-4 border-b">{adotante.telefone}</td>
-                        <td className="py-2 px-4 border-b">{`${adotante.endereco.cidade}/${adotante.endereco.estado}`}</td>
-                        <td className="py-2 px-4 border-b">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => editarAdotante(adotante)}
-                              className="text-blue-500 hover:text-blue-700"
-                              title="Editar"
-                            >
-                              <i className="bi bi-pencil"></i>
-                            </button>
-                            <button
-                              onClick={() => excluirAdotante(adotante.id)}
-                              className="text-red-500 hover:text-red-700"
-                              title="Excluir"
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
         </div>
       ) : (
         <div>
@@ -610,7 +463,7 @@ const GerenciamentoAdotante: React.FC = () => {
                       />
                       <button
                         type="button"
-                        onClick={buscarCEP}
+                        onClick={() => buscarCEP(cep)}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 rounded-r-md"
                       >
                         <i className="bi bi-search"></i>
