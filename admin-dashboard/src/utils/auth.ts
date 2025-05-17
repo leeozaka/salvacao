@@ -16,7 +16,7 @@ export async function verifyToken(token: string) {
 
   try {
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3344";
+      process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
     const verifyUrl = `${baseUrl}/login/verify`;
 
     const response = await fetch(verifyUrl, {
@@ -25,6 +25,7 @@ export async function verifyToken(token: string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ token }),
+      mode: "cors",
       cache: "no-store",
     });
 

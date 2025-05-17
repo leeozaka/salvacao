@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 /**
  * Sets an authentication cookie for the user
@@ -88,7 +88,7 @@ export async function verifyAuthToken(): Promise<boolean> {
 /**
  * Gets token from cookie
  */
-function getTokenFromCookie(): string | null {
+export function getTokenFromCookie(): string | null {
   if (typeof document === "undefined") return null;
 
   const tokenCookie = document.cookie

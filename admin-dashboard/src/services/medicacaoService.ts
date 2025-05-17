@@ -1,11 +1,12 @@
 import {
   Medicacao,
   Animal,
-  Medicamento,
   Pessoa,
   UnidadeDeMedida,
   ReceitaMedicamento,
 } from "@/types/entities";
+
+import { Medicamento } from "@/types/medicamento/medicamento";
 
 // Interface para representar os dados do formulário
 import { FormDataType } from "@/types/formTypes";
