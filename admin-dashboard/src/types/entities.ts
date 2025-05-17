@@ -16,7 +16,7 @@ export interface Usuario {
 export interface TipoProduto {
   id: number;
   nome: string;
-  descricao: boolean;
+  descricao: string;
 }
 
 export interface UnidadeDeMedida {
