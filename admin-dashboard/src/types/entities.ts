@@ -14,14 +14,15 @@ export interface Usuario {
 }
 
 export interface TipoProduto {
-  idtipoproduto: number;
+  id: number;
+  nome: string;
   descricao: string;
-  controlaValidade: boolean;
 }
 
 export interface UnidadeDeMedida {
-  idunidademedida: number;
-  descricao: string;
+  id: number;
+  nome: string;
+  sigla: string;
 }
 
 export interface Produto {
@@ -31,10 +32,6 @@ export interface Produto {
   idunidademedida: number; // Chave estrangeira para UnidadeDeMedida
   fabricante: string;
   dataValidade: Date | null;
-}
-
-export interface Medicamento extends Produto {
-  composicao: string;
 }
 
 export interface Vacina extends Produto {

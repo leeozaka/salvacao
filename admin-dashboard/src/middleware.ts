@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   if (isDashboardPage && authToken) {
     try {
       const apiBaseUrl =
-        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3344";
+        process.env.NEXT_PUBLIC_API_BASE_URL;
       const verifyUrl = `${apiBaseUrl}/login/verify`;
 
       const verifyRes = await fetch(verifyUrl, {
