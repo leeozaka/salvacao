@@ -1,12 +1,10 @@
 // src/services/medicamentoService.ts
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 import {
   CreateMedicamentoDTO,
   UpdateMedicamentoDTO,
 } from "../dto/MedicamentoDTO";
-
-import { MedicamentoBackend } from "@/types/medicamento/medicamento";
 
 import { getTokenFromCookie } from "@/services/authService";
 

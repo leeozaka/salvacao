@@ -14,14 +14,15 @@ export interface Usuario {
 }
 
 export interface TipoProduto {
-  idtipoproduto: number;
-  descricao: string;
-  controlaValidade: boolean;
+  id: number;
+  nome: string;
+  descricao: boolean;
 }
 
 export interface UnidadeDeMedida {
-  idunidademedida: number;
-  descricao: string;
+  id: number;
+  nome: string;
+  sigla: string;
 }
 
 export interface Produto {

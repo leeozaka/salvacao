@@ -237,7 +237,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                   Selecione um tipo
                 </option>
                 {tiposProduto.map((tipo) => (
-                  <option key={tipo.idtipoproduto} value={tipo.idtipoproduto}>
+                  <option key={tipo.id} value={tipo.id}>
                     {tipo.descricao}
                   </option>
                 ))}
@@ -272,18 +272,18 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                     : "border-gray-300 dark:border-gray-600 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 dark:focus:border-[var(--color-primary-color-dark)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
                 }`}
                 value={formData.idUnidadeMedidaPadrao || 0}
-                onChange={handleNumberChange}
+                onChange={handleTextChange}
                 required
               >
                 <option value={0} disabled>
                   Selecione uma unidade
                 </option>
                 {unidadesMedida.map((unidade) => (
-                  <option
-                    key={unidade.idunidademedida}
-                    value={unidade.idunidademedida}
+                  <option 
+                    key={unidade.id}
+                    value={unidade.id}
                   >
-                    {unidade.descricao}
+                    {unidade.nome}
                   </option>
                 ))}
               </select>

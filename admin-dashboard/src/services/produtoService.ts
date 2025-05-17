@@ -1,6 +1,6 @@
-const API_URL = "/api";
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-import { Produto, TipoProduto, UnidadeDeMedida } from "@/types/entities";
+import { Produto } from "@/types/entities";
 import { NovoProdutoDTO } from "@/dto/NovoProdutoDTO";
 import { NovoTipoDTO } from "@/dto/NovoTipoDTO";
 import { cookies } from "next/headers";
@@ -20,14 +20,13 @@ export async function buscarTiposProduto(filtro?: any): Promise<any> {
         )}`
       : "";
 
-    const response = await fetch(`http://${API_URL}/tipo-produto${queryParams}`, {
+    const response = await fetch(`${API_URL}/tipo-produto${queryParams}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -67,22 +66,21 @@ export async function buscarUnidadesMedida(filtro?: any): Promise<any> {
         )}`
       : "";
 
-    const response = await fetch(`http://${API_URL}/unidade-medida${queryParams}`, {
+    const response = await fetch(`${API_URL}/unidade-medida${queryParams}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
 
     if (response.ok) {
       return {
-        success: true,
         data: data,
+        success: true,
       };
     } else {
       return {
@@ -90,6 +88,7 @@ export async function buscarUnidadesMedida(filtro?: any): Promise<any> {
         message: data.message || "Falha ao buscar unidades de medida",
       };
     }
+    
   } catch (error) {
     console.error("Erro ao buscar unidades de medida:", error);
     return {
@@ -121,7 +120,6 @@ export async function buscarProdutos(filtro?: Partial<Produto>): Promise<any> {
         Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -153,7 +151,7 @@ export async function adicionarProduto(produto: NovoProdutoDTO): Promise<any> {
   try {
     const cookie = (await cookies()).get("authToken")?.value;
 
-    const response = await fetch(`http://${API_URL}/produto`, {
+    const response = await fetch(`${API_URL}/produto`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -161,7 +159,6 @@ export async function adicionarProduto(produto: NovoProdutoDTO): Promise<any> {
       },
       body: JSON.stringify(produto),
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -193,7 +190,7 @@ export async function adicionarTipoProduto(tipo: NovoTipoDTO): Promise<any> {
   try {
     const cookie = (await cookies()).get("authToken")?.value;
 
-    const response = await fetch(`http://${API_URL}/tipo-produto`, {
+    const response = await fetch(`${API_URL}/tipo-produto`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -201,7 +198,6 @@ export async function adicionarTipoProduto(tipo: NovoTipoDTO): Promise<any> {
       },
       body: JSON.stringify(tipo),
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -233,14 +229,13 @@ export async function excluirTipoProduto(id: number): Promise<any> {
   try {
     const cookie = (await cookies()).get("authToken")?.value;
 
-    const response = await fetch(`http://${API_URL}/tipo-produto/${id}`, {
+    const response = await fetch(`${API_URL}/tipo-produto/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -275,7 +270,7 @@ export async function atualizarTipoProduto(
   try {
     const cookie = (await cookies()).get("authToken")?.value;
 
-    const response = await fetch(`http://${API_URL}/tipo-produto/${id}`, {
+    const response = await fetch(`${API_URL}/tipo-produto/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -283,7 +278,6 @@ export async function atualizarTipoProduto(
       },
       body: JSON.stringify(tipo),
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -315,14 +309,13 @@ export async function buscarProdutoPorId(id: number): Promise<any> {
   try {
     const cookie = (await cookies()).get("authToken")?.value;
 
-    const response = await fetch(`http://${API_URL}/produto/${id}`, {
+    const response = await fetch(`${API_URL}/produto/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -357,7 +350,7 @@ export async function atualizarProduto(
   try {
     const cookie = (await cookies()).get("authToken")?.value;
 
-    const response = await fetch(`http://${API_URL}/produto/${id}`, {
+    const response = await fetch(`${API_URL}/produto/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -365,7 +358,6 @@ export async function atualizarProduto(
       },
       body: JSON.stringify(produto),
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();
@@ -397,14 +389,13 @@ export async function excluirProduto(id: number): Promise<any> {
   try {
     const cookie = (await cookies()).get("authToken")?.value;
 
-    const response = await fetch(`http://${API_URL}/produto/${id}`, {
+    const response = await fetch(`${API_URL}/produto/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cookie}`,
       },
       cache: "no-store",
-      credentials: "same-origin",
     });
 
     const data = await response.json();

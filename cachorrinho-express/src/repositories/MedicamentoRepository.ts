@@ -1,5 +1,4 @@
-import { PrismaClient, Prisma, Produto, MedicamentoDetalhe } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { Medicamento, CreateMedicamentoDTO, UpdateMedicamentoDTO } from '../dtos/MedicamentoDTO';
 
 export class MedicamentoRepository {
@@ -14,9 +13,9 @@ export class MedicamentoRepository {
             data: {
               nome: data.nome,
               idTipoProduto: data.idTipoProduto,
-              idUnidadeMedidaPadrao: data.idUnidadeMedidaPadrao,
+              idUnidadeMedidaPadrao: Number(data.idUnidadeMedidaPadrao),
               descricao: data.descricao,
-              codigoBarras: data.codigoBarras,
+              codigoBarras: new Date().getTime().toString(), // TODO: código de barras
               isActive: true,
             },
           });

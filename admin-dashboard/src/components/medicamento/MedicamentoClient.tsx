@@ -325,7 +325,7 @@ const MedicamentosClient: React.FC<MedicamentosClientProps> = ({
                 >
                   <option value={0}>Todos os tipos</option>
                   {tiposProduto.map((tipo) => (
-                    <option key={tipo.idtipoproduto} value={tipo.idtipoproduto}>
+                    <option key={tipo.id} value={tipo.id}>
                       {tipo.descricao}
                     </option>
                   ))}
