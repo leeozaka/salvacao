@@ -14,6 +14,9 @@ import { TipoProdutoController } from './controllers/TipoProdutoController';
 import { UnidadeMedidaRepository } from './repositories/UnidadeMedidaRepository';
 import { UnidadeMedidaService } from './services/UnidadeMedidaService';
 import { UnidadeMedidaController } from './controllers/UnidadeMedidaController';
+import { AdotanteRepository } from './repositories/AdotanteRepository';
+import { AdotanteService } from './services/AdotanteService';
+import { AdotanteController } from './controllers/AdotanteController';
 
 export class Container {
   private static prisma: PrismaClient;
@@ -35,6 +38,10 @@ export class Container {
   private static unidadeMedidaRepository: UnidadeMedidaRepository;
   private static unidadeMedidaService: UnidadeMedidaService;
   private static unidadeMedidaController: UnidadeMedidaController;
+
+  private static adotanteRepository: AdotanteRepository;
+  private static adotanteService: AdotanteService;
+  private static adotanteController: AdotanteController;
 
   private static loginController: LoginController;
   private static loginService: LoginService;
@@ -64,6 +71,10 @@ export class Container {
     this.unidadeMedidaRepository = new UnidadeMedidaRepository(this.prisma);
     this.unidadeMedidaService = new UnidadeMedidaService(this.unidadeMedidaRepository);
     this.unidadeMedidaController = new UnidadeMedidaController(this.unidadeMedidaService);
+
+    this.adotanteRepository = new AdotanteRepository(this.prisma);
+    this.adotanteService = new AdotanteService(this.adotanteRepository);
+    this.adotanteController = new AdotanteController(this.adotanteService);
 
     this.authMiddleware = authenticate(this.pessoaUsuarioService);
   }
@@ -103,6 +114,11 @@ export class Container {
   static getPessoaUsuarioService(): PessoaUsuarioService {
     if (!this.pessoaUsuarioService) this.init();
     return this.pessoaUsuarioService;
+  }
+
+  static getAdotanteController(): AdotanteController {
+    if (!this.adotanteController) this.init();
+    return this.adotanteController;
   }
 
   static async disconnect() {
