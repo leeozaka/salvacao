@@ -7,13 +7,13 @@ export default async function DashboardPage() {
   const compromissos = await getCompromissos();
 
   return (
-    <div className="p-6 bg-gray-50 dark:bg-menu-bg-dark min-h-screen">
+    <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <h1 className="text-2xl font-bold text-amber-600 dark:text-amber-500 flex items-center">
+          <h1 className="text-2xl font-bold text-amber-600 flex items-center">
             <i className="bi bi-calendar2-check text-amber-500 mr-3 text-2xl"></i>
             Compromissos
-            <span className="ml-2 bg-amber-100 dark:bg-menu-bg-dark text-amber-800 dark:text-amber-200 text-sm font-medium px-2.5 py-0.5 rounded-full">
+            <span className="ml-2 bg-amber-100 text-amber-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
               {compromissos.length}
             </span>
           </h1>

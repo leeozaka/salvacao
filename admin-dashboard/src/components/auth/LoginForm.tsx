@@ -61,20 +61,20 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md p-6 rounded-lg shadow-md bg-bg-color dark:bg-menu-bg-dark text-text-color dark:text-text-color-dark">
+    <div className="flex flex-col items-center justify-center w-full max-w-md p-6 rounded-lg shadow-md bg-bg-color text-text-color">
 
       <h1 className="text-2xl font-bold text-center mb-4">
         Salvacão - Dashboard
       </h1>
 
       {error && (
-        <div className="p-3 mb-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-800 dark:bg-opacity-30 border border-red-200 dark:border-red-700 rounded w-full">
+        <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded w-full">
           {error}
         </div>
       )}
 
       {redirecting && (
-        <div className="p-3 mb-4 text-sm text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-800 dark:bg-opacity-30 border border-green-200 dark:border-green-700 rounded w-full">
+        <div className="p-3 mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded w-full">
           Login realizado com suceso! {dots}
         </div>
       )}
@@ -95,7 +95,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               required
-              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
+              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color"
             />
           </div>
 
@@ -113,7 +113,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Senha"
               required
-              className="w-full px-3 py-2 mt-1 border text-[var(--color-text)] bg-primary border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
+              className="w-full px-3 py-2 mt-1 border text-[var(--color-text)] bg-primary border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color"
             />
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
           <button
             type="submit"
             disabled={isLoading || redirecting}
-            className="w-full px-4 py-2 text-sm font-medium text-text-color dark:text-text-color-dark bg-login-button dark:bg-login-button-dark rounded-md hover:bg-login-button-hover dark:hover:bg-login-button-hover-dark focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors duration-200"
+            className="w-full px-4 py-2 text-sm font-medium text-text-color bg-login-button rounded-md hover:bg-login-button-hover focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors duration-200"
           >
             {isLoading
               ? "Entrando..."
@@ -162,11 +162,11 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
       </form>
 
       <div className="mt-4 text-center w-full">
-        <p className="text-sm text-text-color dark:text-text-color-dark">
+        <p className="text-sm text-text-color">
           Não tem uma conta?{" "}
           <button
             onClick={onToggleForm}
-            className="hover:text-secondary-color dark:hover:text-secondary-color-dark hover:underline focus:outline-none transition-colors duration-200"
+            className="hover:text-secondary-color hover:underline focus:outline-none transition-colors duration-200"
           >
             Cadastre-se
           </button>

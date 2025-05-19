@@ -194,13 +194,13 @@ export default function RegisterForm({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md p-6 rounded-lg shadow-md bg-bg-color dark:bg-menu-bg-dark text-text-color dark:text-text-color-dark">
+    <div className="flex flex-col items-center justify-center w-full max-w-md p-6 rounded-lg shadow-md bg-bg-color text-text-color">
       <h1 className="text-2xl font-bold text-center mb-4">
         Criar uma Conta
       </h1>
 
       {Object.keys(errors).length > 0 && (
-        <div className="p-3 mb-4 text-sm text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-800 dark:bg-opacity-30 border border-red-200 dark:border-red-700 rounded w-full">
+        <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded w-full">
           <ul className="list-disc list-inside">
             {errors.general && <li>{errors.general}</li>}
             {Object.entries(errors).map(([field, message]) =>
@@ -227,11 +227,11 @@ export default function RegisterForm({
               type="text"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
+              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color"
               required
             />
             {errors.name && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.name}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.name}</p>
             )}
           </div>
 
@@ -248,15 +248,15 @@ export default function RegisterForm({
               type="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark ${
+              className={`w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color ${
                 emailValid === false
-                  ? "border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900 dark:bg-opacity-20"
+                  ? "border-red-300 bg-red-50"
                   : "border-[var(--color-secondary)] bg-primary"
               }`}
               required
             />
             {errors.email && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.email}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.email}</p>
             )}
           </div>
 
@@ -273,11 +273,11 @@ export default function RegisterForm({
               type="text"
               value={formatCPF(formData.cpf)}
               onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
+              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color"
               placeholder="000.000.000-00"
               required
             />
-            {errors.cpf && <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.cpf}</p>}
+            {errors.cpf && <p className="mt-1 text-xs text-red-500">{errors.cpf}</p>}
           </div>
 
           <div>
@@ -293,12 +293,12 @@ export default function RegisterForm({
               type="tel"
               value={formatPhone(formData.telephone)}
               onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
+              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color"
               placeholder="(00) 00000-0000"
               required
             />
             {errors.telephone && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.telephone}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.telephone}</p>
             )}
           </div>
 
@@ -315,15 +315,15 @@ export default function RegisterForm({
               type="date"
               value={formData.birthday}
               onChange={handleChange}
-              className={`w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark ${
+              className={`w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color ${
                 isAgeValid === false
-                  ? "border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900 dark:bg-opacity-20"
+                  ? "border-red-300 bg-red-50"
                   : "border-[var(--color-secondary)] bg-primary"
               }`}
               required
             />
             {errors.birthday && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.birthday}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.birthday}</p>
             )}
           </div>
 
@@ -340,29 +340,29 @@ export default function RegisterForm({
               type="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
+              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color"
               required
             />
             <div className="w-full h-1.5 bg-[var(--color-secondary)] rounded-full mt-1">
               <div
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  passwordStrength.color === "red" ? "bg-red-500 dark:bg-red-800 w-1/4" :
-                  passwordStrength.color === "orange" ? "bg-orange-500 dark:bg-orange-800 w-2/4" :
-                  passwordStrength.color === "yellow" ? "bg-yellow-500 dark:bg-yellow-800 w-3/4" :
-                  passwordStrength.color === "green" ? "bg-green-500 dark:bg-green-800 w-full" : "bg-gray-300 dark:bg-gray-700 w-0"
+                  passwordStrength.color === "red" ? "bg-red-500 w-1/4" :
+                  passwordStrength.color === "orange" ? "bg-orange-500 w-2/4" :
+                  passwordStrength.color === "yellow" ? "bg-yellow-500 w-3/4" :
+                  passwordStrength.color === "green" ? "bg-green-500 w-full" : "bg-gray-300 w-0"
                 }`}
               ></div>
             </div>
             <p className={`text-xs font-medium mt-1 ${
-              passwordStrength.color === "red" ? "text-red-600 dark:text-red-400" :
-              passwordStrength.color === "orange" ? "text-orange-600 dark:text-orange-400" :
-              passwordStrength.color === "yellow" ? "text-yellow-600 dark:text-yellow-400" :
-              passwordStrength.color === "green" ? "text-green-600 dark:text-green-400" : "text-[var(--color-text)] opacity-70"
+              passwordStrength.color === "red" ? "text-red-600" :
+              passwordStrength.color === "orange" ? "text-orange-600" :
+              passwordStrength.color === "yellow" ? "text-yellow-600" :
+              passwordStrength.color === "green" ? "text-green-600" : "text-[var(--color-text)] opacity-70"
             }`}>
               Força da senha: {passwordStrength.label}
             </p>
             {errors.password && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.password}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.password}</p>
             )}
           </div>
 
@@ -379,11 +379,11 @@ export default function RegisterForm({
               type="password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color dark:placeholder-placeholder-color-dark"
+              className="w-full px-3 py-2 mt-1 bg-primary border border-[var(--color-secondary)] rounded-md focus:outline-none focus:ring-2 focus:border-transparent placeholder-placeholder-color"
               required
             />
             {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.confirmPassword}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
             )}
           </div>
         </div>
@@ -392,7 +392,7 @@ export default function RegisterForm({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full px-4 py-2 text-sm font-medium text-text-color dark:text-text-color-dark bg-login-button dark:bg-login-button-dark rounded-md hover:bg-login-button-hover dark:hover:bg-login-button-hover-dark focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors duration-200"
+            className="w-full px-4 py-2 text-sm font-medium text-text-color bg-login-button rounded-md hover:bg-login-button-hover focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors duration-200"
           >
             {isLoading ? "Cadastrando..." : "Cadastrar"}
           </button>
@@ -404,14 +404,14 @@ export default function RegisterForm({
           Já tem uma conta?{" "}
           <button
             onClick={onToggleForm}
-            className="hover:text-secondary-color dark:hover:text-secondary-color-dark hover:underline focus:outline-none transition-colors duration-200"
+            className="hover:text-secondary-color hover:underline focus:outline-none transition-colors duration-200"
           >
             Faça login
           </button>
         </p>
       </div>
 
-      <div className="mt-6 text-center text-sm text-[var(--color-text)] opacity-70">
+      <div className="mt-6 text-center text-sm text-text-color opacity-70">
         &copy; {new Date().getFullYear()} Salvacão - Todos os direitos
         reservados
       </div>

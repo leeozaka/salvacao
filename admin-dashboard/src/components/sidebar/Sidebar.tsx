@@ -90,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     return (
       <div key={item.title}>
         <div
-          className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 dark:hover:bg-gray-500 transition-colors duration-200"
+          className="flex items-center px-4 py-3 my-1 rounded-md cursor-pointer hover:bg-amber-100 transition-colors duration-200"
           onClick={() => {
             if (hasSubmenu) {
               toggleSubmenu(item.title.toLowerCase());
@@ -103,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           <span>{item.title}</span>
           {hasSubmenu && (
             <i
-              className={`bi bi-chevron-down ml-auto text-gray-600 dark:text-gray-300 transition-transform duration-300 ${
+              className={`bi bi-chevron-down ml-auto text-gray-600 transition-transform duration-300 ${
                 isSubmenuOpen ? "rotate-180" : ""
               }`}
             ></i>
@@ -119,11 +119,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             {item.submenu?.map((subItem) => (
               <div
                 key={subItem.title}
-                className="flex items-center p-2 rounded hover:bg-amber-100 dark:hover:bg-gray-500 cursor-pointer transition-colors duration-200"
+                className="flex items-center p-2 rounded hover:bg-amber-100 cursor-pointer transition-colors duration-200"
                 onClick={() => navigateTo(subItem.path)}
               >
                 <i className="bi bi-dot"></i>
-                <span className="ml-2 text-gray-700 dark:text-gray-200 text-sm">
+                <span className="ml-2 text-gray-700 text-sm">
                   {subItem.title}
                 </span>
               </div>
@@ -139,7 +139,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       <button
         id="toggle-sidebar"
         onClick={toggleSidebar}
-        className="lg:hidden fixed top-4 left-4 text-3xl z-50 hover:text-amber-700 dark:hover:text-amber-400 transition-colors duration-200"
+        className="lg:hidden fixed top-4 left-4 text-3xl z-50 hover:text-amber-700 transition-colors duration-200"
         aria-label="Menu"
       >
         <i className={`bi ${isOpen ? "bi-x" : "bi-filter-left"}`}></i>
@@ -147,25 +147,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
       <aside
         id="sidebar"
-        className={`fixed top-0 left-0 w-64 h-screen shadow-md z-40 transition-transform duration-300 ease-in-out bg-bg-color dark:bg-menu-bg-dark ${
+        className={`fixed top-0 left-0 w-64 h-screen shadow-md z-40 transition-transform duration-300 ease-in-out bg-bg-color ${
           !isOpen ? "-translate-x-full lg:translate-x-0" : "translate-x-0"
         }`}
       >
-        <div className="font-semibold text-xl py-4 px-4 mx-4 my-4 text-center rounded-lg shadow-sm text-white bg-primary-color dark:bg-primary-color-dark border border-primary-color dark:border-primary-color-dark">
+        <div className="font-semibold text-xl py-4 px-4 mx-4 my-4 text-center rounded-lg shadow-sm text-white bg-primary-color border border-primary-color">
           PetControl
         </div>
 
-        <div className="mx-4 my-4 p-2 rounded-xl bg-amber-50 dark:bg-gray-600 overflow-y-auto max-h-[calc(100vh-10rem)]">
+        <div className="mx-4 my-4 p-2 rounded-xl bg-amber-50 overflow-y-auto max-h-[calc(100vh-10rem)]">
           {menuItems.map(renderMenuItem)}
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 cursor-pointer">
+        <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-200 cursor-pointer">
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center w-full px-4 py-3 rounded-md bg-red-50 dark:bg-red-700 dark:bg-opacity-20 hover:bg-red-100 dark:hover:bg-red-600 dark:hover:bg-opacity-30 transition-colors duration-200"
+            className="flex items-center justify-center w-full px-4 py-3 rounded-md bg-red-50 hover:bg-red-100 transition-colors duration-200"
           >
-            <i className="bi bi-box-arrow-right text-red-500 dark:text-red-400 text-lg mr-3"></i>
-            <span className="text-red-600 dark:text-red-300 font-medium">
+            <i className="bi bi-box-arrow-right text-red-500 text-lg mr-3"></i>
+            <span className="text-red-600 font-medium">
               Logout
             </span>
           </button>

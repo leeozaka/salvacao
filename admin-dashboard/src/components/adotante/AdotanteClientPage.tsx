@@ -77,9 +77,9 @@ const AdotanteClientPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-color-secondary-color-dark rounded-xl shadow-lg w-full max-w-4xl mx-auto overflow-hidden">
-      <div className="bg-color-menu-bg dark:bg-color-menu-bg-dark border-b border-color-primary-color/20 dark:border-color-primary-color-dark/20 px-6 py-4">
-        <h3 className="text-xl font-semibold text-color-primary-color dark:text-white flex items-center">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl mx-auto overflow-hidden">
+      <div className="bg-color-menu-bg border-b border-color-primary-color/20 px-6 py-4">
+        <h3 className="text-xl font-semibold text-color-primary-color flex items-center">
           <i className="bi bi-person-lines-fill mr-3"></i> Gerenciamento de
           Adotantes
         </h3>
@@ -87,7 +87,7 @@ const AdotanteClientPage: React.FC = () => {
 
       <div className="p-6">
         {success && (
-          <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4 mb-6 rounded-r-md animate-fadeIn">
+          <div className="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-md animate-fadeIn">
             <div className="flex items-center">
               <i className="bi bi-check-circle text-lg mr-3"></i>
               <span>Adotante excluído com sucesso!</span>
@@ -96,7 +96,7 @@ const AdotanteClientPage: React.FC = () => {
         )}
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 mb-6 rounded-r-md animate-fadeIn">
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-md animate-fadeIn">
             <div className="flex items-center">
               <i className="bi bi-exclamation-circle text-lg mr-3"></i>
               <span>{error}</span>
@@ -106,12 +106,12 @@ const AdotanteClientPage: React.FC = () => {
 
         <div>
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-medium text-color-text-color dark:text-color-text-color-dark">
+            <h3 className="text-lg font-medium text-color-text-color">
               Lista de Adotantes
             </h3>
             <button
               onClick={novoAdotante}
-              className="bg-color-primary-color hover:bg-color-primary-color-dark dark:text-white font-semibold px-4 py-2.5 rounded-lg flex items-center transition-colors duration-150"
+              className="bg-color-primary-color hover:bg-color-primary-color-dark text-white font-semibold px-4 py-2.5 rounded-lg flex items-center transition-colors duration-150"
             >
               <i className="bi bi-plus-circle mr-2"></i>
               Novo Adotante
@@ -127,15 +127,15 @@ const AdotanteClientPage: React.FC = () => {
           ) : (
             <div className="overflow-x-auto">
               <table
-                className="min-w-full border border-gray-200 dark:border-gray-700 border-color-bg-color"
+                className="min-w-full border border-gray-200 border-color-bg-color"
               >
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-gray-700/50">
+                  <tr className="bg-gray-50">
                     {['Nome', 'CPF', 'Email', 'Telefone', 'Endereço', 'Ações'].map(
                       (label) => (
                         <th
                           key={label}
-                          className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                          className="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         >
                           {label}
                         </th>
@@ -143,12 +143,12 @@ const AdotanteClientPage: React.FC = () => {
                     )}
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-color-secondary-color-dark divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="bg-white divide-y divide-gray-200">
                   {adotantes.length === 0 && !loading ? (
                     <tr>
                       <td
                         colSpan={6}
-                        className="py-4 px-4 text-center text-gray-500 dark:text-gray-400"
+                        className="py-4 px-4 text-center text-gray-500"
                       >
                         Nenhum adotante cadastrado
                       </td>
@@ -157,21 +157,21 @@ const AdotanteClientPage: React.FC = () => {
                     adotantes.map((adotante) => (
                       <tr
                         key={adotante.id}
-                        className="hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors duration-150"
+                        className="hover:bg-gray-100 transition-colors duration-150"
                       >
-                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700">
                           {adotante.pessoa.nome}
                         </td>
-                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700">
                           {adotante.pessoa.documentoIdentidade}
                         </td>
-                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700">
                           {adotante.pessoa.email}
                         </td>
-                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700">
                           {adotante.pessoa.telefone}
                         </td>
-                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                        <td className="py-3 px-4 whitespace-nowrap text-sm text-gray-700">
                           {adotante.pessoa.endereco}
                         </td>
                         <td className="py-3 px-4 whitespace-nowrap text-sm">
@@ -185,7 +185,7 @@ const AdotanteClientPage: React.FC = () => {
                             </button>
                             <button
                               onClick={() => handleDelete(adotante.id)}
-                              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 p-1 rounded-md transition-colors duration-150"
+                              className="text-red-500 hover:text-red-700 p-1 rounded-md transition-colors duration-150"
                               title="Excluir"
                             >
                               <i className="bi bi-trash"></i>
