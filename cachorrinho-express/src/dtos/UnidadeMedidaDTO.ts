@@ -1,18 +1,9 @@
-export type UnidadeMedida = {
-  id: number;
-  nome: string;
-  sigla: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date | null;
-};
+import { Activable } from './ActivableDTO';
 
-export type UnidadeMedidaDTO = {
+export type UnidadeMedidaDTO = Activable & {
   id: number;
   nome: string;
   sigla: string;
-  isActive: boolean;
 };
 
 export type CreateUnidadeMedidaDTO = {

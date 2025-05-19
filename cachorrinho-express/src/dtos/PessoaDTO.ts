@@ -1,6 +1,8 @@
 import { TipoDocumento, TipoUsuario } from '@prisma/client';
+import { UsuarioDTO } from './UsuarioDTO';
+import { Activable } from './ActivableDTO';
 
-export type PessoaUsuario = {
+export type PessoaDTO = Activable & {
     id: number;
     nome: string;
     documentoIdentidade?: string | null;
@@ -8,22 +10,10 @@ export type PessoaUsuario = {
     email?: string | null;
     telefone?: string | null;
     endereco?: string | null;
-
-    usuarioId: number;
-    tipoUsuario: TipoUsuario;
-    usuarioIsActive: boolean;
-    usuarioCreatedAt: Date;
-    usuarioUpdatedAt?: Date;
-    usuarioDeletedAt?: Date | null;
-
-    pessoaIsActive: boolean;
-    pessoaCreatedAt: Date;
-    pessoaUpdatedAt?: Date;
-    pessoaDeletedAt?: Date | null;
+    usuario?: UsuarioDTO;
 };
 
-
-export type CreatePessoaUsuarioDTO = {
+export type CreatePessoaDTO = {
     nome: string;
     documentoIdentidade?: string | null;
     tipoDocumento?: TipoDocumento | null;
@@ -35,17 +25,19 @@ export type CreatePessoaUsuarioDTO = {
     senha: string;
 };
 
-
-export type UpdatePessoaUsuarioDTO = Partial<{
+export type UpdatePessoaDTO = Partial<{
     nome: string;
     documentoIdentidade: string | null;
     tipoDocumento: TipoDocumento | null;
     email: string | null;
     telefone: string | null;
     endereco: string | null;
-    pessoaIsActive: boolean;
+    isActive: boolean;
 
     tipoUsuario: TipoUsuario;
     senha: string;
     usuarioIsActive: boolean;
+    usuarioCreatedAt: Date;
+    usuarioUpdatedAt: Date;
+    usuarioDeletedAt: Date | null;
 }>; 

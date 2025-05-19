@@ -1,10 +1,10 @@
 import { PrismaClient, Prisma } from '@prisma/client';
-import { Medicamento, CreateMedicamentoDTO, UpdateMedicamentoDTO } from '../dtos/MedicamentoDTO';
+import { MedicamentoDTO, CreateMedicamentoDTO, UpdateMedicamentoDTO } from '../dtos/MedicamentoDTO';
 
 export class MedicamentoRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(data: CreateMedicamentoDTO): Promise<Medicamento> {
+  async create(data: CreateMedicamentoDTO): Promise<MedicamentoDTO> {
     try {
       const newMedicamento = await this.prisma.$transaction(
         async (tx: Prisma.TransactionClient) => {
@@ -65,7 +65,7 @@ export class MedicamentoRepository {
     }
   }
 
-  async findOne(id: number): Promise<Medicamento | null> {
+  async findOne(id: number): Promise<MedicamentoDTO | null> {
     try {
       const produto = await this.prisma.produto.findUnique({
         where: {
@@ -93,7 +93,7 @@ export class MedicamentoRepository {
     }
   }
 
-  async findAll(filter?: Partial<Medicamento>): Promise<Medicamento[]> {
+  async findAll(filter?: Partial<MedicamentoDTO>): Promise<MedicamentoDTO[]> {
     try {
       const where: Prisma.ProdutoWhereInput = {
         isActive: true,
@@ -138,7 +138,7 @@ export class MedicamentoRepository {
     }
   }
 
-  async update(id: number, data: UpdateMedicamentoDTO): Promise<Medicamento | null> {
+  async update(id: number, data: UpdateMedicamentoDTO): Promise<MedicamentoDTO | null> {
     try {
       const updatedMedicamento = await this.prisma.$transaction(
         async (tx: Prisma.TransactionClient) => {
@@ -254,7 +254,7 @@ export class MedicamentoRepository {
     }
   }
 
-  private mapToMedicamento(produto: any): Medicamento {
+  private mapToMedicamento(produto: any): MedicamentoDTO {
     if (!produto || !produto.medicamentoDetalhe) {
       throw new Error('Produto inválido ou medicamentoDetalhe ausente');
     }

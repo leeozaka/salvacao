@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { PessoaUsuarioService } from 'services/PessoaUsuarioService';
+import { PessoaService } from 'services/PessoaService';
 
 /**
  * Controller handling HTTP requests for User operations
  * Manages user-related endpoints and coordinates with UserService
  */
-export class PessoaUsuarioController {
-  constructor(private readonly userService: PessoaUsuarioService) {}
+export class PessoaController {
+  constructor(private readonly pessoaService: PessoaService) {}
 
   /**
    * Creates a new user
@@ -16,7 +16,7 @@ export class PessoaUsuarioController {
    */
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const user = await this.userService.create(req.body);
+      const user = await this.pessoaService.create(req.body);
       res.status(StatusCodes.CREATED).json(user);
     } catch (error) {
       if (Array.isArray(error)) {
@@ -43,7 +43,7 @@ export class PessoaUsuarioController {
         return;
       }
 
-      const user = await this.userService.findOne(Number(id));
+      const user = await this.pessoaService.findOne(Number(id));
       res.status(StatusCodes.OK).json(user);
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -61,7 +61,7 @@ export class PessoaUsuarioController {
     const buscarPessoas = req.query.buscarPessoas === 'true';
 
     try {
-      const users = await this.userService.findAll(buscarPessoas);
+      const users = await this.pessoaService.findAll(buscarPessoas);
       res.status(StatusCodes.OK).json(users);
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -77,7 +77,7 @@ export class PessoaUsuarioController {
    */
   update = async (req: Request, res: Response): Promise<void> => {
     try {
-      const user = await this.userService.update(req.body.id, req.body);
+      const user = await this.pessoaService.update(req.body.id, req.body);
       res.status(StatusCodes.OK).json(user);
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -93,7 +93,7 @@ export class PessoaUsuarioController {
    */
   delete = async (req: Request, res: Response): Promise<void> => {
     try {
-      await this.userService.delete(req.body.userId);
+      await this.pessoaService.delete(req.body.userId);
       res.status(StatusCodes.NO_CONTENT).send();
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

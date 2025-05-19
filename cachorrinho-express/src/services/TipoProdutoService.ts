@@ -1,97 +1,51 @@
-import {
-  TipoProduto,
-  TipoProdutoDTO,
-  CreateTipoProdutoDTO,
-  UpdateTipoProdutoDTO,
-} from '../dtos/TipoProdutoDTO';
 import { TipoProdutoRepository } from '../repositories/TipoProdutoRepository';
+import { TipoProdutoDTO, CreateTipoProdutoDTO, UpdateTipoProdutoDTO } from '../dtos/TipoProdutoDTO';
 
 export class TipoProdutoService {
   constructor(private readonly tipoProdutoRepository: TipoProdutoRepository) {}
 
-  async create(data: CreateTipoProdutoDTO): Promise<TipoProduto> {
-    if (!data.nome) {
-      throw new Error('Nome do tipo de produto é obrigatório.');
-    }
-
+  async create(data: CreateTipoProdutoDTO): Promise<TipoProdutoDTO> {
     try {
-      const novoTipoProduto = await this.tipoProdutoRepository.create(data);
-      return novoTipoProduto;
+      return await this.tipoProdutoRepository.create(data);
     } catch (error) {
-      console.error('Erro em TipoProdutoService.create:', error);
-      if (error instanceof Error && error.message.includes('já existe')) {
-        throw new Error(error.message);
-      }
-      throw new Error('Falha ao criar tipo de produto.');
+      console.error('Erro ao criar tipo de produto:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao criar tipo de produto: ${String(error)}`);
     }
   }
 
-  async update(id: number, data: UpdateTipoProdutoDTO): Promise<TipoProduto> {
-    if (Object.keys(data).length === 0) {
-      throw new Error('Nenhum dado de atualização fornecido.');
-    }
-
+  async findOne(id: number): Promise<TipoProdutoDTO | null> {
     try {
-      const tipoProdutoAtualizado = await this.tipoProdutoRepository.update(id, data);
-
-      if (!tipoProdutoAtualizado) {
-        throw new Error(`Tipo de produto com ID ${id} não encontrado ou não pôde ser atualizado.`);
-      }
-
-      return tipoProdutoAtualizado;
+      return await this.tipoProdutoRepository.findOne(id);
     } catch (error) {
-      console.error(`Erro em TipoProdutoService.update para ID ${id}:`, error);
-      if (error instanceof Error && error.message.includes('não encontrado')) {
-        throw new Error(error.message);
-      }
-      if (error instanceof Error && error.message.includes('já existe')) {
-        throw new Error(error.message);
-      }
-      throw new Error('Falha ao atualizar tipo de produto.');
+      console.error(`Erro ao buscar tipo de produto por ID ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao buscar tipo de produto: ${String(error)}`);
+    }
+  }
+
+  async findAll(): Promise<TipoProdutoDTO[]> {
+    try {
+      return await this.tipoProdutoRepository.findAll();
+    } catch (error) {
+      console.error('Erro ao buscar todos os tipos de produto:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao buscar tipos de produto: ${String(error)}`);
+    }
+  }
+
+  async update(id: number, data: UpdateTipoProdutoDTO): Promise<TipoProdutoDTO | null> {
+    try {
+      return await this.tipoProdutoRepository.update(id, data);
+    } catch (error) {
+      console.error(`Erro ao atualizar tipo de produto ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao atualizar tipo de produto: ${String(error)}`);
     }
   }
 
   async delete(id: number): Promise<boolean> {
     try {
-      const result = await this.tipoProdutoRepository.delete(id);
-
-      if (!result) {
-        console.warn(
-          `Tentativa de excluir tipo de produto inexistente ou já excluído com ID ${id}`,
-        );
-        return false;
-      }
-
-      return result;
+      return await this.tipoProdutoRepository.delete(id);
     } catch (error) {
-      console.error(`Erro em TipoProdutoService.delete para ID ${id}:`, error);
-      throw new Error('Falha ao excluir tipo de produto.');
-    }
-  }
-
-  async findOne(id: number): Promise<TipoProduto> {
-    try {
-      const tipoProduto = await this.tipoProdutoRepository.findOne(id);
-      if (!tipoProduto) {
-        throw new Error(`Tipo de produto com ID ${id} não encontrado.`);
-      }
-      return tipoProduto;
-    } catch (error) {
-      console.error(`Erro em TipoProdutoService.findOne para ID ${id}:`, error);
-      if (error instanceof Error && error.message.includes('não encontrado')) {
-        throw error;
-      }
-      throw new Error('Falha ao buscar tipo de produto.');
-    }
-  }
-
-  async findAll(filter?: Partial<TipoProdutoDTO>): Promise<TipoProduto[]> {
-    try {
-      const tiposProduto = await this.tipoProdutoRepository.findAll(filter);
-      return tiposProduto;
-    } catch (error) {
-      console.error('Erro em TipoProdutoService.findAll:', error);
-      throw new Error('Falha ao recuperar tipos de produto.');
+      console.error(`Erro ao excluir tipo de produto ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao excluir tipo de produto: ${String(error)}`);
     }
   }
 }

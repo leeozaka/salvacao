@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secret';
-import { PessoaUsuarioService } from 'services/PessoaUsuarioService';
-import { EntityAttribute, EntityType } from 'enums/ErrorTypes';
+import { PessoaService } from 'services/PessoaService';
 import JwtPayload from 'interfaces/JwtPayloadInterface';
 
 /**
@@ -10,7 +9,7 @@ import JwtPayload from 'interfaces/JwtPayloadInterface';
  * Validates JWT token and attaches user to request
  */
 export const authenticate =
-  (userService: PessoaUsuarioService) =>
+  (userService: PessoaService) =>
   async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const authHeader = req.headers.authorization;
@@ -19,8 +18,6 @@ export const authenticate =
         return res.status(401).json({
           errors: [
             {
-              type: EntityType.USER,
-              attribute: EntityAttribute.TOKEN,
               message: 'Invalid or missing authentication token',
             },
           ],
@@ -31,8 +28,6 @@ export const authenticate =
         return res.status(401).json({
           errors: [
             {
-              type: EntityType.USER,
-              attribute: EntityAttribute.TOKEN,
               message: 'JWT secret is not configured',
             },
           ],
@@ -46,8 +41,6 @@ export const authenticate =
         return res.status(401).json({
           errors: [
             {
-              type: EntityType.USER,
-              attribute: EntityAttribute.TOKEN,
               message: 'Invalid token payload',
             },
           ],
@@ -60,8 +53,6 @@ export const authenticate =
         return res.status(401).json({
           errors: [
             {
-              type: EntityType.USER,
-              attribute: EntityAttribute.TOKEN,
               message: 'User not found',
             },
           ],
@@ -77,8 +68,6 @@ export const authenticate =
       return res.status(401).json({
         errors: [
           {
-            type: EntityType.USER,
-            attribute: EntityAttribute.TOKEN,
             message: error instanceof Error ? error.message : 'Authentication failed',
           },
         ],

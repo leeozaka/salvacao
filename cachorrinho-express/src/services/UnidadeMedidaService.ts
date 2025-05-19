@@ -1,99 +1,51 @@
-import {
-  UnidadeMedida,
-  UnidadeMedidaDTO,
-  CreateUnidadeMedidaDTO,
-  UpdateUnidadeMedidaDTO,
-} from '../dtos/UnidadeMedidaDTO';
 import { UnidadeMedidaRepository } from '../repositories/UnidadeMedidaRepository';
+import { UnidadeMedidaDTO, CreateUnidadeMedidaDTO, UpdateUnidadeMedidaDTO } from '../dtos/UnidadeMedidaDTO';
 
 export class UnidadeMedidaService {
   constructor(private readonly unidadeMedidaRepository: UnidadeMedidaRepository) {}
 
-  async create(data: CreateUnidadeMedidaDTO): Promise<UnidadeMedida> {
-    if (!data.nome || !data.sigla) {
-      throw new Error('Nome e sigla da unidade de medida são obrigatórios.');
-    }
-
+  async create(data: CreateUnidadeMedidaDTO): Promise<UnidadeMedidaDTO> {
     try {
-      const novaUnidadeMedida = await this.unidadeMedidaRepository.create(data);
-      return novaUnidadeMedida;
+      return await this.unidadeMedidaRepository.create(data);
     } catch (error) {
-      console.error('Erro em UnidadeMedidaService.create:', error);
-      if (error instanceof Error && error.message.includes('já existe')) {
-        throw new Error(error.message);
-      }
-      throw new Error('Falha ao criar unidade de medida.');
+      console.error('Erro ao criar unidade de medida:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao criar unidade de medida: ${String(error)}`);
     }
   }
 
-  async update(id: number, data: UpdateUnidadeMedidaDTO): Promise<UnidadeMedida> {
-    if (Object.keys(data).length === 0) {
-      throw new Error('Nenhum dado de atualização fornecido.');
-    }
-
+  async findOne(id: number): Promise<UnidadeMedidaDTO | null> {
     try {
-      const unidadeMedidaAtualizada = await this.unidadeMedidaRepository.update(id, data);
-
-      if (!unidadeMedidaAtualizada) {
-        throw new Error(
-          `Unidade de medida com ID ${id} não encontrada ou não pôde ser atualizada.`,
-        );
-      }
-
-      return unidadeMedidaAtualizada;
+      return await this.unidadeMedidaRepository.findOne(id);
     } catch (error) {
-      console.error(`Erro em UnidadeMedidaService.update para ID ${id}:`, error);
-      if (error instanceof Error && error.message.includes('não encontrada')) {
-        throw new Error(error.message);
-      }
-      if (error instanceof Error && error.message.includes('já existe')) {
-        throw new Error(error.message);
-      }
-      throw new Error('Falha ao atualizar unidade de medida.');
+      console.error(`Erro ao buscar unidade de medida por ID ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao buscar unidade de medida: ${String(error)}`);
+    }
+  }
+
+  async findAll(): Promise<UnidadeMedidaDTO[]> {
+    try {
+      return await this.unidadeMedidaRepository.findAll();
+    } catch (error) {
+      console.error('Erro ao buscar todas as unidades de medida:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao buscar unidades de medida: ${String(error)}`);
+    }
+  }
+
+  async update(id: number, data: UpdateUnidadeMedidaDTO): Promise<UnidadeMedidaDTO | null> {
+    try {
+      return await this.unidadeMedidaRepository.update(id, data);
+    } catch (error) {
+      console.error(`Erro ao atualizar unidade de medida ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao atualizar unidade de medida: ${String(error)}`);
     }
   }
 
   async delete(id: number): Promise<boolean> {
     try {
-      const result = await this.unidadeMedidaRepository.delete(id);
-
-      if (!result) {
-        console.warn(
-          `Tentativa de excluir unidade de medida inexistente ou já excluída com ID ${id}`,
-        );
-        return false;
-      }
-
-      return result;
+      return await this.unidadeMedidaRepository.delete(id);
     } catch (error) {
-      console.error(`Erro em UnidadeMedidaService.delete para ID ${id}:`, error);
-      throw new Error('Falha ao excluir unidade de medida.');
-    }
-  }
-
-  async findOne(id: number): Promise<UnidadeMedida> {
-    try {
-      const unidadeMedida = await this.unidadeMedidaRepository.findOne(id);
-      if (!unidadeMedida) {
-        throw new Error(`Unidade de medida com ID ${id} não encontrada.`);
-      }
-      return unidadeMedida;
-    } catch (error) {
-      console.error(`Erro em UnidadeMedidaService.findOne para ID ${id}:`, error);
-      if (error instanceof Error && error.message.includes('não encontrada')) {
-        throw error;
-      }
-      throw new Error('Falha ao buscar unidade de medida.');
-    }
-  }
-
-  async findAll(filter?: Partial<UnidadeMedidaDTO>): Promise<UnidadeMedida[]> {
-    try {
-      const unidadesMedida = await this.unidadeMedidaRepository.findAll(filter);
-      return unidadesMedida;
-    } catch (error) {
-      console.error('Erro em UnidadeMedidaService.findAll:', error);
-      throw new Error('Falha ao recuperar unidades de medida.');
+      console.error(`Erro ao excluir unidade de medida ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao excluir unidade de medida: ${String(error)}`);
     }
   }
 }

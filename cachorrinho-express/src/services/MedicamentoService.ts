@@ -1,6 +1,6 @@
 import { MedicamentoRepository } from '../repositories/MedicamentoRepository';
 import {
-  Medicamento,
+  MedicamentoDTO,
   CreateMedicamentoDTO,
   UpdateMedicamentoDTO,
 } from '../dtos/MedicamentoDTO';
@@ -9,7 +9,7 @@ export class MedicamentoService {
   constructor(private readonly medicamentoRepository: MedicamentoRepository) {}
 
 
-  async create(data: CreateMedicamentoDTO): Promise<Medicamento> {
+  async create(data: CreateMedicamentoDTO): Promise<MedicamentoDTO> {
     if (!data.nome || !data.idTipoProduto || !data.idUnidadeMedidaPadrao) {
       throw new Error('Campos obrigatórios faltando (nome, tipo de produto, unidade de medida).');
     }
@@ -27,7 +27,7 @@ export class MedicamentoService {
   }
 
  
-  async update(id: number, data: UpdateMedicamentoDTO): Promise<Medicamento> {
+  async update(id: number, data: UpdateMedicamentoDTO): Promise<MedicamentoDTO> {
     if (Object.keys(data).length === 0) {
       throw new Error('Nenhum dado de atualização fornecido.');
     }
@@ -69,7 +69,7 @@ export class MedicamentoService {
     }
   }
 
-  async findOne(id: number): Promise<Medicamento> {
+  async findOne(id: number): Promise<MedicamentoDTO> {
     try {
       const medicamento = await this.medicamentoRepository.findOne(id);
       if (!medicamento) {
@@ -86,7 +86,7 @@ export class MedicamentoService {
   }
 
  
-  async findAll(filter?: Partial<Medicamento>): Promise<Medicamento[]> {
+  async findAll(filter?: Partial<MedicamentoDTO>): Promise<MedicamentoDTO[]> {
     try {
       const medicamentos = await this.medicamentoRepository.findAll(filter);
       return medicamentos;
