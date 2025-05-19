@@ -50,7 +50,7 @@ export class PessoaUsuarioService {
       throw new Error('No update data provided.');
     }
 
-    let updateData = { ...data };
+    const updateData = { ...data };
     if (data.senha) {
       updateData.senha = await hash(data.senha, 12);
     }
@@ -154,13 +154,12 @@ export class PessoaUsuarioService {
     }
   }
 
-  async findAll(filter?: Partial<PessoaUsuario>): Promise<PessoaUsuario[]> {
+  async findAll(buscarPessoas: boolean): Promise<PessoaUsuario[]> {
     try {
-      const users = await this.usuarioRepository.findAll(filter);
+      const users = await this.usuarioRepository.findAll(buscarPessoas);
       return users;
     } catch (error) {
       console.error('Error in PessoaUsuarioService.findAll:', error);
-      // Replace with generic InternalServerError or FindError
       throw new Error('Failed to retrieve users.');
     }
   }

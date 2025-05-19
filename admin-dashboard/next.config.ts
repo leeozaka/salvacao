@@ -21,9 +21,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
 
-  // Configuração de proxy para API
   async rewrites() {
     return [
       {
