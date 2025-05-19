@@ -58,8 +58,10 @@ export class PessoaUsuarioController {
    * @param res - Express response object
    */
   findAll = async (req: Request, res: Response): Promise<void> => {
+    const buscarPessoas = req.query.buscarPessoas === 'true';
+
     try {
-      const users = await this.userService.findAll(req.body.userId);
+      const users = await this.userService.findAll(buscarPessoas);
       res.status(StatusCodes.OK).json(users);
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

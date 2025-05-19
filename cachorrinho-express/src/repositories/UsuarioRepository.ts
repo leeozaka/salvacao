@@ -85,7 +85,7 @@ export class UsuarioRepository {
     }
   }
 
-  async findAll(filter?: Partial<PessoaUsuario>): Promise<PessoaUsuario[]> {
+  async findAll(buscarPessoas: boolean): Promise<PessoaUsuario[]> {
     try {
       const where: Prisma.PessoaWhereInput = {
         isActive: true,
@@ -94,20 +94,14 @@ export class UsuarioRepository {
           isActive: true,
           deletedAt: null,
         },
-      };
-
-      if (filter) {
-        if (filter.nome) where.nome = { contains: filter.nome, mode: 'insensitive' };
-        if (filter.email) where.email = filter.email;
-        if (filter.documentoIdentidade) where.documentoIdentidade = filter.documentoIdentidade;
-        if (filter.tipoUsuario) {
-          if (where.usuario && typeof where.usuario === 'object') {
-            (where.usuario as Prisma.UsuarioWhereInput).tipoUsuario = filter.tipoUsuario;
-          } else {
-            where.usuario = { tipoUsuario: filter.tipoUsuario, isActive: true, deletedAt: null };
+        ...(buscarPessoas && {
+          NOT: {
+            adotante: {
+              deletedAt: null
+            }
           }
-        }
-      }
+        })
+      };
 
       const pessoas = await this.prisma.pessoa.findMany({
         where: where,

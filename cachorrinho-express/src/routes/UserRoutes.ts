@@ -10,5 +10,6 @@ routes.post('/', userController.create);
 routes.get('/', auth, userController.findOne);
 routes.delete('/', auth, userController.delete);
 routes.put('/', auth, userController.update);
+routes.get('/all', auth, userController.findAll);
 
 export default routes;

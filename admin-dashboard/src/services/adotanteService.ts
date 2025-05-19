@@ -19,7 +19,6 @@ export const buscarAdotantes = async (): Promise<Adotante[]> => {
     }
 
     const data = await response.json().then(adotantes => adotantes.map((adotante: Adotante) => adotante));
-    console.log('adotantes', data);
 
     return data;
   } catch (error) {
@@ -28,8 +27,50 @@ export const buscarAdotantes = async (): Promise<Adotante[]> => {
   }
 };
 
+export const buscarAdotantePorId = async (id: string): Promise<Adotante | null> => {
+  const authToken = (await cookies()).get("authToken")?.value;
+  try {
+    const response = await fetch(`${API_URL}/adotantes/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error('Erro ao buscar adotante por ID');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar adotante por ID:', error);
+    throw error; 
+  }
+};
+
+export const buscarPessoas = async (): Promise<Pessoa[]> => {
+  const authToken = (await cookies()).get("authToken")?.value;
+
+  try {
+    const response = await fetch(`${API_URL}/user/all?buscarPessoas=true`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar pessoas');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erro ao buscar pessoas:', error);
+    throw error;
+  }
+}
 export const cadastrarAdotante = async (adotante: Adotante): Promise<Pessoa> => {
   const authToken = (await cookies()).get("authToken")?.value;
+
   try {
     const response = await fetch(`${API_URL}/adotantes`, {
       method: 'POST',
@@ -53,6 +94,7 @@ export const cadastrarAdotante = async (adotante: Adotante): Promise<Pessoa> => 
 
 export const atualizarAdotante = async (id: number, adotante: Adotante): Promise<Pessoa> => {
   const authToken = (await cookies()).get("authToken")?.value;
+
   try {
     const response = await fetch(`${API_URL}/adotantes/${id}`, {
       method: 'PUT',
