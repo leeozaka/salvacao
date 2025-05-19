@@ -1,15 +1,15 @@
-interface LoginCredentials {
+export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-interface LoginResponse {
+export interface LoginResponse {
   success: boolean;
   token?: string;
   message?: string;
 }
 
-interface RegisterCredentials {
+export interface RegisterCredentials {
   nome: string;
   email: string;
   senha: string;
@@ -21,7 +21,7 @@ interface RegisterCredentials {
   tipoUsuario: string;
 }
 
-interface RegisterResponse {
+export interface RegisterResponse {
   success: boolean;
   message?: string;
   user?: unknown;

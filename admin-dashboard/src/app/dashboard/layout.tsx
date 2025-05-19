@@ -25,23 +25,23 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-bg-color dark:bg-bg-color-dark">
+      <div className="flex min-h-screen bg-bg-color">
         <SidebarWrapper />
 
         <main className="flex-1 transition-all duration-300 flex flex-col lg:ml-64">
-          <header className="bg-menu-bg-color dark:bg-menu-bg-dark shadow-sm py-4 px-6">
+          <header className="bg-menu-bg-color shadow-sm py-4 px-6">
             <div className="flex items-center justify-end">
               <div className="flex items-center space-x-4">
                 <div className="relative text-primary-color">
                   <ThemeSwitcher />
                 </div>
                 <div className="relative">
-                  <button className="p-2 rounded-full hover:bg-amber-100 dark:hover:bg-gray-600">
+                  <button className="p-2 rounded-full hover:bg-amber-100">
                     <i className="bi bi-bell text-primary-color"></i>
                   </button>
                 </div>
                 <div className="relative">
-                  <button className="p-2 rounded-full hover:bg-amber-100 dark:hover:bg-gray-600">
+                  <button className="p-2 rounded-full hover:bg-amber-100">
                     <i className="bi bi-person-circle text-primary-color"></i>
                   </button>
                 </div>

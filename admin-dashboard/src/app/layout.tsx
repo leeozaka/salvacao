@@ -1,4 +1,4 @@
-import { ThemeProvider } from "next-themes";
+// import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
 export const metadata = {
@@ -20,13 +20,13 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           enableSystem={true}
           defaultTheme="system"
-        >
+        > */}
           {children}
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );

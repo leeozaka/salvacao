@@ -128,9 +128,9 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-[var(--color-secondary-color-dark)] rounded-xl shadow-lg w-full max-w-2xl overflow-hidden">
-      <div className="bg-[var(--color-menu-bg)] dark:bg-[var(--color-menu-bg-dark)] border-b border-[var(--color-primary-color)]/20 dark:border-[var(--color-primary-color-dark)]/20 px-6 py-4">
-        <h3 className="text-xl font-semibold text-[var(--color-primary-color)] dark:text-white">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl overflow-hidden">
+      <div className="bg-[var(--color-menu-bg)] border-b border-[var(--color-primary-color)]/20 px-6 py-4">
+        <h3 className="text-xl font-semibold text-[var(--color-primary-color)]">
           {isEditMode ? (
             <span className="flex items-center">
               <i className="bi bi-pencil-square mr-2"></i> {title}
@@ -146,7 +146,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
       <form onSubmit={handleSubmit} className="p-0">
         <div className="p-6">
           {formError && (
-            <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 mb-6 rounded-r-md animate-fadeIn">
+            <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-md animate-fadeIn">
               <div className="flex items-center">
                 <i className="bi bi-exclamation-circle text-lg mr-3"></i>
                 <p>{formError}</p>
@@ -161,8 +161,8 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 htmlFor="nome"
                 className={`block text-sm font-medium mb-1.5 ${
                   formValidation.nome
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                    ? "text-red-600"
+                    : "text-[var(--color-text-color)]"
                 }`}
               >
                 Nome do Medicamento <span className="text-red-500">*</span>
@@ -174,8 +174,8 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-colors
                 ${
                   formValidation.nome
-                    ? "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-900/20 focus:border-red-500 focus:ring-red-500/50 dark:focus:ring-red-500/30 text-red-900 dark:text-red-300"
-                    : "border-gray-300 dark:border-gray-600 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 dark:focus:border-[var(--color-primary-color-dark)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                    ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/50 text-red-900"
+                    : "border-gray-300 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 text-[var(--color-text-color)]"
                 }`}
                 placeholder="Nome completo do medicamento"
                 value={formData.nome || ""}
@@ -183,7 +183,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 required
               />
               {formValidation.nome && (
-                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center">
+                <p className="mt-1.5 text-sm text-red-600 flex items-center">
                   <i className="bi bi-exclamation-triangle-fill mr-1.5"></i>
                   {formValidation.nome}
                 </p>
@@ -194,7 +194,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             <div>
               <label
                 htmlFor="codigoBarras"
-                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+                className="block text-sm font-medium text-[var(--color-text-color)] mb-1.5"
               >
                 Código de Barras
               </label>
@@ -202,7 +202,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 id="codigoBarras"
                 type="text"
                 name="codigoBarras"
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] text-[var(--color-text-color)] transition-colors"
                 placeholder="Código de barras (opcional)"
                 value={formData.codigoBarras || ""}
                 onChange={handleTextChange}
@@ -214,8 +214,8 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 htmlFor="idTipoProduto"
                 className={`block text-sm font-medium mb-1.5 ${
                   formValidation.idTipoProduto
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                    ? "text-red-600"
+                    : "text-[var(--color-text-color)]"
                 }`}
               >
                 Tipo de Produto <span className="text-red-500">*</span>
@@ -226,8 +226,8 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white
                 ${
                   formValidation.idTipoProduto
-                    ? "border-red-300 dark:border-red-800 focus:border-red-500 focus:ring-red-500/50 dark:focus:ring-red-500/30 dark:bg-red-900/20 text-red-900 dark:text-red-300"
-                    : "border-gray-300 dark:border-gray-600 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 dark:focus:border-[var(--color-primary-color-dark)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-500/50 text-red-900"
+                    : "border-gray-300 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 text-[var(--color-text-color)]"
                 }`}
                 value={formData.idTipoProduto || 0}
                 onChange={handleNumberChange}
@@ -243,7 +243,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 ))}
               </select>
               {formValidation.idTipoProduto && (
-                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center">
+                <p className="mt-1.5 text-sm text-red-600 flex items-center">
                   <i className="bi bi-exclamation-triangle-fill mr-1.5"></i>
                   {formValidation.idTipoProduto}
                 </p>
@@ -256,8 +256,8 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 htmlFor="idUnidadeMedidaPadrao"
                 className={`block text-sm font-medium mb-1.5 ${
                   formValidation.idUnidadeMedidaPadrao
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                    ? "text-red-600"
+                    : "text-[var(--color-text-color)]"
                 }`}
               >
                 Unidade de Medida <span className="text-red-500">*</span>
@@ -268,8 +268,8 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 className={`w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition-colors bg-white
                 ${
                   formValidation.idUnidadeMedidaPadrao
-                    ? "border-red-300 dark:border-red-800 focus:border-red-500 focus:ring-red-500/50 dark:focus:ring-red-500/30 dark:bg-red-900/20 text-red-900 dark:text-red-300"
-                    : "border-gray-300 dark:border-gray-600 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 dark:focus:border-[var(--color-primary-color-dark)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)]"
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-500/50 text-red-900"
+                    : "border-gray-300 focus:border-[var(--color-primary-color)] focus:ring-[var(--color-primary-color)]/50 text-[var(--color-text-color)]"
                 }`}
                 value={formData.idUnidadeMedidaPadrao || 0}
                 onChange={handleTextChange}
@@ -288,7 +288,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 ))}
               </select>
               {formValidation.idUnidadeMedidaPadrao && (
-                <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center">
+                <p className="mt-1.5 text-sm text-red-600 flex items-center">
                   <i className="bi bi-exclamation-triangle-fill mr-1.5"></i>
                   {formValidation.idUnidadeMedidaPadrao}
                 </p>
@@ -298,7 +298,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             <div>
               <label
                 htmlFor="dosagem"
-                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+                className="block text-sm font-medium text-[var(--color-text-color)] mb-1.5"
               >
                 Dosagem
               </label>
@@ -306,7 +306,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 id="dosagem"
                 type="text"
                 name="dosagem"
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] text-[var(--color-text-color)] transition-colors"
                 placeholder="Ex: 500, 10, 250"
                 value={formData.dosagem || ""}
                 onChange={handleTextChange}
@@ -317,7 +317,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             <div>
               <label
                 htmlFor="principioAtivo"
-                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+                className="block text-sm font-medium text-[var(--color-text-color)] mb-1.5"
               >
                 Princípio Ativo
               </label>
@@ -325,7 +325,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 id="principioAtivo"
                 type="text"
                 name="principioAtivo"
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] text-[var(--color-text-color)] transition-colors"
                 placeholder="Ex: Paracetamol, Dipirona, etc."
                 value={formData.principioAtivo || ""}
                 onChange={handleTextChange}
@@ -335,7 +335,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             <div>
               <label
                 htmlFor="fabricante"
-                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+                className="block text-sm font-medium text-[var(--color-text-color)] mb-1.5"
               >
                 Fabricante
               </label>
@@ -343,7 +343,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 id="fabricante"
                 type="text"
                 name="fabricante"
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] text-[var(--color-text-color)] transition-colors"
                 placeholder="Nome do fabricante"
                 value={formData.fabricante || ""}
                 onChange={handleTextChange}
@@ -354,14 +354,14 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             <div className="md:col-span-2">
               <label
                 htmlFor="descricao"
-                className="block text-sm font-medium text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] mb-1.5"
+                className="block text-sm font-medium text-[var(--color-text-color)] mb-1.5"
               >
                 Descrição
               </label>
               <textarea
                 id="descricao"
                 name="descricao"
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] dark:focus:ring-[var(--color-primary-color-dark)]/30 dark:focus:border-[var(--color-primary-color-dark)] dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] transition-colors"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 focus:border-[var(--color-primary-color)] text-[var(--color-text-color)] transition-colors"
                 rows={3}
                 placeholder="Informações adicionais sobre o medicamento (opcional)"
                 value={formData.descricao || ""}
@@ -371,7 +371,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
 
             {/* Necessita Receita */}
             <div className="md:col-span-2 mt-2">
-              <div className="bg-[var(--color-menu-bg)] dark:bg-[var(--color-menu-bg-dark)] p-4 rounded-lg border border-[var(--color-primary-color)]/20 dark:border-[var(--color-primary-color-dark)]/20">
+              <div className="bg-[var(--color-menu-bg)] p-4 rounded-lg border border-[var(--color-primary-color)]/20">
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
                     <input
@@ -384,12 +384,12 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                     <div
                       className={`block w-14 h-8 rounded-full transition-colors ${
                         formData.necessitaReceita
-                          ? "bg-[var(--color-primary-color)] dark:bg-[var(--color-primary-color-dark)]"
-                          : "bg-gray-300 dark:bg-gray-600"
+                          ? "bg-[var(--color-primary-color)]"
+                          : "bg-gray-300"
                       }`}
                     ></div>
                     <div
-                      className={`absolute left-1 top-1 bg-white dark:bg-gray-200 w-6 h-6 rounded-full transition-transform ${
+                      className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${
                         formData.necessitaReceita
                           ? "transform translate-x-6"
                           : ""
@@ -397,10 +397,10 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                     ></div>
                   </div>
                   <div className="ml-3">
-                    <span className="font-medium text-[var(--color-secondary-color)] dark:text-[var(--color-text-color-dark)]">
+                    <span className="font-medium text-[var(--color-secondary-color)]">
                       Necessita de Receita Médica
                     </span>
-                    <p className="text-xs text-[var(--color-secondary-color)]/80 dark:text-[var(--color-text-color-dark)]/80 mt-0.5">
+                    <p className="text-xs text-[var(--color-secondary-color)]/80 mt-0.5">
                       {formData.necessitaReceita
                         ? "Este medicamento só pode ser vendido mediante apresentação de receita."
                         : "Este medicamento pode ser vendido sem necessidade de receita."}
@@ -412,10 +412,10 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
           </div>
         </div>
 
-        <div className="bg-[var(--color-menu-bg)]/50 dark:bg-[var(--color-menu-bg-dark)]/50 border-t border-[var(--color-primary-color)]/10 dark:border-[var(--color-primary-color-dark)]/10 px-6 py-4 flex justify-end gap-3">
+        <div className="bg-[var(--color-menu-bg)]/50 border-t border-[var(--color-primary-color)]/10 px-6 py-4 flex justify-end gap-3">
           <button
             type="button"
-            className="px-4 py-2.5 bg-white dark:bg-gray-700 text-[var(--color-text-color)] dark:text-[var(--color-text-color-dark)] border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-650 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500/30 dark:focus:ring-gray-400/30"
+            className="px-4 py-2.5 bg-white text-[var(--color-text-color)] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500/30"
             onClick={onCancel}
             disabled={isSubmitting}
           >
@@ -423,7 +423,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
           </button>
           <button
             type="submit"
-            className={`px-5 py-2.5 bg-[var(--color-primary-color)] hover:bg-[var(--color-secondary-color)] dark:bg-[var(--color-primary-color-dark)] dark:hover:bg-[var(--color-primary-color-dark)]/80 text-white dark:text-[var(--color-text-color-dark)] rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 dark:focus:ring-[var(--color-primary-color-dark)]/50 flex items-center justify-center min-w-[100px] ${
+            className={`px-5 py-2.5 bg-[var(--color-primary-color)] hover:bg-[var(--color-secondary-color)] text-white rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-color)]/50 flex items-center justify-center min-w-[100px] ${
               isSubmitting ? "opacity-70 cursor-not-allowed" : ""
             }`}
             disabled={isSubmitting}
@@ -431,7 +431,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
             {isSubmitting ? (
               <>
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white dark:text-[var(--color-text-color-dark)]"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
