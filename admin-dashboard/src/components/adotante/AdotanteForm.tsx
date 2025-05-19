@@ -3,7 +3,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Adotante, Pessoa } from "@/types/entities";
-import { TipoMoradia } from "@/types/enums";
+import { TipoDocumento, TipoMoradia } from "@/types/enums";
 import {
   cadastrarAdotante,
   atualizarAdotante,
@@ -28,7 +28,7 @@ const AdotanteForm: React.FC<AdotanteFormProps> = ({ adotanteId }) => {
     idPessoa: 0,
     pessoa: {
       id: 0,
-      tipoDocumento: "CPF",
+      tipoDocumento: TipoDocumento.CPF,
       documentoIdentidade: "",
       nome: "",
       email: "",
@@ -37,7 +37,7 @@ const AdotanteForm: React.FC<AdotanteFormProps> = ({ adotanteId }) => {
     },
     motivacaoAdocao: "",
     experienciaAnteriorAnimais: "",
-    tipoMoradia: "",
+    tipoMoradia: TipoMoradia.OUTRO,
     permiteAnimaisMoradia: false,
   });
 
@@ -89,7 +89,7 @@ const AdotanteForm: React.FC<AdotanteFormProps> = ({ adotanteId }) => {
         idPessoa: 0,
         pessoa: {
           id: 0,
-          tipoDocumento: "CPF",
+          tipoDocumento: TipoDocumento.CPF,
           documentoIdentidade: "",
           nome: "",
           email: "",
@@ -98,7 +98,7 @@ const AdotanteForm: React.FC<AdotanteFormProps> = ({ adotanteId }) => {
         },
         motivacaoAdocao: "",
         experienciaAnteriorAnimais: "",
-        tipoMoradia: "",
+        tipoMoradia: TipoMoradia.OUTRO,
         permiteAnimaisMoradia: false,
       });
       setModoEdicao(false);
@@ -126,7 +126,7 @@ const AdotanteForm: React.FC<AdotanteFormProps> = ({ adotanteId }) => {
           idPessoa: 0,
           pessoa: {
             id: 0,
-            tipoDocumento: "CPF",
+            tipoDocumento: TipoDocumento.CPF,
             documentoIdentidade: "",
             nome: "",
             email: "",

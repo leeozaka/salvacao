@@ -55,7 +55,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
         setIsLoading(false);
       }
     } catch (err) {
-      setError("Ocorreu um erro inesperado");
+      setError("Ocorreu um erro inesperado: " + err);
       setIsLoading(false);
     }
   };

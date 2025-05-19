@@ -14,10 +14,10 @@ import {
 } from "./enums";
 
 export interface ActivableEntity {
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date | null;
 }
 
 export interface Pessoa extends ActivableEntity {

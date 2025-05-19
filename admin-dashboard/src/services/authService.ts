@@ -1,3 +1,5 @@
+import { LoginCredentials, LoginResponse, RegisterCredentials, RegisterResponse } from "@/types/auth";
+
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 /**
