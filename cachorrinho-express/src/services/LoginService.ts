@@ -3,9 +3,54 @@ import * as jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/secret';
 import { LoginRequest, LoginResponse } from '../interfaces/LoginInterface';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';
+import { PessoaDTO } from '../dtos/PessoaDTO';
 
 export class LoginService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
+
+  async login(email: string, senha: string): Promise<PessoaDTO> {
+    try {
+      const pessoa = await this.usuarioRepository.findByEmailForAuth(email);
+
+      if (!pessoa) {
+        throw new Error('Usuário não encontrado.');
+      }
+
+      if (!pessoa.usuario) {
+        throw new Error('Usuário não encontrado.');
+      }
+
+      if (!pessoa.usuario.isActive || pessoa.usuario.deletedAt) {
+        throw new Error('Usuário inativo ou excluído.');
+      }
+
+      const senhaCorreta = await compare(senha, pessoa.usuario.senha);
+
+      if (!senhaCorreta) {
+        throw new Error('Senha incorreta.');
+      }
+
+      const { usuario, ...pessoaSemSenha } = pessoa;
+      const usuarioSemSenha = { ...usuario, senha: '' };
+      
+      return {
+        ...pessoaSemSenha,
+        usuario: usuarioSemSenha
+      };
+    } catch (error) {
+      console.error('Erro ao realizar login:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao realizar login: ${String(error)}`);
+    }
+  }
+
+  async isFirstUser(): Promise<boolean> {
+    try {
+      return await this.usuarioRepository.isFirstUser();
+    } catch (error) {
+      console.error('Erro ao verificar se é o primeiro usuário:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao verificar primeiro usuário: ${String(error)}`);
+    }
+  }
 
   async authenticate(loginData: LoginRequest): Promise<LoginResponse> {
     if (!loginData.email || !loginData.password) {

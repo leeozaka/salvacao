@@ -1,19 +1,17 @@
-export type TipoProduto = {
+import { Activable } from './ActivableDTO';
+
+export type TipoProdutoDTO = Activable & {
   id: number;
   nome: string;
   descricao?: string | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date | null;
 };
 
-export type TipoProdutoDTO = {
-  id: number;
-  nome: string;
-  descricao?: string | null;
-  isActive: boolean;
-};
+// export type TipoProdutoDTO = {
+//   id: number;
+//   nome: string;
+//   descricao?: string | null;
+//   isActive: boolean;
+// };
 
 export type CreateTipoProdutoDTO = {
   nome: string;

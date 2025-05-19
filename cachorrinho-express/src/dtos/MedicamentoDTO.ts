@@ -1,6 +1,6 @@
-import {} from '@prisma/client';
+import { Activable } from './ActivableDTO';
 
-export type Medicamento = {
+export type MedicamentoDTO = Activable & {
   id: number;
   nome: string;
   idTipoProduto: number;
@@ -10,10 +10,6 @@ export type Medicamento = {
   nomeUnidadeMedida?: string;
   descricao?: string | null;
   codigoBarras?: string | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date | null;
 
   dosagem?: string | null;
   principioAtivo?: string | null;

@@ -1,5 +1,3 @@
-import { Usuario } from '@prisma/client';
-
 export class UserUtils {
   /**
    * Validates a Brazilian phone number

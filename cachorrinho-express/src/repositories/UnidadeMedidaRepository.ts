@@ -1,16 +1,12 @@
-import { PrismaClient, Prisma } from '@prisma/client';
-import {
-  UnidadeMedida,
-  CreateUnidadeMedidaDTO,
-  UpdateUnidadeMedidaDTO,
-} from '../dtos/UnidadeMedidaDTO';
+import { PrismaClient, Prisma, UnidadeMedida } from '@prisma/client';
+import { UnidadeMedidaDTO, CreateUnidadeMedidaDTO, UpdateUnidadeMedidaDTO } from '../dtos/UnidadeMedidaDTO';
 
 export class UnidadeMedidaRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(data: CreateUnidadeMedidaDTO): Promise<UnidadeMedida> {
+  async create(data: CreateUnidadeMedidaDTO): Promise<UnidadeMedidaDTO> {
     try {
-      const novaUnidadeMedida = await this.prisma.unidadeMedida.create({
+      const newUnidadeMedida = await this.prisma.unidadeMedida.create({
         data: {
           nome: data.nome,
           sigla: data.sigla,
@@ -18,17 +14,17 @@ export class UnidadeMedidaRepository {
         },
       });
 
-      return this.mapToUnidadeMedida(novaUnidadeMedida);
+      return this.mapToUnidadeMedidaDTO(newUnidadeMedida);
     } catch (error) {
       console.error('Erro ao criar unidade de medida:', error);
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           const target = error.meta?.target as string[] | undefined;
           if (target?.includes('nome')) {
-            throw new Error(`Já existe uma unidade de medida com o nome '${data.nome}'.`);
+            throw new Error(`Unidade de medida com nome '${data.nome}' já existe.`);
           }
           if (target?.includes('sigla')) {
-            throw new Error(`Já existe uma unidade de medida com a sigla '${data.sigla}'.`);
+            throw new Error(`Unidade de medida com sigla '${data.sigla}' já existe.`);
           }
         }
       }
@@ -38,7 +34,7 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  async findOne(id: number): Promise<UnidadeMedida | null> {
+  async findOne(id: number): Promise<UnidadeMedidaDTO | null> {
     try {
       const unidadeMedida = await this.prisma.unidadeMedida.findUnique({
         where: {
@@ -52,7 +48,7 @@ export class UnidadeMedidaRepository {
         return null;
       }
 
-      return this.mapToUnidadeMedida(unidadeMedida);
+      return this.mapToUnidadeMedidaDTO(unidadeMedida);
     } catch (error) {
       console.error(`Erro ao buscar unidade de medida por ID ${id}:`, error);
       throw error instanceof Error
@@ -61,67 +57,57 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  async findAll(filter?: Partial<UnidadeMedida>): Promise<UnidadeMedida[]> {
+  async findAll(): Promise<UnidadeMedidaDTO[]> {
     try {
-      const where: Prisma.UnidadeMedidaWhereInput = {
-        isActive: true,
-        deletedAt: null,
-      };
-
-      if (filter) {
-        if (filter.nome) where.nome = { contains: filter.nome, mode: 'insensitive' };
-        if (filter.sigla) where.sigla = { contains: filter.sigla, mode: 'insensitive' };
-      }
-
       const unidadesMedida = await this.prisma.unidadeMedida.findMany({
-        where: where,
+        where: {
+          isActive: true,
+          deletedAt: null,
+        },
         orderBy: {
           nome: 'asc',
         },
       });
 
-      return unidadesMedida.map((um) => this.mapToUnidadeMedida(um));
+      return unidadesMedida.map(unidadeMedida => this.mapToUnidadeMedidaDTO(unidadeMedida));
     } catch (error) {
       console.error('Erro ao buscar todas as unidades de medida:', error);
-      throw new Error(`Erro ao buscar unidades de medida: ${String(error)}`);
+      throw new Error(
+        `Erro ao buscar unidades de medida: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
-  async update(id: number, data: UpdateUnidadeMedidaDTO): Promise<UnidadeMedida | null> {
+  async update(id: number, data: UpdateUnidadeMedidaDTO): Promise<UnidadeMedidaDTO | null> {
     try {
-      const existingUnidadeMedida = await this.prisma.unidadeMedida.findUnique({
-        where: { id: id, isActive: true, deletedAt: null },
-      });
-
-      if (!existingUnidadeMedida) {
-        return null;
-      }
-
-      const unidadeMedidaData: Prisma.UnidadeMedidaUpdateInput = {};
-      if (data.nome !== undefined) unidadeMedidaData.nome = data.nome;
-      if (data.sigla !== undefined) unidadeMedidaData.sigla = data.sigla;
-      if (data.isActive !== undefined) unidadeMedidaData.isActive = data.isActive;
-
-      if (Object.keys(unidadeMedidaData).length === 0) {
-        return this.mapToUnidadeMedida(existingUnidadeMedida);
-      }
-
       const updatedUnidadeMedida = await this.prisma.unidadeMedida.update({
-        where: { id: id },
-        data: { ...unidadeMedidaData, updatedAt: new Date() },
+        where: {
+          id: id,
+          isActive: true,
+          deletedAt: null,
+        },
+        data: {
+          nome: data.nome,
+          sigla: data.sigla,
+          isActive: data.isActive,
+          updatedAt: new Date(),
+        },
       });
 
-      return this.mapToUnidadeMedida(updatedUnidadeMedida);
+      return this.mapToUnidadeMedidaDTO(updatedUnidadeMedida);
     } catch (error) {
       console.error(`Erro ao atualizar unidade de medida ${id}:`, error);
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new Error(`Registro para atualização não encontrado para UnidadeMedida ID ${id}.`);
+        }
         if (error.code === 'P2002') {
           const target = error.meta?.target as string[] | undefined;
           if (target?.includes('nome')) {
-            throw new Error(`Já existe uma unidade de medida com o nome fornecido.`);
+            throw new Error(`Unidade de medida com nome '${data.nome}' já existe.`);
           }
           if (target?.includes('sigla')) {
-            throw new Error(`Já existe uma unidade de medida com a sigla fornecida.`);
+            throw new Error(`Unidade de medida com sigla '${data.sigla}' já existe.`);
           }
         }
       }
@@ -135,44 +121,12 @@ export class UnidadeMedidaRepository {
     try {
       const now = new Date();
 
-      const existingUnidadeMedida = await this.prisma.unidadeMedida.findUnique({
-        where: { id: id, isActive: true, deletedAt: null },
-      });
-
-      if (!existingUnidadeMedida) {
-        return false;
-      }
-
-      const produtosAssociados = await this.prisma.produto.count({
+      const result = await this.prisma.unidadeMedida.update({
         where: {
-          idUnidadeMedidaPadrao: id,
+          id: id,
           isActive: true,
           deletedAt: null,
         },
-      });
-
-      if (produtosAssociados > 0) {
-        throw new Error(
-          `Não é possível excluir esta unidade de medida pois existem ${produtosAssociados} produtos associados.`,
-        );
-      }
-
-      const estoquesAssociados = await this.prisma.estoque.count({
-        where: {
-          idUnidadeMedida: id,
-          isActive: true,
-          deletedAt: null,
-        },
-      });
-
-      if (estoquesAssociados > 0) {
-        throw new Error(
-          `Não é possível excluir esta unidade de medida pois existem ${estoquesAssociados} registros de estoque associados.`,
-        );
-      }
-
-      const unidadeMedidaUpdate = await this.prisma.unidadeMedida.update({
-        where: { id: id },
         data: {
           deletedAt: now,
           isActive: false,
@@ -180,7 +134,7 @@ export class UnidadeMedidaRepository {
         },
       });
 
-      return !!unidadeMedidaUpdate;
+      return !!result;
     } catch (error) {
       console.error(`Erro ao excluir unidade de medida ${id}:`, error);
       throw error instanceof Error
@@ -189,15 +143,15 @@ export class UnidadeMedidaRepository {
     }
   }
 
-  private mapToUnidadeMedida(prismaModel: any): UnidadeMedida {
+  private mapToUnidadeMedidaDTO(unidadeMedida: UnidadeMedida): UnidadeMedidaDTO {
     return {
-      id: prismaModel.id,
-      nome: prismaModel.nome,
-      sigla: prismaModel.sigla,
-      isActive: prismaModel.isActive,
-      createdAt: prismaModel.createdAt,
-      updatedAt: prismaModel.updatedAt,
-      deletedAt: prismaModel.deletedAt,
+      id: unidadeMedida.id,
+      nome: unidadeMedida.nome,
+      sigla: unidadeMedida.sigla,
+      isActive: unidadeMedida.isActive,
+      createdAt: unidadeMedida.createdAt,
+      updatedAt: unidadeMedida.updatedAt,
+      deletedAt: unidadeMedida.deletedAt,
     };
   }
 }

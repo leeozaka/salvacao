@@ -1,16 +1,16 @@
 import { hash } from 'bcrypt';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';
 import {
-  CreatePessoaUsuarioDTO,
-  UpdatePessoaUsuarioDTO,
-  PessoaUsuario,
-} from '../dtos/PessoaUsuarioDTO';
+  CreatePessoaDTO,
+  PessoaDTO,
+  UpdatePessoaDTO,
+} from '../dtos/PessoaDTO';
 import { TipoUsuario } from '@prisma/client';
 
-export class PessoaUsuarioService {
+export class PessoaService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
 
-  async create(data: CreatePessoaUsuarioDTO): Promise<PessoaUsuario> {
+  async create(data: CreatePessoaDTO): Promise<PessoaDTO> {
     if (!data.email || !data.senha || !data.nome || !data.tipoUsuario) {
       throw new Error(
         'Missing required fields for user creation (email, password, name, user type).',
@@ -19,7 +19,7 @@ export class PessoaUsuarioService {
 
     const hashedPassword = await hash(data.senha, 12);
 
-    const userData: CreatePessoaUsuarioDTO = {
+    const userData: CreatePessoaDTO = {
       ...data,
       senha: hashedPassword,
     };
@@ -33,7 +33,7 @@ export class PessoaUsuarioService {
       const newUser = await this.usuarioRepository.create(userData);
       return newUser;
     } catch (error) {
-      console.error('Error in PessoaUsuarioService.create:', error);
+      console.error('Error in PessoaService.create:', error);
       if (
         error instanceof Error &&
         (error.message.includes('already exists') ||
@@ -45,7 +45,7 @@ export class PessoaUsuarioService {
     }
   }
 
-  async update(pessoaId: number, data: UpdatePessoaUsuarioDTO): Promise<PessoaUsuario> {
+  async update(pessoaId: number, data: UpdatePessoaDTO): Promise<PessoaDTO> {
     if (Object.keys(data).length === 0) {
       throw new Error('No update data provided.');
     }
@@ -64,7 +64,7 @@ export class PessoaUsuarioService {
 
       return updatedUser;
     } catch (error) {
-      console.error(`Error in PessoaUsuarioService.update for ID ${pessoaId}:`, error);
+      console.error(`Error in PessoaService.update for ID ${pessoaId}:`, error);
       if (error instanceof Error && error.message.includes('not found')) {
         throw new Error(error.message);
       }
@@ -87,12 +87,12 @@ export class PessoaUsuarioService {
 
       return success;
     } catch (error) {
-      console.error(`Error in PessoaUsuarioService.delete for ID ${pessoaId}:`, error);
+      console.error(`Error in PessoaService.delete for ID ${pessoaId}:`, error);
       throw new Error('Failed to delete user.');
     }
   }
 
-  async findOne(pessoaId: number): Promise<PessoaUsuario> {
+  async findOne(pessoaId: number): Promise<PessoaDTO> {
     try {
       const user = await this.usuarioRepository.findOne(pessoaId);
       if (!user) {
@@ -100,7 +100,7 @@ export class PessoaUsuarioService {
       }
       return user;
     } catch (error) {
-      console.error(`Error in PessoaUsuarioService.findOne for ID ${pessoaId}:`, error);
+      console.error(`Error in PessoaService.findOne for ID ${pessoaId}:`, error);
       if (error instanceof Error && error.message.includes('not found')) {
         throw error;
       }
@@ -108,31 +108,27 @@ export class PessoaUsuarioService {
     }
   }
 
-  async findByEmail(email: string): Promise<PessoaUsuario> {
-    // Basic validation
+  async findByEmail(email: string): Promise<PessoaDTO> {
     if (!email) {
-      // Replace with ValidationError
       throw new Error('Email cannot be empty.');
     }
 
     try {
       const user = await this.usuarioRepository.findByEmail(email);
       if (!user) {
-        // Replace with NotFoundError
         throw new Error(`User with email ${email} not found.`);
       }
       return user;
     } catch (error) {
-      console.error(`Error in PessoaUsuarioService.findByEmail for email ${email}:`, error);
+      console.error(`Error in PessoaService.findByEmail for email ${email}:`, error);
       if (error instanceof Error && error.message.includes('not found')) {
-        throw error; // Re-throw the specific error
+        throw error;
       }
-      // Replace with generic InternalServerError or FindError
       throw new Error('Failed to find user by email.');
     }
   }
 
-  async findByDocumento(documento: string): Promise<PessoaUsuario> {
+  async findByDocumento(documento: string): Promise<PessoaDTO> {
     if (!documento) {
       throw new Error('Document identifier cannot be empty.');
     }
@@ -144,7 +140,7 @@ export class PessoaUsuarioService {
       return user;
     } catch (error) {
       console.error(
-        `Error in PessoaUsuarioService.findByDocumento for document ${documento}:`,
+        `Error in PessoaService.findByDocumento for document ${documento}:`,
         error,
       );
       if (error instanceof Error && error.message.includes('not found')) {
@@ -154,12 +150,12 @@ export class PessoaUsuarioService {
     }
   }
 
-  async findAll(buscarPessoas: boolean): Promise<PessoaUsuario[]> {
+  async findAll(buscarPessoas: boolean): Promise<PessoaDTO[]> {
     try {
       const users = await this.usuarioRepository.findAll(buscarPessoas);
       return users;
     } catch (error) {
-      console.error('Error in PessoaUsuarioService.findAll:', error);
+      console.error('Error in PessoaService.findAll:', error);
       throw new Error('Failed to retrieve users.');
     }
   }

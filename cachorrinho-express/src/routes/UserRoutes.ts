@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Container } from '../container';
 
 const routes = Router();
-const userController = Container.getPessoaUsuarioController();
+const userController = Container.getPessoaController();
 const auth = Container.getAuthMiddleware();
 
 routes.post('/', userController.create);

@@ -1,103 +1,51 @@
-import { Adotante } from '@prisma/client';
 import { AdotanteRepository } from '../repositories/AdotanteRepository';
-import {
-  CreateAdotanteDTO,
-  UpdateAdotanteDTO,
-} from '../dtos/AdotanteDTO';
+import { AdotanteDTO, CreateAdotanteDTO, UpdateAdotanteDTO } from '../dtos/AdotanteDTO';
 
 export class AdotanteService {
   constructor(private readonly adotanteRepository: AdotanteRepository) {}
 
-
-  async create(data: CreateAdotanteDTO): Promise<Adotante> {
-    if (!data.idPessoa) {
-      throw new Error('O campo idPessoa é obrigatório.');
-    }
-    // if (!data.nome || !data.email || !data.telefone || !data.endereco || !data.cep || !data.cidade || !data.estado) {
-    //   throw new Error('Campos obrigatórios faltando (nome, email, telefone, endereço, CEP, cidade, estado).');
-    // }
-
+  async create(data: CreateAdotanteDTO): Promise<AdotanteDTO> {
     try {
-      const novoAdotante = await this.adotanteRepository.create(data);
-      return novoAdotante;
+      return await this.adotanteRepository.create(data);
     } catch (error) {
-      console.error('Erro em AdotanteService.create:', error);
-
-      if (error instanceof Error && (error.message.includes('já existe') || error.message.includes('violation'))) {
-        throw new Error(error.message);
-      }
-
-      throw new Error('Falha ao criar adotante. ' + (error as Error).message);
+      console.error('Erro ao criar adotante:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao criar adotante: ${String(error)}`);
     }
   }
 
- 
-  async update(id: number, data: UpdateAdotanteDTO): Promise<Adotante> {
-    if (Object.keys(data).length === 0) {
-      throw new Error('Nenhum dado de atualização fornecido.');
-    }
-
+  async findOne(id: number): Promise<AdotanteDTO | null> {
     try {
-      const adotanteAtualizado = await this.adotanteRepository.update(id, data);
-
-      if (!adotanteAtualizado) {
-        throw new Error(`Adotante com ID ${id} não encontrado ou não pôde ser atualizado.`);
-      }
-
-      return adotanteAtualizado;
+      return await this.adotanteRepository.findOne(id);
     } catch (error) {
-      console.error(`Erro em AdotanteService.update para ID ${id}:`, error);
-      if (error instanceof Error && error.message.includes('não encontrado')) {
-        throw new Error(error.message);
-      }
-      if (error instanceof Error && error.message.includes('restrição única')) {
-        throw new Error(error.message);
-      }
-      throw new Error('Falha ao atualizar adotante.');
+      console.error(`Erro ao buscar adotante por ID ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao buscar adotante: ${String(error)}`);
     }
   }
 
- 
+  async findAll(): Promise<AdotanteDTO[]> {
+    try {
+      return await this.adotanteRepository.findAll();
+    } catch (error) {
+      console.error('Erro ao buscar todos os adotantes:', error);
+      throw error instanceof Error ? error : new Error(`Erro ao buscar adotantes: ${String(error)}`);
+    }
+  }
+
+  async update(id: number, data: UpdateAdotanteDTO): Promise<AdotanteDTO | null> {
+    try {
+      return await this.adotanteRepository.update(id, data);
+    } catch (error) {
+      console.error(`Erro ao atualizar adotante ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao atualizar adotante: ${String(error)}`);
+    }
+  }
+
   async delete(id: number): Promise<boolean> {
     try {
-      const resultado = await this.adotanteRepository.delete(id);
-
-      if (!resultado) {
-        console.warn(`Tentativa de excluir adotante inexistente ou já excluído com ID ${id}`);
-        return false;
-      }
-
-      return resultado;
+      return await this.adotanteRepository.delete(id);
     } catch (error) {
-      console.error(`Erro em AdotanteService.delete para ID ${id}:`, error);
-      throw new Error('Falha ao excluir adotante.');
-    }
-  }
-
-  async findOne(id: number): Promise<Adotante> {
-    try {
-      const adotante = await this.adotanteRepository.findOne(id);
-      if (!adotante) {
-        throw new Error(`Adotante com ID ${id} não encontrado.`);
-      }
-      return adotante;
-    } catch (error) {
-      console.error(`Erro em AdotanteService.findOne para ID ${id}:`, error);
-      if (error instanceof Error && error.message.includes('não encontrado')) {
-        throw error;
-      }
-      throw new Error('Falha ao buscar adotante.');
-    }
-  }
-
- 
-  async findAll(filter?: Partial<Adotante>): Promise<Adotante[]> {
-    try {
-      const adotantes = await this.adotanteRepository.findAll(filter);
-      return adotantes;
-    } catch (error) {
-      console.error('Erro em AdotanteService.findAll:', error);
-      throw new Error('Falha ao recuperar adotantes.');
+      console.error(`Erro ao excluir adotante ${id}:`, error);
+      throw error instanceof Error ? error : new Error(`Erro ao excluir adotante: ${String(error)}`);
     }
   }
 }

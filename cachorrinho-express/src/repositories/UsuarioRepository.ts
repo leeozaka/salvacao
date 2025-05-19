@@ -1,14 +1,14 @@
-import { PrismaClient, Prisma, Pessoa, Usuario, TipoDocumento, TipoUsuario } from '@prisma/client';
+import { PrismaClient, Prisma, Pessoa, Usuario } from '@prisma/client';
 import {
-  PessoaUsuario,
-  CreatePessoaUsuarioDTO,
-  UpdatePessoaUsuarioDTO,
-} from '../dtos/PessoaUsuarioDTO';
+  PessoaDTO,
+  CreatePessoaDTO,
+  UpdatePessoaDTO,
+} from '../dtos/PessoaDTO';
 
 export class UsuarioRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(data: CreatePessoaUsuarioDTO): Promise<PessoaUsuario> {
+  async create(data: CreatePessoaDTO): Promise<PessoaDTO> {
     try {
       const newPessoa = await this.prisma.pessoa.create({
         data: {
@@ -36,7 +36,7 @@ export class UsuarioRepository {
         throw new Error('Failed to create associated Usuario record.');
       }
 
-      return this.mapToPessoaUsuario(newPessoa, newPessoa.usuario);
+      return this.mapToPessoaDTO(newPessoa, newPessoa.usuario);
     } catch (error) {
       console.error('Error creating user:', error);
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -56,7 +56,7 @@ export class UsuarioRepository {
     }
   }
 
-  async findOne(pessoaId: number): Promise<PessoaUsuario | null> {
+  async findOne(pessoaId: number): Promise<PessoaDTO | null> {
     try {
       const pessoa = await this.prisma.pessoa.findUnique({
         where: {
@@ -78,14 +78,14 @@ export class UsuarioRepository {
         return null;
       }
 
-      return this.mapToPessoaUsuario(pessoa, pessoa.usuario);
+      return this.mapToPessoaDTO(pessoa, pessoa.usuario);
     } catch (error) {
       console.error(`Error finding user by ID ${pessoaId}:`, error);
       throw error instanceof Error ? error : new Error(`Error finding user: ${String(error)}`);
     }
   }
 
-  async findAll(buscarPessoas: boolean): Promise<PessoaUsuario[]> {
+  async findAll(buscarPessoas: boolean): Promise<PessoaDTO[]> {
     try {
       const where: Prisma.PessoaWhereInput = {
         isActive: true,
@@ -115,14 +115,14 @@ export class UsuarioRepository {
 
       return pessoas
         .filter((p) => p.usuario && p.usuario.isActive && !p.usuario.deletedAt)
-        .map((p) => this.mapToPessoaUsuario(p, p.usuario!));
+        .map((p) => this.mapToPessoaDTO(p, p.usuario!));
     } catch (error) {
       console.error('Error finding all users:', error);
       throw new Error(`Error finding all users: ${String(error)}`);
     }
   }
 
-  async update(pessoaId: number, data: UpdatePessoaUsuarioDTO): Promise<PessoaUsuario | null> {
+  async update(pessoaId: number, data: UpdatePessoaDTO): Promise<PessoaDTO | null> {
     try {
       const pessoaUpdateData: Prisma.PessoaUpdateInput = {};
       const usuarioUpdateData: Prisma.UsuarioUpdateInput = {};
@@ -134,11 +134,14 @@ export class UsuarioRepository {
       if (data.email !== undefined) pessoaUpdateData.email = data.email;
       if (data.telefone !== undefined) pessoaUpdateData.telefone = data.telefone;
       if (data.endereco !== undefined) pessoaUpdateData.endereco = data.endereco;
-      if (data.pessoaIsActive !== undefined) pessoaUpdateData.isActive = data.pessoaIsActive;
+      if (data.isActive !== undefined) pessoaUpdateData.isActive = data.isActive;
 
       if (data.tipoUsuario !== undefined) usuarioUpdateData.tipoUsuario = data.tipoUsuario;
       if (data.senha !== undefined) usuarioUpdateData.senha = data.senha;
       if (data.usuarioIsActive !== undefined) usuarioUpdateData.isActive = data.usuarioIsActive;
+      if (data.usuarioCreatedAt !== undefined) usuarioUpdateData.createdAt = data.usuarioCreatedAt;
+      if (data.usuarioUpdatedAt !== undefined) usuarioUpdateData.updatedAt = data.usuarioUpdatedAt;
+      if (data.usuarioDeletedAt !== undefined) usuarioUpdateData.deletedAt = data.usuarioDeletedAt;
 
       const hasPessoaUpdates = Object.keys(pessoaUpdateData).length > 0;
       const hasUsuarioUpdates = Object.keys(usuarioUpdateData).length > 0;
@@ -165,7 +168,7 @@ export class UsuarioRepository {
           throw new Error(`Associated active Usuario for Pessoa ID ${pessoaId} not found.`);
         }
 
-        let finalPessoa: Pessoa & { usuario?: Usuario | null } = existingPessoa as any;
+        let finalPessoa: Pessoa & { usuario?: Usuario | null } = existingPessoa as Pessoa & { usuario?: Usuario | null };
 
         if (hasPessoaUpdates) {
           await tx.pessoa.update({
@@ -193,7 +196,7 @@ export class UsuarioRepository {
         throw new Error(`Usuario data missing after update for Pessoa ID ${pessoaId}`);
       }
 
-      return this.mapToPessoaUsuario(updatedPessoa, updatedPessoa.usuario);
+      return this.mapToPessoaDTO(updatedPessoa, updatedPessoa.usuario);
     } catch (error) {
       console.error(`Error updating user ${pessoaId}:`, error);
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -252,11 +255,12 @@ export class UsuarioRepository {
     }
   }
 
-  async findByDocumento(documento: string): Promise<PessoaUsuario | null> {
+  async findByDocumento(documento: string): Promise<PessoaDTO | null> {
     try {
-      const pessoa = await this.prisma.pessoa.findUnique({
+      const pessoa = await this.prisma.pessoa.findFirst({
         where: {
           documentoIdentidade: documento,
+          isActive: true,
           deletedAt: null,
         },
         include: {
@@ -273,18 +277,16 @@ export class UsuarioRepository {
         return null;
       }
 
-      return this.mapToPessoaUsuario(pessoa, pessoa.usuario);
+      return this.mapToPessoaDTO(pessoa, pessoa.usuario);
     } catch (error) {
-      console.error(`Error finding user by documento ${documento}:`, error);
-      throw error instanceof Error
-        ? error
-        : new Error(`Error finding by documento: ${String(error)}`);
+      console.error(`Error finding user by document ${documento}:`, error);
+      throw error instanceof Error ? error : new Error(`Error finding user: ${String(error)}`);
     }
   }
 
-  async findByEmail(email: string): Promise<PessoaUsuario | null> {
+  async findByEmail(email: string): Promise<PessoaDTO | null> {
     try {
-      const pessoa = await this.prisma.pessoa.findUnique({
+      const pessoa = await this.prisma.pessoa.findFirst({
         where: {
           email: email,
           isActive: true,
@@ -304,16 +306,16 @@ export class UsuarioRepository {
         return null;
       }
 
-      return this.mapToPessoaUsuario(pessoa, pessoa.usuario);
+      return this.mapToPessoaDTO(pessoa, pessoa.usuario);
     } catch (error) {
       console.error(`Error finding user by email ${email}:`, error);
-      throw error instanceof Error ? error : new Error(`Error finding by email: ${String(error)}`);
+      throw error instanceof Error ? error : new Error(`Error finding user: ${String(error)}`);
     }
   }
 
-  async findByEmailForAuth(email: string): Promise<(PessoaUsuario & { senha?: string }) | null> {
+  async findByEmailForAuth(email: string): Promise<(PessoaDTO & { senha?: string }) | null> {
     try {
-      const pessoa = await this.prisma.pessoa.findUnique({
+      const pessoa = await this.prisma.pessoa.findFirst({
         where: {
           email: email,
           isActive: true,
@@ -325,6 +327,15 @@ export class UsuarioRepository {
               isActive: true,
               deletedAt: null,
             },
+            select: {
+              id: true,
+              tipoUsuario: true,
+              senha: true,
+              isActive: true,
+              createdAt: true,
+              updatedAt: true,
+              deletedAt: true,
+            },
           },
         },
       });
@@ -333,14 +344,14 @@ export class UsuarioRepository {
         return null;
       }
 
-      const pessoaUsuario = this.mapToPessoaUsuario(pessoa, pessoa.usuario);
+      const pessoaDTO = this.mapToPessoaDTO(pessoa, { ...pessoa.usuario, idPessoa: pessoa.id });
       return {
-        ...pessoaUsuario,
+        ...pessoaDTO,
         senha: pessoa.usuario.senha,
       };
     } catch (error) {
-      console.error(`Error finding user by email for auth (${email}):`, error);
-      throw new Error('Error during authentication lookup.');
+      console.error(`Error finding user by email ${email} for auth:`, error);
+      throw error instanceof Error ? error : new Error(`Error finding user: ${String(error)}`);
     }
   }
 
@@ -354,30 +365,33 @@ export class UsuarioRepository {
       });
       return count === 0;
     } catch (error) {
-      console.error('Error checking for first user:', error);
-      throw new Error(`Error checking for first user: ${String(error)}`);
+      console.error('Error checking if first user:', error);
+      throw error instanceof Error ? error : new Error(`Error checking first user: ${String(error)}`);
     }
   }
 
-  private mapToPessoaUsuario(pessoa: Pessoa, usuario: Usuario): PessoaUsuario {
+  private mapToPessoaDTO(pessoa: Pessoa, usuario: Usuario): PessoaDTO {
     return {
       id: pessoa.id,
       nome: pessoa.nome,
       documentoIdentidade: pessoa.documentoIdentidade,
-      tipoDocumento: pessoa.tipoDocumento as TipoDocumento | null,
+      tipoDocumento: pessoa.tipoDocumento,
       email: pessoa.email,
       telefone: pessoa.telefone,
       endereco: pessoa.endereco,
-      pessoaIsActive: pessoa.isActive,
-      pessoaCreatedAt: pessoa.createdAt,
-      pessoaUpdatedAt: pessoa.updatedAt,
-      pessoaDeletedAt: pessoa.deletedAt,
-      usuarioId: usuario.id,
-      tipoUsuario: usuario.tipoUsuario as TipoUsuario,
-      usuarioIsActive: usuario.isActive,
-      usuarioCreatedAt: usuario.createdAt,
-      usuarioUpdatedAt: usuario.updatedAt,
-      usuarioDeletedAt: usuario.deletedAt,
+      isActive: pessoa.isActive,
+      createdAt: pessoa.createdAt,
+      updatedAt: pessoa.updatedAt,
+      deletedAt: pessoa.deletedAt,
+      usuario: {
+        id: usuario.id,
+        tipoUsuario: usuario.tipoUsuario,
+        senha: usuario.senha,
+        isActive: usuario.isActive,
+        createdAt: usuario.createdAt,
+        updatedAt: usuario.updatedAt,
+        deletedAt: usuario.deletedAt,
+      },
     };
   }
 }
