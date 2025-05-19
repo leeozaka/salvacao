@@ -1,10 +1,11 @@
 export interface Pessoa {
-  idpessoa: number;
+  id: number;
   nome: string;
-  cpf: string;
-  endereco: string;
+  documentoIdentidade: string;
+  tipoDocumento: string;
   telefone: string;
   email: string;
+  endereco: string;
 }
 
 export interface Usuario {
@@ -146,26 +147,15 @@ export interface Evento {
   local: string;
 }
 
-
-/* export interface Adotante{
-} */
-
-// Interface para os dados do formulário
-export interface formularioAdotante {
-  id?: string;
-  cpf: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  endereco: {
-    logradouro: string;
-    numero: string;
-    complemento: string;
-    bairro: string;
-    cidade: string;
-    estado: string;
-    cep: string;
-  };
+export interface Adotante {
+  id: number;
+  idPessoa: number;
+  motivacaoAdocao: string;
+  experienciaAnteriorAnimais: string;
+  tipoMoradia: string;
+  permiteAnimaisMoradia: boolean;
+  pessoa: Pessoa;
+  adocoes?: Adocao[];
 }
 
 // Interface para representar um endereço, no banco esta como string
