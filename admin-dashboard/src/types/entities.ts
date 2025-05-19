@@ -145,3 +145,36 @@ export interface Evento {
   animal_idanimal: number; // Chave estrangeira para Animal
   local: string;
 }
+
+
+/* export interface Adotante{
+} */
+
+// Interface para os dados do formulário
+export interface formularioAdotante {
+  id?: string;
+  cpf: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  endereco: {
+    logradouro: string;
+    numero: string;
+    complemento: string;
+    bairro: string;
+    cidade: string;
+    estado: string;
+    cep: string;
+  };
+}
+
+// Interface para representar um endereço, no banco esta como string
+/* interface Endereco {
+  logradouro: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+} */

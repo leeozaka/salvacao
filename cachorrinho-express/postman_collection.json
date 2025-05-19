@@ -1,0 +1,765 @@
+{
+	"info": {
+		"_postman_id": "c4a7e3a0-7a4e-4f9a-8d3f-7c1d3a2b1c0e",
+		"name": "Cachorrinho Express API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "Postman collection for the Cachorrinho Express API"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Checks if the API is running."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"senha\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Authenticate user and get token."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"your_jwt_token_here\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login",
+								"verify"
+							]
+						},
+						"description": "Verify authentication token."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Nome Completo do Usuário\",\n    \"email\": \"usuario@example.com\",\n    \"senha\": \"password123\",\n    \"tipoUsuario\": \"USER\",\n    \"documentoIdentidade\": \"12345678900\",\n    \"tipoDocumento\": \"CPF\",\n    \"telefone\": \"11999998888\",\n    \"endereco\": \"Rua Exemplo, 123, Bairro, Cidade - UF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "Create a new user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "Get current user information (Auth Required). Note: Route points to findOne, might be for current user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Novo Nome do Usuário\",\n    \"telefone\": \"11777776666\",\n    \"endereco\": \"Nova Rua Exemplo, 456, Bairro, Cidade - UF\",\n    \"tipoDocumento\": \"RG\",\n    \"documentoIdentidade\": \"12.345.678-9\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "Update current user information (Auth Required). Note: Route does not specify ID, might be for current user."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "Delete current user (Auth Required). Note: Route does not specify ID, might be for current user."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Adotantes",
+			"item": [
+				{
+					"name": "Create Adotante",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Nome Completo do Adotante\",\n    \"email\": \"adotante@example.com\",\n    \"telefone\": \"21988887777\",\n    \"documentoIdentidade\": \"09876543211\",\n    \"tipoDocumento\": \"CPF\",\n    \"endereco\": \"Avenida Principal, 789, Centro, Cidade - UF\",\n    \"motivacaoAdocao\": \"Desejo oferecer um lar seguro e amoroso.\",\n    \"experienciaAnteriorAnimais\": \"Cresci com cães e gatos.\",\n    \"tipoMoradia\": \"CASA_COM_QUINTAL_TOTALMENTE_MURADO\",\n    \"permiteAnimaisMoradia\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/adotantes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"adotantes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Adotante by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/adotantes/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"adotantes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Auth Required"
+					},
+					"response": []
+				},
+				{
+					"name": "List Adotantes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/adotantes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"adotantes"
+							]
+						},
+						"description": "Auth Required. Note: Route points to findOne, review if this lists all or a specific one."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Adotante",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"motivacaoAdocao\": \"Atualizando minha motivação para adoção.\",\n    \"experienciaAnteriorAnimais\": \"Tive um cão por 10 anos e participei de voluntariado em abrigo.\",\n    \"tipoMoradia\": \"APARTAMENTO_COM_TELA_PROTECAO\",\n    \"permiteAnimaisMoradia\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/adotantes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"adotantes"
+							]
+						},
+						"description": "Auth Required. Note: Route does not specify ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Adotante",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/adotantes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"adotantes"
+							]
+						},
+						"description": "Auth Required. Note: Route does not specify ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Unidade Medida",
+			"description": "All endpoints require authentication.",
+			"item": [
+				{
+					"name": "Create Unidade Medida",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Quilograma\",\n    \"sigla\": \"kg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/unidade-medida",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidade-medida"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Unidades Medida",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/unidade-medida",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidade-medida"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Unidade Medida by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/unidade-medida/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidade-medida",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Unidade Medida",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Grama\",\n    \"sigla\": \"g\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/unidade-medida/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidade-medida",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Unidade Medida",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/unidade-medida/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"unidade-medida",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Medicamento",
+			"description": "All endpoints require authentication.",
+			"item": [
+				{
+					"name": "Create Medicamento",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Amoxicilina 500mg\",\n    \"idTipoProduto\": 1,\n    \"idUnidadeMedidaPadrao\": 1,\n    \"descricao\": \"Antibiótico de amplo espectro.\",\n    \"codigoBarras\": \"7890123456789\",\n    \"dosagem\": \"500mg\",\n    \"principioAtivo\": \"Amoxicilina Tri-hidratada\",\n    \"fabricante\": \"Farmaco Inc.\",\n    \"necessitaReceita\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/medicamento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"medicamento"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Medicamentos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/medicamento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"medicamento"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Medicamento by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/medicamento/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"medicamento",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Medicamento",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Amoxicilina 500mg - Nova Apresentação\",\n    \"idTipoProduto\": 1,\n    \"idUnidadeMedidaPadrao\": 2,\n    \"descricao\": \"Antibiótico de amplo espectro, agora em nova embalagem.\",\n    \"codigoBarras\": \"7890123456780\",\n    \"dosagem\": \"500mg / comprimido\",\n    \"principioAtivo\": \"Amoxicilina Tri-hidratada\",\n    \"fabricante\": \"Farmaco Ltda.\",\n    \"necessitaReceita\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/medicamento/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"medicamento",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Medicamento",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/medicamento/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"medicamento",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tipo Produto",
+			"description": "All endpoints require authentication.",
+			"item": [
+				{
+					"name": "Create Tipo Produto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Alimento Seco\",\n    \"descricao\": \"Ração seca para cães e gatos.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tipo-produto",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tipo-produto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Tipos Produto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tipo-produto",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tipo-produto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tipo Produto by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tipo-produto/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tipo-produto",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Tipo Produto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Alimento Úmido\",\n    \"descricao\": \"Ração úmida (sachês/latas) para cães e gatos.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tipo-produto/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tipo-produto",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Tipo Produto",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tipo-produto/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tipo-produto",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "Set your API base URL here"
+		}
+	]
+} 
