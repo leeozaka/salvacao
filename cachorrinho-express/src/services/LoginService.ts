@@ -32,10 +32,10 @@ export class LoginService {
 
       const { usuario, ...pessoaSemSenha } = pessoa;
       const usuarioSemSenha = { ...usuario, senha: '' };
-      
+
       return {
         ...pessoaSemSenha,
-        usuario: usuarioSemSenha
+        usuario: usuarioSemSenha,
       };
     } catch (error) {
       console.error('Erro ao realizar login:', error);
@@ -48,7 +48,9 @@ export class LoginService {
       return await this.usuarioRepository.isFirstUser();
     } catch (error) {
       console.error('Erro ao verificar se é o primeiro usuário:', error);
-      throw error instanceof Error ? error : new Error(`Erro ao verificar primeiro usuário: ${String(error)}`);
+      throw error instanceof Error
+        ? error
+        : new Error(`Erro ao verificar primeiro usuário: ${String(error)}`);
     }
   }
 

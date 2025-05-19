@@ -10,8 +10,8 @@ import {
   TipoCompromisso,
   TipoDoacao,
   TipoInteracao,
-  ViaAdministracaoMedicamento
-} from './enums';
+  ViaAdministracaoMedicamento,
+} from "./enums";
 
 export interface ActivableEntity {
   isActive: boolean;
@@ -77,7 +77,7 @@ export type Produto = {
   unidadeMedidaPadrao: UnidadeMedida;
   medicamentoDetalhe?: MedicamentoDetalhe;
   vacinaDetalhe?: VacinaDetalhe;
-}
+};
 
 export interface MedicamentoDetalhe extends ActivableEntity {
   idProduto: number;

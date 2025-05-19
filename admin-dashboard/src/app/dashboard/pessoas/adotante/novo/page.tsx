@@ -11,4 +11,4 @@ const NovaPaginaAdotante = () => {
   );
 };
 
-export default NovaPaginaAdotante; 
+export default NovaPaginaAdotante;

@@ -27,7 +27,9 @@ export class AdotanteService {
       return await this.adotanteRepository.findAll();
     } catch (error) {
       console.error('Erro ao buscar todos os adotantes:', error);
-      throw error instanceof Error ? error : new Error(`Erro ao buscar adotantes: ${String(error)}`);
+      throw error instanceof Error
+        ? error
+        : new Error(`Erro ao buscar adotantes: ${String(error)}`);
     }
   }
 
@@ -36,7 +38,9 @@ export class AdotanteService {
       return await this.adotanteRepository.update(id, data);
     } catch (error) {
       console.error(`Erro ao atualizar adotante ${id}:`, error);
-      throw error instanceof Error ? error : new Error(`Erro ao atualizar adotante: ${String(error)}`);
+      throw error instanceof Error
+        ? error
+        : new Error(`Erro ao atualizar adotante: ${String(error)}`);
     }
   }
 
@@ -45,7 +49,9 @@ export class AdotanteService {
       return await this.adotanteRepository.delete(id);
     } catch (error) {
       console.error(`Erro ao excluir adotante ${id}:`, error);
-      throw error instanceof Error ? error : new Error(`Erro ao excluir adotante: ${String(error)}`);
+      throw error instanceof Error
+        ? error
+        : new Error(`Erro ao excluir adotante: ${String(error)}`);
     }
   }
 }

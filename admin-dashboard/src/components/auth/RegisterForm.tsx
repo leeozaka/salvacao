@@ -174,10 +174,10 @@ export default function RegisterForm({
         senha: formData.password,
         telefone: formData.telephone.replace(/\D/g, ""),
         documentoIdentidade: formData.cpf.replace(/\D/g, ""),
-        tipoDocumento: 'CPF',
+        tipoDocumento: "CPF",
         dataNascimento: birthdayDate.toISOString(),
-        tipoUsuario: 'USER',
-        endereco: '',
+        tipoUsuario: "USER",
+        endereco: "",
       });
 
       if (result.success) {
@@ -195,9 +195,7 @@ export default function RegisterForm({
 
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-md p-6 rounded-lg shadow-md bg-bg-color text-text-color">
-      <h1 className="text-2xl font-bold text-center mb-4">
-        Criar uma Conta
-      </h1>
+      <h1 className="text-2xl font-bold text-center mb-4">Criar uma Conta</h1>
 
       {Object.keys(errors).length > 0 && (
         <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded w-full">
@@ -215,10 +213,7 @@ export default function RegisterForm({
       <form onSubmit={handleSubmit} className="space-y-6 w-full">
         <div className="space-y-4">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="name" className="block text-sm font-medium">
               Nome Completo
             </label>
             <input
@@ -236,10 +231,7 @@ export default function RegisterForm({
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email
             </label>
             <input
@@ -261,10 +253,7 @@ export default function RegisterForm({
           </div>
 
           <div>
-            <label
-              htmlFor="cpf"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="cpf" className="block text-sm font-medium">
               CPF
             </label>
             <input
@@ -277,14 +266,13 @@ export default function RegisterForm({
               placeholder="000.000.000-00"
               required
             />
-            {errors.cpf && <p className="mt-1 text-xs text-red-500">{errors.cpf}</p>}
+            {errors.cpf && (
+              <p className="mt-1 text-xs text-red-500">{errors.cpf}</p>
+            )}
           </div>
 
           <div>
-            <label
-              htmlFor="telephone"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="telephone" className="block text-sm font-medium">
               Telefone
             </label>
             <input
@@ -303,10 +291,7 @@ export default function RegisterForm({
           </div>
 
           <div>
-            <label
-              htmlFor="birthday"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="birthday" className="block text-sm font-medium">
               Data de Nascimento
             </label>
             <input
@@ -328,10 +313,7 @@ export default function RegisterForm({
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Senha
             </label>
             <input
@@ -346,19 +328,31 @@ export default function RegisterForm({
             <div className="w-full h-1.5 bg-[var(--color-secondary)] rounded-full mt-1">
               <div
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  passwordStrength.color === "red" ? "bg-red-500 w-1/4" :
-                  passwordStrength.color === "orange" ? "bg-orange-500 w-2/4" :
-                  passwordStrength.color === "yellow" ? "bg-yellow-500 w-3/4" :
-                  passwordStrength.color === "green" ? "bg-green-500 w-full" : "bg-gray-300 w-0"
+                  passwordStrength.color === "red"
+                    ? "bg-red-500 w-1/4"
+                    : passwordStrength.color === "orange"
+                      ? "bg-orange-500 w-2/4"
+                      : passwordStrength.color === "yellow"
+                        ? "bg-yellow-500 w-3/4"
+                        : passwordStrength.color === "green"
+                          ? "bg-green-500 w-full"
+                          : "bg-gray-300 w-0"
                 }`}
               ></div>
             </div>
-            <p className={`text-xs font-medium mt-1 ${
-              passwordStrength.color === "red" ? "text-red-600" :
-              passwordStrength.color === "orange" ? "text-orange-600" :
-              passwordStrength.color === "yellow" ? "text-yellow-600" :
-              passwordStrength.color === "green" ? "text-green-600" : "text-[var(--color-text)] opacity-70"
-            }`}>
+            <p
+              className={`text-xs font-medium mt-1 ${
+                passwordStrength.color === "red"
+                  ? "text-red-600"
+                  : passwordStrength.color === "orange"
+                    ? "text-orange-600"
+                    : passwordStrength.color === "yellow"
+                      ? "text-yellow-600"
+                      : passwordStrength.color === "green"
+                        ? "text-green-600"
+                        : "text-[var(--color-text)] opacity-70"
+              }`}
+            >
               Força da senha: {passwordStrength.label}
             </p>
             {errors.password && (
@@ -383,7 +377,9 @@ export default function RegisterForm({
               required
             />
             {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
+              <p className="mt-1 text-xs text-red-500">
+                {errors.confirmPassword}
+              </p>
             )}
           </div>
         </div>

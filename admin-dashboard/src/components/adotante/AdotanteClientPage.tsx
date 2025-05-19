@@ -1,11 +1,8 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Adotante } from "@/types/entities";
-import {
-  buscarAdotantes,
-  excluirAdotante,
-} from "@/services/adotanteService";
+import { buscarAdotantes, excluirAdotante } from "@/services/adotanteService";
 import { useRouter } from "next/navigation";
 
 const AdotanteClientPage: React.FC = () => {
@@ -120,27 +117,28 @@ const AdotanteClientPage: React.FC = () => {
 
           {loading && !adotantes.length ? (
             <div className="flex justify-center py-8">
-              <div
-                className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-color-secondary-color"
-              ></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-color-secondary-color"></div>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table
-                className="min-w-full border border-gray-200 border-color-bg-color"
-              >
+              <table className="min-w-full border border-gray-200 border-color-bg-color">
                 <thead>
                   <tr className="bg-gray-50">
-                    {['Nome', 'CPF', 'Email', 'Telefone', 'Endereço', 'Ações'].map(
-                      (label) => (
-                        <th
-                          key={label}
-                          className="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                        >
-                          {label}
-                        </th>
-                      ),
-                    )}
+                    {[
+                      "Nome",
+                      "CPF",
+                      "Email",
+                      "Telefone",
+                      "Endereço",
+                      "Ações",
+                    ].map((label) => (
+                      <th
+                        key={label}
+                        className="py-3 px-4 border-b border-gray-200 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      >
+                        {label}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -205,4 +203,4 @@ const AdotanteClientPage: React.FC = () => {
   );
 };
 
-export default AdotanteClientPage; 
+export default AdotanteClientPage;

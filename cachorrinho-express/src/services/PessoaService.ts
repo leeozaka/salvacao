@@ -1,10 +1,6 @@
 import { hash } from 'bcrypt';
 import { UsuarioRepository } from '../repositories/UsuarioRepository';
-import {
-  CreatePessoaDTO,
-  PessoaDTO,
-  UpdatePessoaDTO,
-} from '../dtos/PessoaDTO';
+import { CreatePessoaDTO, PessoaDTO, UpdatePessoaDTO } from '../dtos/PessoaDTO';
 import { TipoUsuario } from '@prisma/client';
 
 export class PessoaService {
@@ -139,10 +135,7 @@ export class PessoaService {
       }
       return user;
     } catch (error) {
-      console.error(
-        `Error in PessoaService.findByDocumento for document ${documento}:`,
-        error,
-      );
+      console.error(`Error in PessoaService.findByDocumento for document ${documento}:`, error);
       if (error instanceof Error && error.message.includes('not found')) {
         throw error;
       }

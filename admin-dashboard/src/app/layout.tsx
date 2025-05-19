@@ -25,7 +25,7 @@ export default function RootLayout({
           enableSystem={true}
           defaultTheme="system"
         > */}
-          {children}
+        {children}
         {/* </ThemeProvider> */}
       </body>
     </html>

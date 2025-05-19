@@ -18,4 +18,4 @@ const EditarPaginaAdotante: React.FC<EditarPaginaAdotanteProps> = (props) => {
   );
 };
 
-export default EditarPaginaAdotante; 
+export default EditarPaginaAdotante;

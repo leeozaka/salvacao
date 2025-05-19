@@ -6,38 +6,36 @@ export class AdotanteRepository {
 
   async create(data: CreateAdotanteDTO): Promise<AdotanteDTO> {
     try {
-      const newAdotante = await this.prisma.$transaction(
-        async (tx: Prisma.TransactionClient) => {
-          // First create the pessoa
-          const newPessoa = await tx.pessoa.create({
-            data: {
-              nome: data.pessoa.nome,
-              documentoIdentidade: data.pessoa.documentoIdentidade,
-              email: data.pessoa.email,
-              telefone: data.pessoa.telefone,
-              endereco: data.pessoa.endereco,
-              isActive: true,
-            },
-          });
+      const newAdotante = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        // First create the pessoa
+        const newPessoa = await tx.pessoa.create({
+          data: {
+            nome: data.pessoa.nome,
+            documentoIdentidade: data.pessoa.documentoIdentidade,
+            email: data.pessoa.email,
+            telefone: data.pessoa.telefone,
+            endereco: data.pessoa.endereco,
+            isActive: true,
+          },
+        });
 
-          // Then create the adotante
-          const adotante = await tx.adotante.create({
-            data: {
-              idPessoa: newPessoa.id,
-              motivacaoAdocao: data.motivacaoAdocao,
-              experienciaAnteriorAnimais: data.experienciaAnteriorAnimais,
-              tipoMoradia: data.tipoMoradia,
-              permiteAnimaisMoradia: data.permiteAnimaisMoradia,
-              isActive: true,
-            },
-            include: {
-              pessoa: true,
-            },
-          });
+        // Then create the adotante
+        const adotante = await tx.adotante.create({
+          data: {
+            idPessoa: newPessoa.id,
+            motivacaoAdocao: data.motivacaoAdocao,
+            experienciaAnteriorAnimais: data.experienciaAnteriorAnimais,
+            tipoMoradia: data.tipoMoradia,
+            permiteAnimaisMoradia: data.permiteAnimaisMoradia,
+            isActive: true,
+          },
+          include: {
+            pessoa: true,
+          },
+        });
 
-          return adotante;
-        },
-      );
+        return adotante;
+      });
 
       return this.mapToAdotanteDTO(newAdotante);
     } catch (error) {
@@ -74,9 +72,7 @@ export class AdotanteRepository {
       return this.mapToAdotanteDTO(adotante);
     } catch (error) {
       console.error(`Erro ao buscar adotante por ID ${id}:`, error);
-      throw error instanceof Error
-        ? error
-        : new Error(`Erro ao buscar adotante: ${String(error)}`);
+      throw error instanceof Error ? error : new Error(`Erro ao buscar adotante: ${String(error)}`);
     }
   }
 
@@ -107,7 +103,7 @@ export class AdotanteRepository {
         },
       });
 
-      return adotantes.map(adotante => this.mapToAdotanteDTO(adotante));
+      return adotantes.map((adotante) => this.mapToAdotanteDTO(adotante));
     } catch (error) {
       console.error('Erro ao buscar todos os adotantes:', error);
       throw new Error(
@@ -131,7 +127,7 @@ export class AdotanteRepository {
 
           const adotanteData: Prisma.AdotanteUpdateInput = {};
           const pessoaData: Prisma.PessoaUpdateInput = {};
-          
+
           if (data.motivacaoAdocao !== undefined) {
             adotanteData.motivacaoAdocao = data.motivacaoAdocao;
           }
@@ -150,7 +146,8 @@ export class AdotanteRepository {
 
           if (data.pessoa) {
             if (data.pessoa.nome !== undefined) pessoaData.nome = data.pessoa.nome;
-            if (data.pessoa.documentoIdentidade !== undefined) pessoaData.documentoIdentidade = data.pessoa.documentoIdentidade;
+            if (data.pessoa.documentoIdentidade !== undefined)
+              pessoaData.documentoIdentidade = data.pessoa.documentoIdentidade;
             if (data.pessoa.email !== undefined) pessoaData.email = data.pessoa.email;
             if (data.pessoa.telefone !== undefined) pessoaData.telefone = data.pessoa.telefone;
             if (data.pessoa.endereco !== undefined) pessoaData.endereco = data.pessoa.endereco;

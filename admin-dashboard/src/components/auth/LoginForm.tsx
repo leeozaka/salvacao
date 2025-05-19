@@ -62,7 +62,6 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
 
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-md p-6 rounded-lg shadow-md bg-bg-color text-text-color">
-
       <h1 className="text-2xl font-bold text-center mb-4">
         Salvacão - Dashboard
       </h1>
@@ -82,10 +81,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
       <form className="space-y-6 w-full" onSubmit={handleLogin}>
         <div className="space-y-4">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email
             </label>
             <input
@@ -100,10 +96,7 @@ export default function LoginForm({ onToggleForm }: LoginFormProps) {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Senha
             </label>
             <input

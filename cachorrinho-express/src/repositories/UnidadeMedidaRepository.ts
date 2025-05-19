@@ -1,5 +1,9 @@
 import { PrismaClient, Prisma, UnidadeMedida } from '@prisma/client';
-import { UnidadeMedidaDTO, CreateUnidadeMedidaDTO, UpdateUnidadeMedidaDTO } from '../dtos/UnidadeMedidaDTO';
+import {
+  UnidadeMedidaDTO,
+  CreateUnidadeMedidaDTO,
+  UpdateUnidadeMedidaDTO,
+} from '../dtos/UnidadeMedidaDTO';
 
 export class UnidadeMedidaRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -69,7 +73,7 @@ export class UnidadeMedidaRepository {
         },
       });
 
-      return unidadesMedida.map(unidadeMedida => this.mapToUnidadeMedidaDTO(unidadeMedida));
+      return unidadesMedida.map((unidadeMedida) => this.mapToUnidadeMedidaDTO(unidadeMedida));
     } catch (error) {
       console.error('Erro ao buscar todas as unidades de medida:', error);
       throw new Error(

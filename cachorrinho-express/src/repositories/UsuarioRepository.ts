@@ -1,9 +1,5 @@
 import { PrismaClient, Prisma, Pessoa, Usuario } from '@prisma/client';
-import {
-  PessoaDTO,
-  CreatePessoaDTO,
-  UpdatePessoaDTO,
-} from '../dtos/PessoaDTO';
+import { PessoaDTO, CreatePessoaDTO, UpdatePessoaDTO } from '../dtos/PessoaDTO';
 
 export class UsuarioRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -97,10 +93,10 @@ export class UsuarioRepository {
         ...(buscarPessoas && {
           NOT: {
             adotante: {
-              deletedAt: null
-            }
-          }
-        })
+              deletedAt: null,
+            },
+          },
+        }),
       };
 
       const pessoas = await this.prisma.pessoa.findMany({
@@ -168,7 +164,9 @@ export class UsuarioRepository {
           throw new Error(`Associated active Usuario for Pessoa ID ${pessoaId} not found.`);
         }
 
-        let finalPessoa: Pessoa & { usuario?: Usuario | null } = existingPessoa as Pessoa & { usuario?: Usuario | null };
+        let finalPessoa: Pessoa & { usuario?: Usuario | null } = existingPessoa as Pessoa & {
+          usuario?: Usuario | null;
+        };
 
         if (hasPessoaUpdates) {
           await tx.pessoa.update({
@@ -366,7 +364,9 @@ export class UsuarioRepository {
       return count === 0;
     } catch (error) {
       console.error('Error checking if first user:', error);
-      throw error instanceof Error ? error : new Error(`Error checking first user: ${String(error)}`);
+      throw error instanceof Error
+        ? error
+        : new Error(`Error checking first user: ${String(error)}`);
     }
   }
 

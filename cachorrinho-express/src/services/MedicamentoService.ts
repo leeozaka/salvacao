@@ -1,13 +1,8 @@
 import { MedicamentoRepository } from '../repositories/MedicamentoRepository';
-import {
-  MedicamentoDTO,
-  CreateMedicamentoDTO,
-  UpdateMedicamentoDTO,
-} from '../dtos/MedicamentoDTO';
+import { MedicamentoDTO, CreateMedicamentoDTO, UpdateMedicamentoDTO } from '../dtos/MedicamentoDTO';
 
 export class MedicamentoService {
   constructor(private readonly medicamentoRepository: MedicamentoRepository) {}
-
 
   async create(data: CreateMedicamentoDTO): Promise<MedicamentoDTO> {
     if (!data.nome || !data.idTipoProduto || !data.idUnidadeMedidaPadrao) {
@@ -19,14 +14,16 @@ export class MedicamentoService {
       return novoMedicamento;
     } catch (error) {
       console.error('Erro em MedicamentoService.create:', error);
-      if (error instanceof Error && (error.message.includes('já existe') || error.message.includes('violation'))) {
+      if (
+        error instanceof Error &&
+        (error.message.includes('já existe') || error.message.includes('violation'))
+      ) {
         throw new Error(error.message);
       }
       throw new Error('Falha ao criar medicamento.');
     }
   }
 
- 
   async update(id: number, data: UpdateMedicamentoDTO): Promise<MedicamentoDTO> {
     if (Object.keys(data).length === 0) {
       throw new Error('Nenhum dado de atualização fornecido.');
@@ -52,7 +49,6 @@ export class MedicamentoService {
     }
   }
 
- 
   async delete(id: number): Promise<boolean> {
     try {
       const resultado = await this.medicamentoRepository.delete(id);
@@ -85,7 +81,6 @@ export class MedicamentoService {
     }
   }
 
- 
   async findAll(filter?: Partial<MedicamentoDTO>): Promise<MedicamentoDTO[]> {
     try {
       const medicamentos = await this.medicamentoRepository.findAll(filter);

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useTheme } from 'next-themes';
+import { useTheme } from "next-themes";
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
@@ -46,4 +46,4 @@ export function ThemeSwitcher() {
       </svg>
     </button>
   );
-} 
+}

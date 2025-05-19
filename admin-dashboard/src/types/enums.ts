@@ -1,17 +1,17 @@
 export enum TipoDocumento {
   CPF = "CPF",
-  RG = "RG"
+  RG = "RG",
 }
 
 export enum TipoUsuario {
   ADMIN = "ADMIN",
-  USER = "USER"
+  USER = "USER",
 }
 
 export enum SexoAnimal {
   MACHO = "MACHO",
   FEMEA = "FEMEA",
-  DESCONHECIDO = "DESCONHECIDO"
+  DESCONHECIDO = "DESCONHECIDO",
 }
 
 export enum PorteAnimal {
@@ -19,7 +19,7 @@ export enum PorteAnimal {
   PEQUENO = "PEQUENO",
   MEDIO = "MEDIO",
   GRANDE = "GRANDE",
-  GIGANTE = "GIGANTE"
+  GIGANTE = "GIGANTE",
 }
 
 export enum StatusAnimal {
@@ -31,7 +31,7 @@ export enum StatusAnimal {
   FALECIDO = "FALECIDO",
   EM_OBSERVACAO = "EM_OBSERVACAO",
   PERDIDO = "PERDIDO",
-  DEVOLVIDO = "DEVOLVIDO"
+  DEVOLVIDO = "DEVOLVIDO",
 }
 
 export enum StatusAdocao {
@@ -42,7 +42,7 @@ export enum StatusAdocao {
   CANCELADA = "CANCELADA",
   CONCLUIDA = "CONCLUIDA",
   ACOMPANHAMENTO = "ACOMPANHAMENTO",
-  DEVOLVIDO = "DEVOLVIDO"
+  DEVOLVIDO = "DEVOLVIDO",
 }
 
 export enum TipoMoradia {
@@ -55,7 +55,7 @@ export enum TipoMoradia {
   SITIO = "SITIO",
   FAZENDA = "FAZENDA",
   COMUNIDADE = "COMUNIDADE",
-  OUTRO = "OUTRO"
+  OUTRO = "OUTRO",
 }
 
 export enum StatusAgendamento {
@@ -66,7 +66,7 @@ export enum StatusAgendamento {
   CANCELADO_PELA_ONG = "CANCELADO_PELA_ONG",
   REAGENDADO = "REAGENDADO",
   NAO_COMPARECEU = "NAO_COMPARECEU",
-  EM_ANDAMENTO = "EM_ANDAMENTO"
+  EM_ANDAMENTO = "EM_ANDAMENTO",
 }
 
 export enum TipoCompromisso {
@@ -86,7 +86,7 @@ export enum TipoCompromisso {
   EVENTO_FEIRA_ADOCAO = "EVENTO_FEIRA_ADOCAO",
   TREINAMENTO_COMPORTAMENTAL = "TREINAMENTO_COMPORTAMENTAL",
   SESSAO_FISIOTERAPIA = "SESSAO_FISIOTERAPIA",
-  OUTRO = "OUTRO"
+  OUTRO = "OUTRO",
 }
 
 export enum TipoDoacao {
@@ -105,7 +105,7 @@ export enum TipoDoacao {
   SERVICO_TREINAMENTO = "SERVICO_TREINAMENTO",
   SERVICO_DIVULGACAO_MARKETING = "SERVICO_DIVULGACAO_MARKETING",
   SERVICO_FOTOGRAFIA_VIDEO = "SERVICO_FOTOGRAFIA_VIDEO",
-  OUTRO = "OUTRO"
+  OUTRO = "OUTRO",
 }
 
 export enum TipoInteracao {
@@ -120,7 +120,7 @@ export enum TipoInteracao {
   VIDEO_CHAMADA_REALIZADA = "VIDEO_CHAMADA_REALIZADA",
   CONTATO_REDES_SOCIAIS = "CONTATO_REDES_SOCIAIS",
   RELATORIO_ESCRITO = "RELATORIO_ESCRITO",
-  OUTRO = "OUTRO"
+  OUTRO = "OUTRO",
 }
 
 export enum ViaAdministracaoMedicamento {
@@ -135,5 +135,5 @@ export enum ViaAdministracaoMedicamento {
   TOPICA_AURICULAR = "TOPICA_AURICULAR",
   INALATORIA = "INALATORIA",
   RETAL = "RETAL",
-  OUTRA = "OUTRA"
-} 
+  OUTRA = "OUTRA",
+}

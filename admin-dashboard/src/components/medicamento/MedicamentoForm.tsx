@@ -279,10 +279,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                   Selecione uma unidade
                 </option>
                 {unidadesMedida.map((unidade) => (
-                  <option 
-                    key={unidade.id}
-                    value={unidade.id}
-                  >
+                  <option key={unidade.id} value={unidade.id}>
                     {unidade.nome}
                   </option>
                 ))}

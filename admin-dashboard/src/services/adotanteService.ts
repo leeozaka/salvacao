@@ -11,40 +11,44 @@ export const buscarAdotantes = async (): Promise<Adotante[]> => {
   try {
     const response = await fetch(`${API_URL}/adotantes`, {
       headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
     if (!response.ok) {
-      throw new Error('Erro ao buscar adotantes');
+      throw new Error("Erro ao buscar adotantes");
     }
 
-    const data = await response.json().then(adotantes => adotantes.map((adotante: Adotante) => adotante));
+    const data = await response
+      .json()
+      .then((adotantes) => adotantes.map((adotante: Adotante) => adotante));
 
     return data;
   } catch (error) {
-    console.error('Erro ao buscar adotantes:', error);
+    console.error("Erro ao buscar adotantes:", error);
     return [];
   }
 };
 
-export const buscarAdotantePorId = async (id: string): Promise<Adotante | null> => {
+export const buscarAdotantePorId = async (
+  id: string,
+): Promise<Adotante | null> => {
   const authToken = (await cookies()).get("authToken")?.value;
   try {
     const response = await fetch(`${API_URL}/adotantes/${id}`, {
       headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
     if (!response.ok) {
       if (response.status === 404) {
         return null;
       }
-      throw new Error('Erro ao buscar adotante por ID');
+      throw new Error("Erro ao buscar adotante por ID");
     }
     return await response.json();
   } catch (error) {
-    console.error('Erro ao buscar adotante por ID:', error);
-    throw error; 
+    console.error("Erro ao buscar adotante por ID:", error);
+    throw error;
   }
 };
 
@@ -54,64 +58,69 @@ export const buscarPessoas = async (): Promise<Pessoa[]> => {
   try {
     const response = await fetch(`${API_URL}/user/all?buscarPessoas=true`, {
       headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
 
     if (!response.ok) {
-      throw new Error('Erro ao buscar pessoas');
+      throw new Error("Erro ao buscar pessoas");
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Erro ao buscar pessoas:', error);
+    console.error("Erro ao buscar pessoas:", error);
     throw error;
   }
-}
-export const cadastrarAdotante = async (adotante: Adotante): Promise<Pessoa> => {
+};
+export const cadastrarAdotante = async (
+  adotante: Adotante,
+): Promise<Pessoa> => {
   const authToken = (await cookies()).get("authToken")?.value;
 
   try {
     const response = await fetch(`${API_URL}/adotantes`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify(adotante),
     });
-    
+
     if (!response.ok) {
-      throw new Error('Erro ao cadastrar adotante');
+      throw new Error("Erro ao cadastrar adotante");
     }
-    
+
     return await response.json();
   } catch (error) {
-    console.error('Erro ao cadastrar adotante:', error);
+    console.error("Erro ao cadastrar adotante:", error);
     throw error;
   }
 };
 
-export const atualizarAdotante = async (id: number, adotante: Adotante): Promise<Pessoa> => {
+export const atualizarAdotante = async (
+  id: number,
+  adotante: Adotante,
+): Promise<Pessoa> => {
   const authToken = (await cookies()).get("authToken")?.value;
 
   try {
     const response = await fetch(`${API_URL}/adotantes/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify(adotante),
     });
-    
+
     if (!response.ok) {
-      throw new Error('Erro ao atualizar adotante');
+      throw new Error("Erro ao atualizar adotante");
     }
-    
+
     return await response.json();
   } catch (error) {
-    console.error('Erro ao atualizar adotante:', error);
+    console.error("Erro ao atualizar adotante:", error);
     throw error;
   }
 };
@@ -120,17 +129,17 @@ export const excluirAdotante = async (id: string): Promise<void> => {
   const authToken = (await cookies()).get("authToken")?.value;
   try {
     const response = await fetch(`${API_URL}/adotantes/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
+        Authorization: `Bearer ${authToken}`,
+      },
     });
-    
+
     if (!response.ok) {
-      throw new Error('Erro ao excluir adotante');
+      throw new Error("Erro ao excluir adotante");
     }
   } catch (error) {
-    console.error('Erro ao excluir adotante:', error);
+    console.error("Erro ao excluir adotante:", error);
     throw error;
   }
 };

@@ -20,7 +20,6 @@ export class MedicamentoController {
     }
   };
 
-
   findOne = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = req.params.id || req.query.id || req.body.id;
@@ -90,12 +89,12 @@ export class MedicamentoController {
       }
 
       const result = await this.medicamentoService.delete(Number(id));
-      
+
       if (result) {
         res.status(StatusCodes.NO_CONTENT).send();
       } else {
         res.status(StatusCodes.NOT_FOUND).json({
-          mensagem: `Medicamento com ID ${id} não encontrado ou já está excluído.`
+          mensagem: `Medicamento com ID ${id} não encontrado ou já está excluído.`,
         });
       }
     } catch (error) {

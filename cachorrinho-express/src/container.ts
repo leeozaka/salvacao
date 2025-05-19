@@ -76,7 +76,8 @@ export class Container {
     this.adotanteService = new AdotanteService(this.adotanteRepository);
     this.adotanteController = new AdotanteController(this.adotanteService);
 
-    this.authMiddleware = authenticate(this.pessoaService)  }
+    this.authMiddleware = authenticate(this.pessoaService);
+  }
 
   static getPessoaController(): PessoaController {
     if (!this.pessoaController) this.init();

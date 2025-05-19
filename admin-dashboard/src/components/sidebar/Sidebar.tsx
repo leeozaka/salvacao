@@ -165,9 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             className="flex items-center justify-center w-full px-4 py-3 rounded-md bg-red-50 hover:bg-red-100 transition-colors duration-200"
           >
             <i className="bi bi-box-arrow-right text-red-500 text-lg mr-3"></i>
-            <span className="text-red-600 font-medium">
-              Logout
-            </span>
+            <span className="text-red-600 font-medium">Logout</span>
           </button>
         </div>
       </aside>

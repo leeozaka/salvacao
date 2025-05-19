@@ -6,7 +6,6 @@ import {
 } from "@/services/produtoService";
 
 export default async function MedicamentosPage() {
-
   const dadosIniciais = {
     tipos: [],
     unidades: [],
@@ -30,7 +29,6 @@ export default async function MedicamentosPage() {
         unidadesResponse.message,
       );
     }
-
   } catch (error) {
     console.error("Erro geral ao carregar dados iniciais:", error);
   }

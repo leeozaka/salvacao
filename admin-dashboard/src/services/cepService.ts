@@ -1,13 +1,15 @@
 // src/services/cepService.ts
 export const buscarCEP = async (cep: string) => {
-  const sanitizedCEP = cep.replace(/\D/g, '');
+  const sanitizedCEP = cep.replace(/\D/g, "");
 
   if (sanitizedCEP.length !== 8) {
     throw new Error("CEP inválido");
   }
 
-  const response = await fetch(`https://viacep.com.br/ws/${sanitizedCEP}/json/`);
-  
+  const response = await fetch(
+    `https://viacep.com.br/ws/${sanitizedCEP}/json/`,
+  );
+
   if (!response.ok) {
     throw new Error("Erro ao buscar CEP");
   }
@@ -22,6 +24,6 @@ export const buscarCEP = async (cep: string) => {
     logradouro: data.logradouro,
     bairro: data.bairro,
     cidade: data.localidade,
-    estado: data.uf
+    estado: data.uf,
   };
 };

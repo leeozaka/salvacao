@@ -90,7 +90,6 @@ export async function buscarUnidadesMedida(filtro?: any): Promise<any> {
         message: data.message || "Falha ao buscar unidades de medida",
       };
     }
-    
   } catch (error) {
     console.error("Erro ao buscar unidades de medida:", error);
     return {

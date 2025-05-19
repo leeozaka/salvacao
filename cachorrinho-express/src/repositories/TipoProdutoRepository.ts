@@ -63,7 +63,7 @@ export class TipoProdutoRepository {
         },
       });
 
-      return tiposProduto.map(tipoProduto => this.mapToTipoProdutoDTO(tipoProduto));
+      return tiposProduto.map((tipoProduto) => this.mapToTipoProdutoDTO(tipoProduto));
     } catch (error) {
       console.error('Erro ao buscar todos os tipos de produto:', error);
       throw new Error(

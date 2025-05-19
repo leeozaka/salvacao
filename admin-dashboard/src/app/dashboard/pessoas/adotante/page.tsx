@@ -1,9 +1,7 @@
 import AdotanteClientPage from "@/components/adotante/AdotanteClientPage";
 
 const AdotantesPage = async () => {
-  return (
-    <AdotanteClientPage />
-  );
+  return <AdotanteClientPage />;
 };
 
 export default AdotantesPage;

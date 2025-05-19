@@ -7,6 +7,6 @@ export type UsuarioDTO = Activable & {
   tipoUsuario: TipoUsuario;
   senha: string;
   pessoa?: PessoaDTO;
-}
+};
 
-export type UsuarioPublicData = Omit<UsuarioDTO, 'senha'>; 
+export type UsuarioPublicData = Omit<UsuarioDTO, 'senha'>;

@@ -15,8 +15,7 @@ export async function verifyToken(token: string) {
   if (!token) return false;
 
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
     const verifyUrl = `${baseUrl}/login/verify`;
 
     const response = await fetch(verifyUrl, {
