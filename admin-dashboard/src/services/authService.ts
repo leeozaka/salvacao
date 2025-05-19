@@ -31,7 +31,6 @@ export async function loginUser(
     const data = await response.json();
 
     if (response.ok && data.token) {
-      // Set authentication cookie
       setAuthCookie(data.token);
 
       return {

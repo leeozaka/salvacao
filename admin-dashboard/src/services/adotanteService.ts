@@ -1,10 +1,11 @@
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 import { Pessoa, formularioAdotante } from "@/types/entities";
 
 export const adotanteService = {
-  // Método para buscar todos os adotantes
   buscarAdotantes: async (): Promise<formularioAdotante[]> => {
     try {
-      const response = await fetch('/api/adotantes');
+      const response = await fetch(`${API_URL}/adotantes`);
       if (!response.ok) {
         throw new Error('Erro ao buscar adotantes');
       }
@@ -15,10 +16,9 @@ export const adotanteService = {
     }
   },
 
-  // Método para cadastrar um novo adotante
   cadastrarAdotante: async (adotante: formularioAdotante): Promise<Pessoa> => {
     try {
-      const response = await fetch('/api/adotantes', {
+      const response = await fetch(`${API_URL}/adotantes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,10 +37,9 @@ export const adotanteService = {
     }
   },
 
-  // Método para atualizar um adotante existente
   atualizarAdotante: async (id: string, adotante: formularioAdotante): Promise<Pessoa> => {
     try {
-      const response = await fetch(`/api/adotantes/${id}`, {
+      const response = await fetch(`${API_URL}/adotantes/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -59,10 +58,9 @@ export const adotanteService = {
     }
   },
 
-  // Método para excluir um adotante
   excluirAdotante: async (id: string): Promise<void> => {
     try {
-      const response = await fetch(`/api/adotantes/${id}`, {
+      const response = await fetch(`${API_URL}/adotantes/${id}`, {
         method: 'DELETE',
       });
       
