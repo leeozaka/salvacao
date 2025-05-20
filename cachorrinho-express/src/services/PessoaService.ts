@@ -143,9 +143,9 @@ export class PessoaService {
     }
   }
 
-  async findAll(buscarPessoas: boolean): Promise<PessoaDTO[]> {
+  async findAll(buscarPessoas: boolean, termo: string, tipoUsuario: string): Promise<PessoaDTO[]> {
     try {
-      const users = await this.usuarioRepository.findAll(buscarPessoas);
+      const users = await this.usuarioRepository.findAll(buscarPessoas, termo, tipoUsuario);
       return users;
     } catch (error) {
       console.error('Error in PessoaService.findAll:', error);

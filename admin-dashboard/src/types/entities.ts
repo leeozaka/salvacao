@@ -28,6 +28,11 @@ export interface Pessoa extends ActivableEntity {
   email?: string;
   telefone?: string;
   endereco?: string;
+  usuario?: {
+    id: number;
+    tipoUsuario: TipoUsuario;
+    isActive?: boolean;
+  };
 }
 
 export interface Usuario extends ActivableEntity {

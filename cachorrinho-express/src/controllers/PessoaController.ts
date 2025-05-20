@@ -36,9 +36,9 @@ export class PessoaController {
    */
   findOne = async (req: Request, res: Response): Promise<void> => {
     try {
-      const id = req.query.id || req.body.id;
+      const id = req.params.id || req.query.id || req.body.id;
 
-      if (typeof id !== 'string') {
+      if (!id || isNaN(Number(id))) {
         res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid ID parameter' });
         return;
       }
@@ -59,9 +59,11 @@ export class PessoaController {
    */
   findAll = async (req: Request, res: Response): Promise<void> => {
     const buscarPessoas = req.query.buscarPessoas === 'true';
+    const termo = req.query.termo as string;
+    const tipoUsuario = req.query.tipoUsuario as string;
 
     try {
-      const users = await this.pessoaService.findAll(buscarPessoas);
+      const users = await this.pessoaService.findAll(buscarPessoas, termo, tipoUsuario);
       res.status(StatusCodes.OK).json(users);
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

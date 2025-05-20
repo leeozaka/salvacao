@@ -39,6 +39,10 @@ export const menuItems: MenuItem[] = [
     icon: "bi-people",
     submenu: [
       {
+        title: "Gerenciar Pessoas",
+        path:"/dashboard/pessoas/cadastro",
+      },
+      {
         title: "Gerenciar adotantes",
         path: "/dashboard/pessoas/adotante",
       },

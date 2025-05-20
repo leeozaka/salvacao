@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, Pessoa, Usuario } from '@prisma/client';
+import { PrismaClient, Prisma, Pessoa, Usuario, TipoUsuario } from '@prisma/client';
 import { PessoaDTO, CreatePessoaDTO, UpdatePessoaDTO } from '../dtos/PessoaDTO';
 
 export class UsuarioRepository {
@@ -81,7 +81,7 @@ export class UsuarioRepository {
     }
   }
 
-  async findAll(buscarPessoas: boolean): Promise<PessoaDTO[]> {
+  async findAll(buscarPessoas: boolean, termo: string, tipoUsuario: string): Promise<PessoaDTO[]> {
     try {
       const where: Prisma.PessoaWhereInput = {
         isActive: true,
@@ -89,6 +89,9 @@ export class UsuarioRepository {
         usuario: {
           isActive: true,
           deletedAt: null,
+          ...(tipoUsuario && {
+            tipoUsuario: tipoUsuario as TipoUsuario,
+          }),
         },
         ...(buscarPessoas && {
           NOT: {
@@ -96,6 +99,13 @@ export class UsuarioRepository {
               deletedAt: null,
             },
           },
+        }),
+        ...(termo && {
+          OR: [
+            { nome: { contains: termo, mode: 'insensitive' } },
+            { email: { contains: termo, mode: 'insensitive' } },
+            { documentoIdentidade: { contains: termo, mode: 'insensitive' } },
+          ],
         }),
       };
 
